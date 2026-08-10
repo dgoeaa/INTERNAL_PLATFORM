@@ -1230,9 +1230,16 @@ dgo-shell[data-route-pending] .dgo-route-loading{display:block}
    .dgo-route-title classes and --dgo-shell-ministry-h/--dgo-shell-topbar-h tokens —
    those two feed calc() elsewhere (.dgo-shell-grid, .dgo-notify-panel), so the mobile
    tier below overrides them with new fixed values rather than `auto`.
-   `(min-height:641px)` keeps this tier disjoint from the existing short-landscape
-   tier at `@media(max-height:640px)` above (line ~505), which already zeroes the
-   ministry bar and owns that case.
+   R-D2 (mobile shell remediation, closing pass): `(min-height:641px)` used to gate
+   this tier disjoint from the existing short-landscape tier at `@media(max-height:640px)`
+   above (line ~505). That left a dead zone: at e.g. 640x360, the 320px-containment rule
+   below (2.2, un-height-gated) still hides [data-guide]/[data-sync]/button[data-density],
+   but this tier's `--tb-more:inline-flex` never activated because min-height:641px didn't
+   match — the overflow trigger that would have surfaced those controls never appeared, so
+   they were simply unreachable. Removing the height guard closes that gap: the tier now
+   matches everywhere the hide rule does. The one property this tier and the short-landscape
+   tier both set (`--dgo-shell-ministry-h`) is resolved just below the tier's closing brace,
+   without reordering either block (see the comment there).
    Breakpoint is 640px, not the directive's 620px: "2.2 — 320px topbar containment"
    (line ~944, pre-existing) already force-hides [data-guide],[data-sync] and
    button[data-density] with !important at max-width:640px. Since guide/sync are
@@ -1268,7 +1275,7 @@ dgo-shell[data-route-pending] .dgo-route-loading{display:block}
 .dgo-route-title{flex:1 1 0%;min-width:200px;max-width:none;}
 .dgo-route-title b[data-tb-title]{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;max-width:100%;}
 .dgo-topbar__spacer{flex:0 0 0;}
-@media(max-width:640px) and (min-height:641px){
+@media(max-width:640px){
   :root{
     --dgo-shell-ministry-h:40px;
     --dgo-shell-topbar-h:106px;
@@ -1282,8 +1289,27 @@ dgo-shell[data-route-pending] .dgo-route-loading{display:block}
   /* F-7 (search field renders ~340px tall): height ceiling for real form fields
      stretched by a flex-column ancestor. .dgo-input__field/.dgo-select__field named
      in the directive don't exist here (D-1c selector audit) - .dgo-select__field
-     does, .dgo-input is the real base-input equivalent of .dgo-input__field. */
+     does, .dgo-input is the real base-input equivalent of .dgo-input__field.
+     R-D2/R-5: this used to sit inside the min-height:641px-gated tier, so short-landscape
+     viewports (640x360, 600x480) never got the 44px field ceiling either. Now ungated
+     with the rest of this tier, it applies at every height once width<=640px. */
   .dgo-input,.dgo-select,.dgo-select__field,input,select{max-height:44px;}
+}
+/* R-D2 4.2 — property overlap between this tier and the short-landscape tier at
+   `@media(max-height:640px)` (line ~505). Only one property is set by both:
+   `--dgo-shell-ministry-h` (this tier: 40px, to fit the wrapped ministry-bar text;
+   short-landscape: 0px, to reclaim the row entirely). Both consumers that read the var
+   directly (`.dgo-notify-panel`, `.dgo-more-menu` inset-block-start calc) need the
+   short-landscape value to win whenever height<=640px, regardless of width. `.dgo-shell-grid`
+   itself is not at risk — the short-landscape tier pins its block-size to a literal 100dvh
+   rather than going through the var. Rule 4 (additive CSS; no reordering except the two
+   named exceptions) rules out moving the earlier @media(max-height:640px) block down here,
+   so the same outcome is reached additively: this new block sits after the tier above and
+   is scoped to max-height:640px, so at any viewport matching both conditions it is the
+   last declaration of `--dgo-shell-ministry-h` in source order and wins without reordering
+   or !important. */
+@media(max-height:640px){
+  :root{--dgo-shell-ministry-h:0px;}
 }
 .dgo-related__link .dgo-icon{width:14px;height:14px}
 
