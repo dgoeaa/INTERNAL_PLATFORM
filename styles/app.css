@@ -1232,12 +1232,19 @@ dgo-shell[data-route-pending] .dgo-route-loading{display:block}
    tier below overrides them with new fixed values rather than `auto`.
    `(min-height:641px)` keeps this tier disjoint from the existing short-landscape
    tier at `@media(max-height:640px)` above (line ~505), which already zeroes the
-   ministry bar and owns that case. ============================================================ */
+   ministry bar and owns that case.
+   Breakpoint is 640px, not the directive's 620px: "2.2 — 320px topbar containment"
+   (line ~944, pre-existing) already force-hides [data-guide],[data-sync] and
+   button[data-density] with !important at max-width:640px. Since guide/sync are
+   inline-styled (display:var(--tb-ctl)) rather than !important, a 620px tier would
+   leave 621-640px where that pre-existing rule still hides them but --tb-more
+   hasn't appeared yet - guide and sync would be unreachable in that band. Matching
+   640px keeps every mechanism flipping at the same edge. ============================================================ */
 :root{
   --tb-ctl:inline-flex;
   --tb-more:none;
 }
-@media(max-width:620px) and (min-height:641px){
+@media(max-width:640px) and (min-height:641px){
   :root{
     --dgo-shell-ministry-h:40px;
     --dgo-shell-topbar-h:96px;
@@ -1248,6 +1255,11 @@ dgo-shell[data-route-pending] .dgo-route-loading{display:block}
   .dgo-ministry-bar__text{white-space:normal;overflow:visible;text-overflow:clip;}
   .dgo-topbar{flex-wrap:wrap !important;padding:5px 12px;}
   .dgo-route-title b[data-tb-title]{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-overflow:clip;}
+  /* F-7 (search field renders ~340px tall): height ceiling for real form fields
+     stretched by a flex-column ancestor. .dgo-input__field/.dgo-select__field named
+     in the directive don't exist here (D-1c selector audit) - .dgo-select__field
+     does, .dgo-input is the real base-input equivalent of .dgo-input__field. */
+  .dgo-input,.dgo-select,.dgo-select__field,input,select{max-height:44px;}
 }
 /* Desktop bug fix (F-2): the title column was shrink-to-fit (flex:0 1 220px, app.css:529),
    which is why the route title ellipsised with ~330px of free space beside it at 1440px.
