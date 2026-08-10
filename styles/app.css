@@ -1284,7 +1284,12 @@ dgo-shell[data-route-pending] .dgo-route-loading{display:block}
   }
   .dgo-ministry-bar{white-space:normal;padding:5px 12px;}
   .dgo-ministry-bar__text{white-space:normal;overflow:visible;text-overflow:clip;}
-  .dgo-topbar{flex-wrap:wrap !important;padding:5px 12px;}
+  /* R-D3: !important removed. The only other declaration of .dgo-topbar's flex-wrap is the
+     unconditional `flex-wrap:nowrap` in the "mobile landscape horizontal containment" block
+     (line ~583 above), same specificity (0-1-0) and not !important - source order alone
+     decides, and this rule sits later in the file, so it still wins at <=640px without the
+     escalation. Verified in-browser: wrapping is unchanged at 320/390/640px. */
+  .dgo-topbar{flex-wrap:wrap;padding:5px 12px;}
   .dgo-route-title b[data-tb-title]{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-overflow:clip;min-width:0;max-width:100%;}
   /* F-7 (search field renders ~340px tall): height ceiling for real form fields
      stretched by a flex-column ancestor. .dgo-input__field/.dgo-select__field named
