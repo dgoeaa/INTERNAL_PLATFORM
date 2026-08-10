@@ -1180,4 +1180,38 @@ dgo-shell[data-route-pending] .dgo-route-loading{display:block}
 .dgo-nav-icon{display:inline-flex;align-items:center;justify-content:center;width:20px;color:currentColor}
 .dgo-cmdk__icon{display:inline-flex;align-items:center;justify-content:center;width:22px;color:var(--mut)}
 .dgo-iconbtn .dgo-icon,.dgo-search-trigger .dgo-icon{width:16px;height:16px}
+
+/* ============================================================
+   Mobile shell tier (EXECUTION DIRECTIVE — Mobile Shell Remediation).
+   Ported from "Root Platform — DGO Digital Operations.dc.html" (the shell's own
+   design source, which already implements this tier against its own --topbar/--kpi/
+   .dgo-row prototype markup) onto this runtime's real .dgo-ministry-bar/.dgo-topbar/
+   .dgo-route-title classes and --dgo-shell-ministry-h/--dgo-shell-topbar-h tokens —
+   those two feed calc() elsewhere (.dgo-shell-grid, .dgo-notify-panel), so the mobile
+   tier below overrides them with new fixed values rather than `auto`.
+   `(min-height:641px)` keeps this tier disjoint from the existing short-landscape
+   tier at `@media(max-height:640px)` above (line ~505), which already zeroes the
+   ministry bar and owns that case. ============================================================ */
+:root{
+  --tb-ctl:inline-flex;
+  --tb-more:none;
+}
+@media(max-width:620px) and (min-height:641px){
+  :root{
+    --dgo-shell-ministry-h:40px;
+    --dgo-shell-topbar-h:96px;
+    --tb-ctl:none;
+    --tb-more:inline-flex;
+  }
+  .dgo-ministry-bar{white-space:normal;padding:5px 12px;}
+  .dgo-ministry-bar__text{white-space:normal;overflow:visible;text-overflow:clip;}
+  .dgo-topbar{flex-wrap:wrap !important;padding:5px 12px;}
+  .dgo-route-title b[data-tb-title]{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-overflow:clip;}
+}
+/* Desktop bug fix (F-2): the title column was shrink-to-fit (flex:0 1 220px, app.css:529),
+   which is why the route title ellipsised with ~330px of free space beside it at 1440px.
+   flex:1 1 auto lets it claim the row's leftover space at every width; min-width:0 is
+   retained so it still shrinks below its content size where the row is genuinely tight. */
+.dgo-route-title{flex:1 1 auto;min-width:0;}
+.dgo-route-title b[data-tb-title]{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .dgo-related__link .dgo-icon{width:14px;height:14px}
