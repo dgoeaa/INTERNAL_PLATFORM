@@ -68,8 +68,9 @@ class Shell extends HTMLElement{
           <div class="dgo-route-title"><small data-eyebrow>ACTIVE WORKSPACE</small><b data-context data-tb-title>${esc(this.routeLabel(route))}</b></div>
           <div class="dgo-topbar__spacer"></div>
           <button type="button" class="dgo-search-trigger" data-palette aria-label="Search and command palette">${icon('i-search')}<span>Search references, tasks, people...</span><kbd>Ctrl K</kbd></button>
-          <button type="button" class="dgo-iconbtn" data-guide aria-label="Workspace guide" title="Workspace guide">${icon('i-help')}</button>
-          <button type="button" class="dgo-iconbtn" data-sync aria-label="Synchronize data" title="Synchronize data">${icon('i-refresh')}</button>
+          <button type="button" class="dgo-iconbtn" data-guide aria-label="Workspace guide" title="Workspace guide" style="display:var(--tb-ctl)">${icon('i-help')}</button>
+          <button type="button" class="dgo-iconbtn" data-sync aria-label="Synchronize data" title="Synchronize data" style="display:var(--tb-ctl)">${icon('i-refresh')}</button>
+          <button type="button" class="dgo-iconbtn" data-more-open aria-label="More controls" aria-haspopup="menu" aria-expanded="false" title="More controls" style="display:var(--tb-more)">${icon('i-more')}</button>
           <button type="button" class="dgo-iconbtn" data-density aria-label="Toggle density" title="Density: ${esc(density)}">${icon('i-chevron-down')}</button>
           <button type="button" class="dgo-iconbtn" data-theme aria-label="Switch theme" title="Theme: ${esc(theme)}">${icon('i-globe')}</button>
           <button type="button" class="dgo-iconbtn dgo-notify-trigger" data-notify-open aria-label="Activity and notifications" title="Activity" aria-haspopup="dialog" aria-expanded="false">${icon('i-bell')}<span class="dgo-notify-badge" data-notify-badge hidden></span></button>
