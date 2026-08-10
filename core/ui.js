@@ -30,7 +30,7 @@ export const head = (title, subtitle='', eyebrow='') => title
 export const statRow = (xs, cls='') => `<div class="stat-row ${cls}">${xs.map(x=>`<div class="kpi"><small>${esc(x[0])}</small><b>${esc(x[1])}</b></div>`).join('')}</div>`;
 export const fmtDate = v => String(v??'').slice(0,10);
 export const fmtDateTime = v => String(v??'').slice(0,16).replace('T',' ');
-export const kpis = xs => `<div class="kpis dgo-dashboard__metrics">${xs.map(x=>`<div class="kpi dgo-metric"><small class="dgo-metric__label">${esc(x[0])}</small><b class="dgo-metric__value">${esc(x[1])}</b></div>`).join('')}</div>`;
+export const kpis = xs => `<div class="kpis dgo-dashboard__metrics" data-strip>${xs.map(x=>`<div class="kpi dgo-metric"><small class="dgo-metric__label">${esc(x[0])}</small><b class="dgo-metric__value">${esc(x[1])}</b></div>`).join('')}</div>`;
 export const toast = (m,t='') => document.querySelector('dgo-shell')?.toast(m,t);
 function normalizeConfirmOptions(o){return typeof o==='string'?{title:'Confirm action',body:o}:o;}
 export const confirmAction = async o => { const shell=typeof document!=='undefined'?document.querySelector('dgo-shell'):null; if(!shell?.confirm) return true; return shell.confirm(normalizeConfirmOptions(o)); };

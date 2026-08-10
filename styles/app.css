@@ -1328,6 +1328,30 @@ dgo-shell[data-route-pending] .dgo-route-loading{display:block}
 @media(max-height:640px){
   :root{--dgo-shell-ministry-h:0px;}
 }
+/* R-D1 — KPI/metric strips scroll horizontally instead of shearing their content at narrow
+   widths. `data-strip` is now emitted on every element carrying class `kpis` or `cc-kpi-band`
+   at this commit: core/ui.js's `kpis()` helper (the shared builder used by 14 modules),
+   modules/response-tracking.js's hand-rolled `.kpis` (the one caller that doesn't go through
+   the helper), and modules/home.js's `.cc-kpi-band` wrapper. Three call sites, marked.
+   §3.4 fallback: `.kpis` (and `.cc-kpi-band .kpis`) computes `display:flex` at this commit
+   (line 230's `.kpis,.stat-row{display:flex;flex-wrap:wrap;gap:14px}` - confirmed via a real
+   browser's computed style, not just reading the cascade), never `display:grid` - every
+   grid-template-columns rule elsewhere in this file targeting `.kpis` is inert dead CSS,
+   left as-is per rule 4. The `div[data-strip]{grid-auto-flow:column;...}` rule below is
+   therefore also inert for `.kpis`; the flex equivalent directly below it is what actually
+   applies: nowrap plus a flex-basis on children, matching the 64%-partial-next-card intent
+   without grid.
+   `.cc-kpi-band` itself also carries `data-strip` per the directive's literal "kpis or
+   cc-kpi-band" scope, but it wraps a single `.kpis` child and is `display:block` (line
+   ~907) - the rules below are inert on it (nothing to scroll at that level) and harmless. */
+@media(max-width:640px){
+  [data-strip]{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+  [data-strip]::-webkit-scrollbar{display:none}
+  [data-strip]>*{flex:0 0 auto}
+  div[data-strip]{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:minmax(150px,64%)}
+  .kpis[data-strip]{flex-wrap:nowrap}
+  .kpis[data-strip]>*{flex:0 0 64%;min-width:150px}
+}
 .dgo-related__link .dgo-icon{width:14px;height:14px}
 
 /* Chip colour contrast (deferred item, mobile shell directive §1).

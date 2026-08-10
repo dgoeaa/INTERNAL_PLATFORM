@@ -21,7 +21,7 @@ function card(w, count='', note='', priority='normal'){
 function render(el){const s=State.get();const open=s.activities.filter(a=>!['Treated','Processed'].includes(status(a)));const unassigned=s.activities.filter(a=>!a.assignedTo&&!['Treated','Processed'].includes(status(a)));const active=s.tracking.filter(t=>t.status!=='Completed');const overdue=s.tracking.filter(t=>t.due&&new Date(t.due)<new Date()&&t.status!=='Completed');const approvals=(s.approvals||[]).filter(a=>['Pending','Draft'].includes(a.status||'Pending'));const dispatchedTotal=s.dispatches.length;const dispatches=(s.dispatches||[]).filter(d=>!d.closedAt);const by=Object.fromEntries(VisibleWorkspaces.map(w=>[w.id,w]));
   el.innerHTML=`<div class="workspace cc-workspace">${head('Command Center',`${welcomeLine(s)} Everything waiting on this office, and where each piece of work goes next.`)}
   <section class="cc-hero-grid" aria-label="Command Center overview">
-    <div class="cc-kpi-band" data-critical="true">
+    <div class="cc-kpi-band" data-critical="true" data-strip>
       ${kpis([['Open References',open.length],['Unassigned',unassigned.length],['Active Tasks',active.length],['Overdue',overdue.length],['Dispatched',dispatchedTotal]])}
     </div>
     <aside class="panel cc-source-strip" aria-label="Four ingestion sources">
