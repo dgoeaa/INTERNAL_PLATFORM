@@ -1244,27 +1244,45 @@ dgo-shell[data-route-pending] .dgo-route-loading{display:block}
   --tb-ctl:inline-flex;
   --tb-more:none;
 }
+/* Desktop bug fix (F-2): the title column was shrink-to-fit (flex:0 1 220px, app.css:529),
+   which is why the route title ellipsised with ~330px of free space beside it at 1440px.
+   Two things had to change together, found by testing in a real browser:
+   - flex-basis:0% (not auto): with auto, the mobile topbar's flex-wrap line-fit decision
+     used the title's max-content hypothetical size (~291px for the longest route label)
+     rather than its post-shrink size, so it wrapped onto its own row even when there was
+     room beside the hamburger once shrunk.
+   - .dgo-topbar__spacer (app.css:530) is flex:1 1 auto - a second growable item that, at
+     an equal flex-grow of 1, split the reclaimed space with the title roughly in half
+     (title stalled back around 180px, re-ellipsizing on the "fixed" desktop case) and,
+     at mobile widths, contributed a gap that alone was enough to push the title off the
+     hamburger's row. It has had nothing to distribute since the title itself absorbs the
+     row's leftover space; flex:0 0 0 here (unconditional - it never needs to grow at any
+     width) removes it from the growth split entirely.
+   With the spacer no longer competing, the title's own flex-grow does not need to be
+   large - 1 is enough once it is the only growable sibling. min-width:0 still lets it
+   shrink below content size when the row is genuinely tight.
+   This unconditional block must come BEFORE the max-width:640px block below: same
+   specificity (.dgo-route-title b[data-tb-title], 0-2-1) means source order decides,
+   and a later plain rule beats an earlier conditionally-matching one regardless of
+   viewport - placing it after the media query silently won the cascade at every width. */
+.dgo-route-title{flex:1 1 0%;min-width:200px;max-width:none;}
+.dgo-route-title b[data-tb-title]{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;max-width:100%;}
+.dgo-topbar__spacer{flex:0 0 0;}
 @media(max-width:640px) and (min-height:641px){
   :root{
     --dgo-shell-ministry-h:40px;
-    --dgo-shell-topbar-h:96px;
+    --dgo-shell-topbar-h:106px;
     --tb-ctl:none;
     --tb-more:inline-flex;
   }
   .dgo-ministry-bar{white-space:normal;padding:5px 12px;}
   .dgo-ministry-bar__text{white-space:normal;overflow:visible;text-overflow:clip;}
   .dgo-topbar{flex-wrap:wrap !important;padding:5px 12px;}
-  .dgo-route-title b[data-tb-title]{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-overflow:clip;}
+  .dgo-route-title b[data-tb-title]{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-overflow:clip;min-width:0;max-width:100%;}
   /* F-7 (search field renders ~340px tall): height ceiling for real form fields
      stretched by a flex-column ancestor. .dgo-input__field/.dgo-select__field named
      in the directive don't exist here (D-1c selector audit) - .dgo-select__field
      does, .dgo-input is the real base-input equivalent of .dgo-input__field. */
   .dgo-input,.dgo-select,.dgo-select__field,input,select{max-height:44px;}
 }
-/* Desktop bug fix (F-2): the title column was shrink-to-fit (flex:0 1 220px, app.css:529),
-   which is why the route title ellipsised with ~330px of free space beside it at 1440px.
-   flex:1 1 auto lets it claim the row's leftover space at every width; min-width:0 is
-   retained so it still shrinks below its content size where the row is genuinely tight. */
-.dgo-route-title{flex:1 1 auto;min-width:0;}
-.dgo-route-title b[data-tb-title]{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .dgo-related__link .dgo-icon{width:14px;height:14px}
