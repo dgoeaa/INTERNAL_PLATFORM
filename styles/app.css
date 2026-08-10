@@ -1286,3 +1286,36 @@ dgo-shell[data-route-pending] .dgo-route-loading{display:block}
   .dgo-input,.dgo-select,.dgo-select__field,input,select{max-height:44px;}
 }
 .dgo-related__link .dgo-icon{width:14px;height:14px}
+
+/* Chip colour contrast (deferred item, mobile shell directive §1).
+   Checked every chip/pill/status pairing that reads the *-subtle-bg/*-subtle-fg tokens
+   (.dgo-status, .pill, .chip, .tag, .dgo-pill--success, .dgo-alert--success, .cc-stat,
+   .dgo-metric__delta--up - grep confirms this is the complete consumer set) against WCAG
+   2.2 AA (4.5:1) in every theme this platform ships:
+     light   success 5.44:1 · info 8.37:1 · warning 8.70:1 · danger 9.56:1  - all pass
+     dark    success 7.75:1 · info 6.74:1 · warning 8.09:1 · danger 6.84:1  - all pass
+     (dark bg is rgba(...,0.18-0.20) composited over surface-page/-raised/-sunken;
+     checked against all three - none drop below 6.7:1)
+     hardcoded .dgo-source--* (not token-driven): 5.02-6.93:1 across the board - all pass
+   No pairing fails AA anywhere. There is nothing to fix at the ratio level.
+
+   What IS broken: tokens.theme-hc.css declares its own bold status colours
+   (--dgo-color-status-{pending,routed,replied,action}-{bg,fg}, targeting AAA per that
+   file's own header comment) but every consumer above reads --dgo-color-{success,
+   warning,danger,info}-subtle-{bg,fg} instead - a token HC theme never overrides. HC mode
+   silently inherits light theme's values rather than its own. Three of the four are
+   byte-identical to light anyway (warning/info/danger), so only success is a measurable
+   change: light's pair passes AA at 5.44:1; HC's own status-replied pair reaches AAA at
+   9.35:1, which is the whole point of a theme whose stated target is AAA where possible.
+   styles/dgo-design-system/** stays frozen (per the mobile shell directive's own rule 3,
+   followed here too) - wired here instead of by editing tokens.theme-hc.css. */
+[data-theme="hc"]{
+  --dgo-color-success-subtle-bg: #C2EED2;
+  --dgo-color-success-subtle-fg: #07401D;
+  --dgo-color-warning-subtle-bg: #FBF1D8;
+  --dgo-color-warning-subtle-fg: #5A3F00;
+  --dgo-color-info-subtle-bg:    #E6F0F8;
+  --dgo-color-info-subtle-fg:    #054871;
+  --dgo-color-danger-subtle-bg:  #FBE7EB;
+  --dgo-color-danger-subtle-fg:  #780820;
+}
