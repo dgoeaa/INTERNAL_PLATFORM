@@ -101,7 +101,7 @@ class Shell extends HTMLElement{
     </div>
     <div class="dgo-scrim" data-scrim hidden></div>
     <div class="dgo-live-region" aria-live="polite" data-live-region></div>
-    ${ToastHost()}${CommandPalette()}${this.notifyPanelHtml()}`;
+    ${ToastHost()}${CommandPalette()}${this.notifyPanelHtml()}${this.moreMenuHtml()}`;
     this.bind(); this.active(route); this.watchNavBreakpoint(); this.syncNavInert(); this.syncNavScrollHint(); addEventListener('resize',()=>this.syncNavScrollHint());
   }
   // SYSTEM contains the platform's IT-only screens (Administration, System Health) alongside
@@ -126,7 +126,7 @@ class Shell extends HTMLElement{
     this.querySelector('[data-density]')?.addEventListener('click',()=>{ const d=setDensity(nextDensity()); this.toast(`Density set to ${d}`,'success'); });
     this.querySelector('[data-palette]')?.addEventListener('click',()=>this.openCommandPalette());
     this.querySelector('[data-guide]')?.addEventListener('click',()=>this.showGuide());
-    this.querySelector('[data-sync]')?.addEventListener('click',()=>{ State.patch({runtime:{...State.get().runtime,lastLoad:new Date().toISOString()}},{module:'shell',action:'sync',event:'audit:sync-requested'}); this.toast('Synchronization requested','info'); });
+    this.querySelector('[data-sync]')?.addEventListener('click',()=>this.runSync());
     this.querySelectorAll('.dgo-sidebar__item').forEach(a=>a.addEventListener('click',()=>this.closeNav()));
     this.querySelector('[data-command-close]')?.addEventListener('click',()=>this.closeCommandPalette());
     this.querySelector('[data-command-input]')?.addEventListener('input',e=>this.renderCommandResults(e.target.value));
@@ -135,6 +135,70 @@ class Shell extends HTMLElement{
     this.querySelector('[data-notify-clear]')?.addEventListener('click',()=>{ NotificationCenter.clear(); this.announce('Activity history cleared'); });
     this._offFeed?.(); this._offFeed=NotificationCenter.subscribe(()=>this.renderNotifications());
     this.renderNotifications();
+    this.querySelector('[data-more-open]')?.addEventListener('click',()=>this.toggleMoreMenu());
+    this.querySelector('[data-more-panel]')?.addEventListener('click',e=>{
+      const btn=e.target.closest('[data-more-action]'); if(!btn) return;
+      const action=btn.dataset.moreAction; this.closeMoreMenu();
+      if(action==='guide') this.showGuide();
+      else if(action==='sync') this.runSync();
+      else if(action==='density'){ const d=setDensity(nextDensity()); this.toast(`Density set to ${d}`,'success'); }
+      else if(action==='theme'){ const t=setTheme(nextTheme()); this.toast(`Theme set to ${t}`,'success'); }
+    });
+    // Click-outside dismissal (finding: notifications/persona have none; the overflow
+    // menu is the one surface this directive requires it for). Bound once — render()
+    // runs a single time per Shell instance, so this listener is never duplicated.
+    document.addEventListener('click',e=>{
+      const panel=this.querySelector('[data-more-panel]'); if(!panel||panel.hidden) return;
+      if(panel.contains(e.target)||e.target.closest('[data-more-open]')) return;
+      this.closeMoreMenu();
+    });
+  }
+  /* ── Overflow menu (D-6) — collapses workspace-guide, synchronise, density and theme
+     into one popover once the topbar can no longer show them beside a two-line route
+     title. Density/theme rows call the same setDensity/setTheme entry points as their
+     topbar buttons rather than re-implementing persistence, so the two paths never
+     desynchronise. */
+  moreMenuHtml(){
+    return `<div class="dgo-more-menu" data-more-panel hidden role="menu" aria-label="More controls">${this.moreMenuItemsHtml()}</div>`;
+  }
+  moreMenuItemsHtml(){
+    const s=State.get();
+    const density=normalizeDensity(s.settings.density), theme=normalizeTheme(s.settings.theme);
+    const items=[
+      {action:'guide',icon:'i-help',label:'Workspace guide',value:''},
+      {action:'sync',icon:'i-refresh',label:'Synchronise data',value:this._syncing?'Working':''},
+      {action:'density',icon:'i-filter',label:'Density',value:density},
+      {action:'theme',icon:'i-eye',label:'Theme',value:theme}
+    ];
+    return items.map(it=>`<button type="button" role="menuitem" class="dgo-more-menu__item" data-more-action="${it.action}">${icon(it.icon)}<span>${esc(it.label)}</span><small>${esc(it.value)}</small></button>`).join('');
+  }
+  renderMoreMenuItems(){ const panel=this.querySelector('[data-more-panel]'); if(panel) panel.innerHTML=this.moreMenuItemsHtml(); }
+  toggleMoreMenu(){ this.querySelector('[data-more-panel]')?.hidden ? this.openMoreMenu() : this.closeMoreMenu(); }
+  openMoreMenu(){
+    this.closeNotifications();
+    const panel=this.querySelector('[data-more-panel]'); if(!panel) return;
+    this.renderMoreMenuItems();
+    panel.hidden=false;
+    this.querySelector('[data-more-open]')?.setAttribute('aria-expanded','true');
+    panel._releaseTrap=createFocusTrap(panel,{onEscape:()=>this.closeMoreMenu()});
+    requestAnimationFrame(()=>panel.querySelector('button')?.focus());
+  }
+  closeMoreMenu(){
+    const panel=this.querySelector('[data-more-panel]'); if(!panel||panel.hidden) return;
+    panel._releaseTrap?.(); panel._releaseTrap=null;
+    panel.hidden=true;
+    const trigger=this.querySelector('[data-more-open]');
+    trigger?.setAttribute('aria-expanded','false');
+    trigger?.focus();
+  }
+  // Shared by the topbar [data-sync] button and the overflow menu's "Synchronise data"
+  // row, so the transient "Working" label (900ms, matching the design source's own
+  // timing) reflects one piece of state instead of two independently-tracked ones.
+  runSync(){
+    this._syncing=true; this.renderMoreMenuItems();
+    State.patch({runtime:{...State.get().runtime,lastLoad:new Date().toISOString()}},{module:'shell',action:'sync',event:'audit:sync-requested'});
+    this.toast('Synchronization requested','info');
+    setTimeout(()=>{ this._syncing=false; this.renderMoreMenuItems(); },900);
   }
 
   /* ── Durable feedback surface (finding 03) ─────────────────────────────────────────
@@ -176,6 +240,7 @@ class Shell extends HTMLElement{
   }
   toggleNotifications(){ this.querySelector('[data-notify-panel]')?.hidden ? this.openNotifications() : this.closeNotifications(); }
   openNotifications(){
+    this.closeMoreMenu();
     const panel=this.querySelector('[data-notify-panel]'); if(!panel) return;
     panel.hidden=false;
     this.querySelector('[data-notify-open]')?.setAttribute('aria-expanded','true');
