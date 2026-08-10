@@ -1299,6 +1299,18 @@ dgo-shell[data-route-pending] .dgo-route-loading{display:block}
      viewports (640x360, 600x480) never got the 44px field ceiling either. Now ungated
      with the rest of this tier, it applies at every height once width<=640px. */
   .dgo-input,.dgo-select,.dgo-select__field,input,select{max-height:44px;}
+  /* R-D5: .toolbar/.action-row/.form-row already wrap at this breakpoint (line ~21); these
+     two never got the same rule. .dgo-toolbar has no current renderer (Toolbar() in
+     shared/components.js and figmaToolbar() in core/ui.js both build it, but neither is
+     called anywhere in the module set at this commit) - additive and inert today, kept for
+     parity with any future consumer. .rt-toolbar is real (response-tracking's filter bar)
+     but is already deliberately horizontal-scrolling, not wrapping: dgo-shell[data-route=
+     "response-tracking"] .rt-toolbar sets flex-wrap:nowrap;overflow-x:auto !important
+     unconditionally (line ~745), at higher specificity (0-2-1) than the bare class here
+     (0-1-0), so it continues to win there by design - this rule does not override that
+     route's intentional scroll behaviour, only applies where .rt-toolbar has no such
+     override. */
+  .dgo-toolbar,.rt-toolbar{flex-wrap:wrap;}
 }
 /* R-D2 4.2 — property overlap between this tier and the short-landscape tier at
    `@media(max-height:640px)` (line ~505). Only one property is set by both:
