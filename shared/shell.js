@@ -65,7 +65,7 @@ class Shell extends HTMLElement{
       <section class="dgo-workarea">
         <header class="dgo-topbar">
           <button type="button" class="dgo-iconbtn dgo-hamburger" data-menu aria-label="Toggle navigation">${icon('i-menu')}</button>
-          <div class="dgo-route-title"><small data-eyebrow>ACTIVE WORKSPACE</small><b data-context>${esc(this.routeLabel(route))}</b></div>
+          <div class="dgo-route-title"><small data-eyebrow>ACTIVE WORKSPACE</small><b data-context data-tb-title>${esc(this.routeLabel(route))}</b></div>
           <div class="dgo-topbar__spacer"></div>
           <button type="button" class="dgo-search-trigger" data-palette aria-label="Search and command palette">${icon('i-search')}<span>Search references, tasks, people...</span><kbd>Ctrl K</kbd></button>
           <button type="button" class="dgo-iconbtn" data-guide aria-label="Workspace guide" title="Workspace guide">${icon('i-help')}</button>
