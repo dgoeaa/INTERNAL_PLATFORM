@@ -329,7 +329,13 @@ class Shell extends HTMLElement{
   openCommandPalette(){ const p=this.querySelector('[data-command-palette]'); if(!p)return; p.hidden=false; this.renderCommandResults(''); this._trapFocus(p); requestAnimationFrame(()=>this.querySelector('[data-command-input]')?.focus()); }
   closeCommandPalette(){ const p=this.querySelector('[data-command-palette]'); if(p){ p.hidden=true; p._releaseTrap?.(); } }
   renderCommandResults(q=''){ const box=this.querySelector('[data-command-results]'); if(!box)return; const query=String(q).toLowerCase(); const items=allWorkspaceCommands().filter(c=>canCurrentUserAccess(c.route)).filter(c=>!query || `${c.label} ${c.route} ${c.purpose}`.toLowerCase().includes(query)).slice(0,20); box.innerHTML=items.map(c=>`<button type="button" role="option" class="dgo-cmdk__item" data-open-route="${esc(c.route)}"><span class="dgo-cmdk__icon">${routeIcon(c.route)}</span><span><b>${esc(c.label)}</b><small>${esc(c.primary?'Workspace':(c.visibleThrough||'Contextual'))}</small></span></button>`).join('') || '<div class="dgo-cmdk__empty">No matching workspace.</div>'; box.querySelectorAll('[data-open-route]').forEach(b=>b.addEventListener('click',()=>{Router.go(b.dataset.openRoute); this.closeCommandPalette();})); }
-  showGuide(){ const route=Router.path(); const g=guideFor(route); const title=g?.label || this.routeLabel(route); const body=`<p>${esc(g?.purpose || g?.reason || 'This workspace is governed by the DGO operating model.')}</p>${g?.owns?`<p><b>Owns:</b> ${esc(g.owns.join(', '))}</p>`:''}${g?.handoffs?`<p><b>Handoffs:</b> ${esc(g.handoffs.join(', '))}</p>`:''}`; this.dialog(title, body); }
+  // G-6 gap: the guide dialog is modal (z-index 1300, above both popovers) so it visually
+  // covered an open notify/more panel without closing it - closing the dialog afterwards
+  // left the popover still open underneath, with its own aria-expanded still true. Closing
+  // both here matches the mutual exclusion openMoreMenu/openNotifications already have with
+  // each other, so exactly one of the four named surfaces (notifications, persona, guide,
+  // overflow menu) is ever open at once.
+  showGuide(){ this.closeNotifications(); this.closeMoreMenu(); const route=Router.path(); const g=guideFor(route); const title=g?.label || this.routeLabel(route); const body=`<p>${esc(g?.purpose || g?.reason || 'This workspace is governed by the DGO operating model.')}</p>${g?.owns?`<p><b>Owns:</b> ${esc(g.owns.join(', '))}</p>`:''}${g?.handoffs?`<p><b>Handoffs:</b> ${esc(g.handoffs.join(', '))}</p>`:''}`; this.dialog(title, body); }
   /* The transient half of the feedback channel. Every toast is also written to the
      notification centre before it is shown, so the 4200ms timeout below decides only how
      long the message stays in front of the user — never whether it survives at all. */
