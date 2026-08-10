@@ -180,7 +180,7 @@ class Shell extends HTMLElement{
     this.renderMoreMenuItems();
     panel.hidden=false;
     this.querySelector('[data-more-open]')?.setAttribute('aria-expanded','true');
-    panel._releaseTrap=createFocusTrap(panel,{onEscape:()=>this.closeMoreMenu()});
+    createFocusTrap(panel,{onEscape:()=>this.closeMoreMenu()});
     requestAnimationFrame(()=>panel.querySelector('button')?.focus());
   }
   closeMoreMenu(){
@@ -246,7 +246,7 @@ class Shell extends HTMLElement{
     this.querySelector('[data-notify-open]')?.setAttribute('aria-expanded','true');
     NotificationCenter.markAllRead();
     this.renderNotifications();
-    panel._releaseTrap=createFocusTrap(panel,{onEscape:()=>this.closeNotifications()});
+    createFocusTrap(panel,{onEscape:()=>this.closeNotifications()});
     requestAnimationFrame(()=>panel.querySelector('button')?.focus());
   }
   closeNotifications(){
