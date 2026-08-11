@@ -1386,3 +1386,31 @@ dgo-shell[data-route-pending] .dgo-route-loading{display:block}
   --dgo-color-danger-subtle-bg:  #FBE7EB;
   --dgo-color-danger-subtle-fg:  #780820;
 }
+
+/* R3-D1 — bound the topbar to one control row (closes O-1 / R-D4).
+   shared/shell.js now wraps the seven trailing controls (guide, sync, overflow, density,
+   theme, notify, persona) in .dgo-topbar__controls, so .dgo-topbar's own flex-wrap can only
+   ever wrap that whole group to a second row — never one control at a time onto a third or
+   later row, which is how the topbar's fixed --dgo-shell-topbar-h could be exceeded.
+   Baseline (unconditional) rules recreate exactly the spacing the seven controls had as
+   direct .dgo-topbar children, at every width .dgo-topbar itself sets a gap for (12px
+   default, 8px <=1200px, 6px <=640px) — the wrapper is transparent to desktop layout. */
+.dgo-topbar__controls{display:flex;flex-wrap:nowrap;align-items:center;gap:12px;min-inline-size:0;}
+@media(max-width:1200px){
+  .dgo-topbar__controls{gap:8px;}
+}
+@media(max-width:640px){
+  .dgo-topbar__controls{gap:6px;}
+}
+/* Approach chosen for 3.3 (guarantee reachability under compression): .dgo-topbar itself
+   carries an unconditional `overflow:hidden !important` (line ~528) that a non-!important
+   overflow-x:auto on .dgo-topbar could never beat without adding a second !important, which
+   this brief's rule 5 forbids. .dgo-topbar__controls is a class that rule does not name, so
+   scrolling it instead is unopposed - the wrapper approach was chosen for this reason, not
+   arbitrarily. Each child gets flex:0 0 auto so the scroll container is horizontal reachability,
+   not shrink-to-clip. */
+@media(max-width:640px){
+  .dgo-topbar__controls{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;max-inline-size:100%;}
+  .dgo-topbar__controls::-webkit-scrollbar{display:none;}
+  .dgo-topbar__controls>*{flex:0 0 auto;}
+}
