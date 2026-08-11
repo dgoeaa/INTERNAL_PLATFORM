@@ -1421,3 +1421,20 @@ dgo-shell[data-route-pending] .dgo-route-loading{display:block}
 .dgo-persona-panel__identity{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--dgo-card-border,#dfe7e2);}
 .dgo-persona-panel__identity b,.dgo-persona-panel__identity small{display:block;text-align:left;}
 .dgo-persona-panel__identity small{font-size:11px;color:var(--dgo-color-fg-muted,#626a64);overflow-wrap:anywhere;}
+
+/* R3-D4 — touch targets (closes O-4). .dgo-btn already carries an unconditional literal
+   min-height:44px (line ~229) and .dgo-iconbtn already carries a literal 44px floor at
+   <=900px (2.3, line ~965) - both measured and confirmed at or above 40px already, so
+   neither is touched here (see the R3-D4 report for the rule-already-satisfies-it
+   citations). What IS live and under 40px on its smallest axis in the mobile shell:
+   platform-authority.css (frozen) sizes .dgo-search-trigger/.dgo-persona-button/
+   .dgo-sidebar__item/.dgo-related__link/summary/button.chip/a.chip/a.skip off
+   --dgo-control-target-min, and tokens.enhanced.css (frozen) sets that token to
+   --dgo-control-target-compact (36px) whenever [data-density="compact"]. Measured
+   live: .dgo-persona-button renders 36x40px in compact density at 390px width - 4px
+   under the floor this directive sets. Scoped to <=640px only (rule 6.3: "do not alter
+   desktop sizing"); the identical gap exists above 640px too but fixing it there would be
+   a desktop change this brief does not authorise, so it is reported, not fixed here. */
+@media(max-width:640px){
+  [data-density="compact"]{--dgo-control-target-min:40px;}
+}
