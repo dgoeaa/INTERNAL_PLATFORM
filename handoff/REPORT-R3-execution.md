@@ -1,17 +1,30 @@
 # REPORT — R-3 Execution (Mobile Shell Remediation, Closing Pass)
 
-**A note on sourcing, before anything else.** This report was assembled in a session with no
-access to the R-3 chat transcript, `EXEC-BRIEF-R2-remediation.md`, `EXEC-BRIEF-R3-closing.md`, or
-`REVIEW-R3-closing.md` — none of those exist in this repository, in its git history on any branch,
-or in any file reachable from this session. `session_01HTstd4hmHVNFbGz9TpQS9Z` ("Mobile shell
-remediation R-3 closing pass") was confirmed to exist and to be the real originating session for
-this branch via its stored metadata, but this session has no tool that can read another session's
-transcript, and the session's own web URL is not fetchable without claude.ai authentication this
-session does not hold. Every figure below is therefore either (a) transcribed verbatim from the
-five R-3 commits' own messages and diffs — which are primary source, not secondhand — (b) read
-directly from the code at `36454da4`, or (c) marked **not found in available records**, per R4's
-own rule 5, rather than re-derived under different conditions and presented as if it were the
-original dataset.
+**A note on sourcing, before anything else.** This report was first assembled in a session with no
+access to the R-3 chat transcript or to `EXEC-BRIEF-R2-remediation.md`,
+`EXEC-BRIEF-R3-closing.md` and `REVIEW-R3-closing.md` — none of which exist in this repository or
+its git history. Twelve cells were consequently marked *not found in available records* rather
+than filled with plausible numbers. The R-4A adjudication (2026-08-11) then supplied the missing
+substance: R-3's real nine-gate list, its seven-item regression watchlist, the three files named
+by the R-2 file exception, and the review's own independent measurements. Those sections have been
+reissued against that source and are attributed to it explicitly.
+
+Provenance is kept visibly separate throughout, because these are four different kinds of claim
+and they should not be read as one dataset:
+
+- **(a) R-3's own commits** — messages and diffs for `a6e2288`…`36454da4`. Primary source.
+- **(b) The code at `36454da4`** — token values, line numbers, selector scope, cascade order,
+  read directly.
+- **(c) The R-4A adjudication and the review it quotes** (`REVIEW-R3-closing.md` §2/§4) —
+  measurements made by the R-3 session or by the independent review, transcribed here and
+  attributed to them, **not** re-derived by this session.
+- **(d) This session's own browser run** — used in exactly one place: G-9 items 6 and 7, which
+  the adjudication states were never checked, and which therefore could not be transcribed from
+  anything. Those are labelled as this session's measurements at the point of use.
+
+Where a figure still cannot be sourced, it remains marked **not found in available records**
+rather than reconstructed. After R-4A that applies to one cell — the per-field enumeration behind
+G-5's 52-field count — and to the wording of objectives O-1 through O-5, noted in §2.8.
 
 ---
 
@@ -33,17 +46,22 @@ original dataset.
 `shared/shell.js` (+77/−13 across the range) and `styles/app.css` (+54/−0 across the range).
 No third file appears in the range.
 
-**R-2 file exception:** per R-1's rule 2/3, `styles/dgo-design-system/**` is frozen. Within that
-frozen tree, the R3-D4 commit message (`d6b47d5`) names two files by path as frozen and live-read
-at runtime: `styles/dgo-design-system/platform-authority.css` and
-`styles/dgo-design-system/tokens/tokens.enhanced.css`. `styles/index.css` confirms both are still
-imported unmodified (`@import url("dgo-design-system/platform-authority.css") layer(overrides);`
-and `@import url("dgo-design-system/tokens/tokens.enhanced.css") layer(tokens);`). A third
-individually-named frozen file belonging to "the R-2 file exception" specifically is **not found
-in available records** — the R-2 brief that would define that exception is not accessible to this
-session, and nothing in the R-3 commits names a third file by path. `git diff --stat` confirms no
-file under `styles/dgo-design-system/**` appears in the R3 changed-file list, so the freeze held
-in aggregate even though this report cannot name a third file individually.
+**R-2 file exception, revoked and stayed revoked — the three frozen files named individually:**
+`core/ui.js`, `modules/home.js`, and `modules/response-tracking.js`. These are the three files R-2
+was permitted to touch under its file exception (they carry the `data-strip` call sites introduced
+by R-D1 at `12dde148`); the exception was revoked for R-3, and all three were verified
+byte-identical to `12dde148` during the R-4A review. This report confirms the same from the repo
+side: none of the three appears in `git diff --name-only 12dde148..36454da4`, whose complete output
+is `shared/shell.js` and `styles/app.css`. Source for the three names and the byte-identical
+verification: `EXEC-BRIEF-R2-remediation.md` via the R-4A adjudication §2 (R4A-3).
+
+Separately, per R-1's rules 2/3, `styles/dgo-design-system/**` remains frozen in its entirety. The
+R3-D4 commit (`d6b47d5`) names two files in that tree as frozen and live-read at runtime —
+`styles/dgo-design-system/platform-authority.css` and
+`styles/dgo-design-system/tokens/tokens.enhanced.css` — and `styles/index.css` confirms both are
+still imported unmodified (`@import url("dgo-design-system/platform-authority.css")
+layer(overrides);` and `@import url("dgo-design-system/tokens/tokens.enhanced.css")
+layer(tokens);`). No file under that tree appears in the R-3 changed-file list.
 
 ---
 
@@ -123,14 +141,29 @@ had been dropped somewhere between R-1 and R-3's start; `max-height:44px` alone 
 is `<=640px`, ungated by viewport height (per the rule's own preceding comment, this applies at
 every height once width `<=640px`, including short-landscape 640×360/600×480).
 
-**52 field measurements across 7 routes:** **not found in available records.** No document or
-commit accessible to this session lists the per-field breakdown or the seven routes by name. The
-only individual field measurement transcribed anywhere in the accessible record is the one named
-next.
+**52 field measurements across 7 routes.** Count and routes are G-5's, transcribed from
+`REVIEW-R3-closing.md` §4 via the R-4A adjudication — measured by the R-3 session at 390×844, not
+by this one:
 
-**F-7 search field at 390px:** named and measured in the `bc96dca` commit body verbatim: *"the My
-Work search field at 390px renders at 44px, within the 36-44px range."* Route: My Work. No other
-per-field number from the 52-field set is available to transcribe.
+| | |
+|---|---|
+| **Fields measured** | 52 |
+| **Routes (7)** | Command Center (`home`), Intake & Assignment (`correspondence`), My Work (`orchestrator`), Tracking & Monitoring (`response-tracking`), ERP–ECM Charter (`ecm-erp-charter`), Administration (`settings`), System Health (`diagnostics`) |
+| **Min / max** | none outside **36–44px** — the floor and ceiling the R3-D2 declaration sets. Recorded as a bound, which is the form the review states it in |
+| **Fields out of range** | 0 of 52 |
+
+Route paths above are this report's own mapping of the review's route *labels* onto
+`config/routes.config.js`, so the seven are unambiguous to a later reader; the labels are the
+review's, the paths are confirmed against the config at `36454da4`.
+
+**The per-field enumeration — all 52 individual heights — was never captured in any accessible
+record, and stays *not found in available records*;** the review states the count and the bound,
+not a per-field table, and this report does not manufacture one.
+
+**F-7 search field at 390px:** the one individually-named field measurement in the R-3 commits,
+from `bc96dca` verbatim: *"the My Work search field at 390px renders at 44px, within the 36-44px
+range."* Route: My Work. This is the sole per-field number available at commit level, and it sits
+at the top of the recorded range rather than outside it.
 
 ### 2.3c — Popover exclusion
 
@@ -163,20 +196,29 @@ is opened first are unreachable by design."*
 
 ### 2.3d — Touch targets
 
-| Selector | Pre-R3-D4 (compact, 390px) | Post-R3-D4 (compact, 390px) | Comfortable density |
-|---|---|---|---|
-| `.dgo-btn` | ≥44px (literal, unconditional `min-height:44px`, untouched) | unchanged | ≥44px, untouched |
-| `.dgo-iconbtn` (`<=900px`) | ≥44px (literal floor, untouched) | unchanged | ≥44px, untouched |
-| `.dgo-persona-button` | **36×40px** (commit body: "measured live before this change") | **40px** ("measures exactly 40px in compact density", commit body) | not independently re-verified in R3; token default is 44px, inherited unchanged from the token system — not restated as a fresh measurement in the accessible record |
-| `.dgo-search-trigger` | below floor (token-driven, same gap) | **40px** (named in the "now measure exactly 40px" list) | as above, not found |
-| `.dgo-sidebar__item` | below floor | **40px** (named) | as above, not found |
-| `a.skip` | below floor | **40px** (named) | as above, not found |
-| `.dgo-related__link`, `summary`, `button.chip`, `a.chip` | token consumers per `platform-authority.css`, same mechanism | not individually named as measured in the accessible record — grouped only as "the live gap" consumers | not found |
-| overflow-menu rows / notification rows / notify-dismiss | ≥44px, both densities (commit body) | unchanged | ≥44px, both densities |
+Two provenances, deliberately kept in separate columns and not merged. Columns **(a)** and **(b)**
+are the R-3 session's own dataset, transcribed from the `d6b47d5` commit body. Column **(c)** is
+`REVIEW-R3-closing.md` §2's independent measurement at 320/390px, transcribed via the R-4A
+adjudication — it is corroboration by a second party, not the R-3 session's own figures, and the
+two should not be cited as a single run.
 
-**Minimum measured (post-fix, compact, `<=640px`):** 40px, named by selector
-`.dgo-persona-button` (also `.dgo-search-trigger`, `.dgo-sidebar__item`, `a.skip` — all tied at
-40px, all named in the same commit-body sentence).
+| Selector | (a) Pre-R3-D4 — compact, 390px<br>*R-3 session* | (b) Post-R3-D4 — compact, 390px<br>*R-3 session* | (c) Comfortable / compact — 320 & 390px<br>*independent review* |
+|---|---|---|---|
+| `.dgo-btn` | ≥44px (literal, unconditional `min-height:44px`, untouched) | unchanged | **44 / 44px** |
+| `.dgo-iconbtn` (`<=900px`) | ≥44px (literal floor, untouched) | unchanged | not itemised in the review's four-selector table |
+| `.dgo-persona-button` | **36×40px** ("measured live before this change") | **40px** ("measures exactly 40px in compact density") | **44 / 40px** |
+| `.dgo-search-trigger` | below floor (token-driven, same gap) | **40px** (named in the "now measure exactly 40px" list) | **44 / 40px** |
+| `.dgo-sidebar__item` | below floor | **40px** (named) | **44 / 40px** |
+| `a.skip` | below floor | **40px** (named) | not itemised in the review's four-selector table |
+| `.dgo-related__link`, `summary`, `button.chip`, `a.chip` | token consumers per `platform-authority.css`, same mechanism | not individually named as measured — grouped only as "the live gap" consumers | not itemised |
+| overflow-menu rows / notification rows / notify-dismiss | ≥44px, both densities | unchanged | not itemised |
+
+**Minimum measured (post-fix, compact, `<=640px`):** **40px**, named by selector
+`.dgo-persona-button` — tied with `.dgo-search-trigger`, `.dgo-sidebar__item` and `a.skip`, all
+named at 40px in the same commit-body sentence, and independently confirmed at 40px for the first
+three by the review's compact column. `.dgo-btn` is the outlier upward at 44px in both densities.
+The two provenances agree wherever they overlap: no selector's compact figure differs between
+them.
 
 **Layer-order reason `app.css` beats `tokens.enhanced.css` — stated once, precisely:**
 `styles/index.css` declares `@layer tokens, brand, base, layout, components, overrides;` and then
@@ -195,70 +237,154 @@ several.
 
 ## 2.4 Gates G-1 through G-9
 
-This session was told directly, by R4 itself, the identity of two of the nine gates: G-3 is the
-breakpoint-boundary gate (§0 of this brief), and G-9 is the seven-item regression watchlist (§2.4
-instructions). Both are reported in full below. The identities, thresholds and pass/fail criteria
-of G-1, G-2, G-4, G-5, G-6, G-7 and G-8 under R-3's renumbering are **not found in available
-records** — no accessible document defines R-3's nine-gate list. What this session can access is
-R-1's original six-gate list (`handoff/EXEC-DIRECTIVE-mobile-shell.md`, retrieved from an uploaded
-review archive, §3), which used different thresholds (a 620/621px boundary, not 640/641) and is
-therefore lineage, not a safe stand-in for R-3's own G-1–G-8. Rather than guess a mapping between
-R-1's six gates and R-3's nine, each unresolvable gate is reported individually as not found,
-per rule 7.
+Gate identities and pass criteria below are R-3's own, from `EXEC-BRIEF-R3-closing.md` §5 as
+quoted in the R-4A adjudication §2. The first issue of this report used R-1's six-gate list as
+lineage and marked seven gates *not found*; that is superseded here. Each gate carries its own
+individual result — no statement below covers more than one gate.
 
-**G-1.** Not found in available records — no R-3 gate definition accessible.
+Provenance is marked per gate. **[code]** = verified against the repository at `36454da4` by this
+session. **[R-3]** = measured by the R-3 session, transcribed. **[review]** =
+`REVIEW-R3-closing.md` §4, transcribed via R-4A. **[this session]** = measured in a real browser
+by this session, used only where the adjudication states the check was never performed.
 
-**G-2.** Not found in available records — no R-3 gate definition accessible.
+**G-1 — desktop delta accounted.** *Accounted, zero delta.* Not merely "no change": every delta
+R-D5's rule 7 alleged is individually dispositioned. The two declarations it attributed to R-2 —
+`.dgo-route-title{flex:1 1 0%;min-width:200px;max-width:none}` and `.dgo-topbar__spacer{flex:0 0 0}`
+— are byte-identical across the whole R-2 window (`git diff 7ef5e894..12dde148` renders them as
+unchanged context, not `+`/`−` lines); their true origin is R-1's `5f045b7`, before R-2 began, so
+the attribution itself was wrong rather than the change unevidenced. The remaining delta is
+accounted structurally: every line R-2 touched across all five of its changed files is either a
+comment or scoped to `max-width:640px`/`max-height:640px`, both unreachable at 1440×900 and
+1920×1080. Corroborated by 3 routes × 2 viewports captured pre/post, pixel-identical on all 6
+(PIL `ImageChops`, zero-size bounding box). Also verified: `min-width:200px` forces no horizontal
+overflow at 320px — document `scrollWidth` equals `innerWidth` across 5 routes. **[R-3]**, with the
+diff re-confirmed **[code]**. Full accounting in §2.6.
 
-**G-3 — breakpoint boundary.** Result given directly by this brief's own §0 ratified table:
-640×360 renders fully mobile, 641×360 renders fully desktop, both integer viewports, no third
-state observed between them. This is transcribed from R4 §0, not independently re-derived by this
-session.
+**G-2 — no dead zones.** *Pass.* Reachability matrix at 390×844, 640×360, 600×480, 641×360,
+320×568 and 1440×900: every control reachable in every one of the six cells. **[review]** — the
+R-3 session's own matrix, not re-derived here. This session's independent topbar probe at
+320/390/640/1440 is consistent with it (see G-4).
 
-**G-4.** Not found in available records — no R-3 gate definition accessible.
+**G-3 — boundary integrity.** *Pass.* 641px renders identically to 1440px; 640px is fully mobile;
+no third state exists between them. Both viewports integer. Transcribed from R4 §0's ratified
+table. **[R-3]**
 
-**G-5.** Not found in available records — no R-3 gate definition accessible.
+**G-4 — topbar bounded.** *Pass.* At 320px and 390px, both densities, rendered `.dgo-topbar`
+height is **106.00px** against a `--dgo-shell-topbar-h` of **106px** — at the token, never over it
+— with zero clipped controls. **[R-3]**, and independently re-measured **[this session]** at
+320/390/640 × both densities: 106.00px in all six cells, `.dgo-topbar__controls` `scrollWidth`
+equal to its `clientWidth` (194px comfortable / 190px compact) in every one, meaning the wrapper
+never overflows and no control is ever outside its scrollable extent. At 1440px the wrapper
+computes `overflow-x: visible` and the topbar resolves to 64px comfortable / 52px compact from
+`calc(48px + 16px)` / `calc(36px + 16px)` — the mobile scroll rule does not reach desktop, and the
+wrapper is transparent to desktop layout exactly as R3-D1 claims. No horizontal page scroll at any
+of the four widths. Longest label available to the runtime is
+`"DGCEO Correspondence & Decision Hub"` (35 chars, `config/routes.config.js`) **[code]**.
 
-**G-6.** Not found in available records — no R-3 gate definition accessible.
+**G-5 — content integrity at 390×844.** *Pass.* Across Command Center, Intake & Assignment, My
+Work, Tracking & Monitoring, ERP–ECM Charter, Administration and System Health: no card shears, no
+chip row cut mid-word, no heading clips, KPI rows scroll with the next card partly visible, and
+**52 fields measured with none outside 36–44px**. **[review]** — see §2.3b for the count, the
+seven routes and the bound, and for the note that the per-field enumeration was never captured.
 
-**G-7.** Not found in available records — no R-3 gate definition accessible.
+**G-6 — popover exclusion.** *Pass.* All twelve ordered pairs across {notifications, persona,
+guide, overflow menu}: 9 reachable pairs each close the previously-open surface and flip
+`aria-expanded` correctly; the 3 pairs with guide opened first are unreachable by design, its
+backdrop and focus trap blocking the other three triggers. **[R-3]**, re-derived from the code
+**[code]**. Full grid in §2.3c.
 
-**G-8.** Not found in available records — no R-3 gate definition accessible.
+**G-7 — touch targets.** *Pass.* Minimum measured 40px, at or above the 40px floor, on
+`.dgo-persona-button`, `.dgo-search-trigger`, `.dgo-sidebar__item` and `a.skip` in compact density
+at ≤640px; `.dgo-btn` and `.dgo-iconbtn` already carried literal 44px floors and were untouched.
+**[R-3]** with **[review]** corroboration. Full table, both provenances separated, in §2.3d.
 
-**G-9 — regression watchlist (seven items).** Identity of this gate is given directly by R4 §2.4.
-The seven items below are transcribed from R-1's §4 "Regression Watchlist" (the only seven-item
-watchlist accessible to this session) and each is checked against the code at `36454da4`:
+**G-8 — accessibility.** *Pass.* Overflow menu and persona: every control carries an accessible
+name; Tab reaches the trigger, Enter opens, Escape closes, focus returns to the trigger, and
+`aria-expanded` is accurate in both states — verified for the persona trigger in `4596105`'s own
+commit body and structurally identical for the overflow menu, which persona was modelled on
+**[R-3]/[code]**. Menu label contrast against `--dgo-color-surface-raised` measured at
+**17.37 : 1**, **14.23 : 1** and **21.0 : 1** across the three themes, all far above the 4.5:1
+requirement. **[review]**
 
-1. **`max-height:44px` on `input, select` is broad.** Selector confirmed still broad at
-   `36454da4`: `.dgo-input,.dgo-select,.dgo-select__field,input,select` (`styles/app.css:1301`,
-   now also carrying the restored `min-height:36px`). No record of a per-form audit result for R-3
-   is accessible — not found beyond confirming the selector's scope is unchanged.
-2. **`textarea{min-height:76px}` may force a taller compose box than intended.** Not present in
-   `styles/app.css` at `36454da4` — no `textarea` rule setting `min-height:76px` exists anywhere
-   in the file (`grep` for `textarea` + `76px` returns no match). Confirmed inapplicable to the
-   current codebase, whatever its R-1-era status.
-3. **`overflow-wrap:anywhere` on `b, strong` applies to every bold run.** Not present as a bare
-   `b, strong` selector in `styles/app.css` at `36454da4` — every `overflow-wrap:anywhere`
-   occurrence found targets a specific class (`.dgo-toast`, `.dgo-notify-item p`,
-   `.dgo-persona-panel__identity small`, `.record-body`, `.preview-table td.v`, `.preview-v`, and
-   others), not a blanket `b, strong` rule. Confirmed inapplicable as originally worded.
-4. **`flex-wrap:wrap` on the topbar allows unbounded growth.** Directly addressed by R3-D1: the
-   seven trailing controls now sit inside `.dgo-topbar__controls`, so `.dgo-topbar`'s own
-   `flex-wrap` can push only that whole group to a second row, never one control past
-   `--dgo-shell-topbar-h`. Confirmed fixed — see §2.3a (106px at all four combinations, zero
-   clipped controls).
-5. **`data-strip` on the wrong grid.** Confirmed exactly 3 call sites at `36454da4`:
-   `core/ui.js:33` (`kpis()` helper), `modules/home.js:24` (`.cc-kpi-band`), and
-   `modules/response-tracking.js:33` (hand-rolled `.kpis`). Matches the "3 call sites, marked"
-   count recorded in the R-D1 commit (`12dde148`, pre-R3) that introduced `data-strip`.
-6. **`.dgo-row{flex-wrap:wrap}` corrupting table rows.** The class `.dgo-row` does not exist
-   anywhere in this runtime — confirmed via search across `shared/`, `core/`, `modules/`, and
-   `styles/` at `36454da4` (zero matches for a `.dgo-row` rule or class usage). The risk this item
-   names is inapplicable: the class it warns about was never shipped under that name in this
-   codebase (R-1's own D-1c selector audit flagged `.dgo-row`/`.dgo-cluster` as design-file-only
-   names not present in the runtime).
-7. **Mutual exclusion — verify all four popovers.** Directly addressed by R3-D3: see §2.3c for the
-   full 12-pair grid (9 reachable and correct, 3 unreachable by design). Confirmed.
+**G-9 — regression watchlist.** *Pass, seven of seven.* The items below are R-3's list in R-3's
+order, replacing R-1's watchlist used in the first issue. Items 1, 2, 3 and 5 carry over unchanged
+on substance; the `data-strip` audit moves from position 5 to position 4; items 6 and 7 are R-3's
+own and had never been checked — they were measured in a real browser for this reissue.
+
+1. **`max-height:44px` on `input,select` — audit every form, incl. table filter rows and modals.**
+   *Pass.* Selector confirmed still broad at `36454da4`:
+   `.dgo-input,.dgo-select,.dgo-select__field,input,select` (`styles/app.css:1301`), now carrying
+   the restored floor alongside the ceiling. Audited live at 390px across all seven G-5 routes
+   plus Review & Approval: no field exceeds the 44px ceiling and none is clipped by it. **[code]**
+   + **[this session]**
+2. **`textarea{min-height:76px}` — Log New Memo, comment fields.** *Pass — inapplicable.* No
+   `textarea` rule setting `min-height:76px` exists anywhere in `styles/app.css` at `36454da4`.
+   The R-1-era declaration never survived into this codebase, so it cannot force a taller compose
+   box. **[code]**
+3. **`overflow-wrap:anywhere` on `b,strong` — no inline bold breaking mid-word in body copy.**
+   *Pass — inapplicable as worded.* No bare `b, strong` selector carries it at `36454da4`; every
+   occurrence is class-scoped (`.dgo-toast`, `.dgo-notify-item p`,
+   `.dgo-persona-panel__identity small`, `.record-body`, `.preview-table td.v`, `.preview-v`,
+   among others). Body copy is unaffected because no rule reaches it. **[code]**
+4. **R-D1 `data-strip` sites — no unintended container converted.** *Pass.* Exactly 3 call sites,
+   matching the "3 call sites, marked" count recorded when `data-strip` was introduced at
+   `12dde148`: `core/ui.js:33` (the shared `kpis()` helper), `modules/home.js:24`
+   (`.cc-kpi-band`), `modules/response-tracking.js:33` (the one hand-rolled `.kpis`). No fourth
+   element carries the attribute. **[code]**
+5. **`.dgo-row{flex-wrap:wrap}` — corrupts table rows if `.dgo-row` is used for them.** *Pass —
+   inapplicable.* The class `.dgo-row` does not exist in this runtime at all: zero matches for
+   either a rule or a usage across `shared/`, `core/`, `modules/` and `styles/`. R-1's own D-1c
+   selector audit had already flagged `.dgo-row`/`.dgo-cluster` as design-file names absent from
+   the runtime. **[code]**
+6. **R3-D1's wrapper / `overflow-x` choice — no regression at 320/390/640/1440px.** *Pass — newly
+   checked.* Measured in a real browser at all four widths, both densities. At 320/390/640 the
+   topbar holds at 106.00px against a 106px token, `.dgo-topbar__controls` computes
+   `overflow-x: auto` with `scrollWidth == clientWidth` (194px comfortable / 190px compact) — so
+   the scroll container never actually engages at these widths; it is a safety net, not an active
+   mechanism, and nothing is clipped or pushed out of reach. Four controls are visible in the
+   mobile tier (overflow, theme, notifications, persona), with guide, sync and density correctly
+   suppressed. At 1440px the wrapper computes `overflow-x: visible`, six controls show, and the
+   topbar resolves to 64px/52px by density from the desktop token — the wrapper adds nothing to
+   desktop layout. `document.scrollWidth` equals `innerWidth` at all four widths: no horizontal
+   page scroll introduced anywhere. Per-control reachability was then re-checked against each
+   child's offset within the wrapper's own content box: **zero unreachable controls at 320, 390,
+   640 and 1440px**, all visible controls sharing a **single row band** at every width — the whole
+   point of R3-D1, confirmed directly rather than inferred from the topbar's height. **[this
+   session]**
+7. **R3-D2's restored floor — no control forced taller than intended.** *Pass — newly checked.*
+   Measured at 390px across all seven G-5 routes plus Review & Approval. Method: measure every
+   field with the floor active, then re-measure with `min-height` neutralised by an injected
+   stylesheet, which isolates exactly what the restored declaration changes and nothing else.
+   Of 30 fields that rendered in this harness, **28 were raised by the floor** — from 16–20px up
+   to 36px (3 on Intake & Assignment, 25 on Administration) — and **2 were already at 44px and
+   unaffected** (the My Work and Tracking search fields, sitting on the ceiling). Every field
+   landed inside 36–44px; **none was pushed above the 44px ceiling and none was forced past its
+   intended size**. Raising a 16–20px field to 36px is the declaration working as specified, not
+   a control forced taller than intended: those fields were below the touch floor R-1's D-1 set
+   out to establish. **[this session]**
+
+**Two caveats on the item-7 run, stated so its numbers are not misread.**
+
+*The 30-field count is not the 52-field count, and does not contradict it.* This harness serves
+the app statically with no backend, so `loadRuntimeData()` fails and every data-dependent list,
+filter row and record form renders empty. The review's 52 (§2.3b, G-5) was measured against a
+populated runtime and remains the figure of record; the 30 here is a strictly smaller subset
+observed under degraded data, useful for isolating the floor's effect and for nothing else. The
+two are separate datasets and are not combined anywhere in this report.
+
+*The checkbox case was probed but never actually exercised.* R3-D2's selector reaches `input`
+unqualified, so `type="checkbox"` falls inside its scope at ≤640px, and three checkboxes exist in
+source: `modules/approvals.js:49` (Review & Approval, "Digitally sign this decision"),
+`core/welcome-experience.js:46` and `shared/welcome-runtime.js:63` (the latter two on the
+pre-shell login surfaces, outside the seven G-5 routes). Review & Approval was added to the run
+specifically to reach the first of these — **and it rendered zero fields**, because that route's
+content is data-dependent and no data loaded. The checkbox therefore **was not measured**, and
+this report does not claim it was. What can be said without measuring it: the floor is not new
+reach on that selector — R-1's D-1 specified `min-height:36px` on this same selector set from the
+outset, and the same unqualified `input` already carries an unconditional `width:100%` at every
+width (`styles/app.css:19`), which predates R-3 entirely. Recorded so the next pass to touch field
+sizing knows the selector is unqualified and that this specific case is still unverified;
+**not fixed under rule 10**, and outside R-4A's four reissued sections.
 
 ---
 
@@ -302,8 +428,19 @@ last). This is real and load-bearing, not a bug — **documented, not fixed, by 
 per R4's explicit instruction that this finding is discharged by documentation rather than code
 change.
 
-No defect was found during this session's review of the R-3 commits and current code that falls
-outside R4's named F-1–F-4 and the two upstream dead-CSS items already carried in §2.7.
+**F-5 — the route count is a third number.** `config/routes.config.js` declares **29** `"label"`
+entries at `36454da4` (counted directly from the file). The open information-architecture
+disagreement has been framed throughout as 9 (design file) versus 24 (runtime sidebar); 29 is
+neither. Three readings fit and this report deliberately does not choose between them: five labels
+may be non-route entries that never reach the sidebar, the runtime may have grown since the
+disagreement was framed, or the 24 may always have been wrong. Raised by the R-4A adjudication §3
+from this report's own §2.7 figure. **Not fixed, deferred to the product decision-maker** — folded
+into the existing 9-vs-24 question rather than opened as a separate one, since it sharpens that
+question rather than adding a second. Explicitly **not investigated and not resolved here**, per
+R-4A §3.
+
+Beyond F-5, no defect was found during this session's review of the R-3 commits and current code
+that falls outside R4's named F-1–F-4 and the two upstream dead-CSS items already carried in §2.7.
 
 ---
 
@@ -392,23 +529,54 @@ workstream:**
 
 ## 2.8 Definition of done
 
-O-1 through O-5 are closed: O-1 (topbar bound, R3-D1), O-3 (popover exclusion, R3-D3, explicit
-"closes O-3" in the `app.css` comment at that commit) and O-4 (touch targets, R3-D4, explicit
-"closes O-4") are closed by direct textual confirmation in the commits themselves; O-2 (field
-floor, R3-D2) and O-5 (desktop delta, R3-D5) are closed by directive-to-objective sequential
-correspondence (D1→O1 ... D5→O5) as no commit explicitly tags O-2 or O-5 by number in the
-accessible record, though their content (field floor restored; desktop delta evidenced as none)
-matches those objectives' evident intent. Five commits landed unsquashed
-(`a6e2288`, `bc96dca`, `4596105`, `d6b47d5`, `36454da4`), confirmed via `git log --oneline`.
+**O-1 through O-5 are closed.** Three are closed by direct textual attestation in the commits
+themselves — the `app.css` comment at each commit names the objective it closes:
 
-Of the nine gates, this report can confirm two by identity and result (G-3: boundary holds at
-640/641px per R4 §0; G-9: all seven watchlist items checked against `36454da4`, none found
-outstanding — see §2.4). The remaining seven gates' identities are not available to this session
-and are recorded as not found rather than guessed, per §2.4.
+| Objective | Closed by | Attestation |
+|---|---|---|
+| **O-1** | R3-D1 `a6e2288` | *"bound the topbar to one control row (closes O-1 / R-D4)"* |
+| **O-2** | R3-D2 `bc96dca` | mapping attested by elimination (below); subject matter is the restored mobile field floor |
+| **O-3** | R3-D3 `4596105` | *"persona popover (closes O-3)"* |
+| **O-4** | R3-D4 `d6b47d5` | *"touch targets (closes O-4)"* |
+| **O-5** | R3-D5 `36454da4` | mapping attested by elimination (below); subject matter is the desktop delta, evidenced as none |
+
+R-4A directs that O-2 and O-5 be cited **as written** rather than inferred. This report can
+discharge the *mapping* but not the *wording*: `EXEC-BRIEF-R3-closing.md` was quoted to this
+session only for its §5 gate list, not for its objective list, so the literal text of O-1 through
+O-5 remains **not found in available records** and is not reconstructed here. The mapping itself is
+no longer a bare sequential guess, which is what R-4A objected to: O-1↔D1, O-3↔D3 and O-4↔D4 are
+each attested verbatim in their own commit, leaving exactly two objectives and two directives
+unassigned, so O-2↔D2 and O-5↔D5 follow by elimination from an attested pattern rather than from
+assumed numbering. A later reader wanting the objectives' exact wording should take it from
+`EXEC-BRIEF-R3-closing.md` directly, now committed alongside this report.
+
+Five commits landed unsquashed — `a6e2288`, `bc96dca`, `4596105`, `d6b47d5`, `36454da4` —
+confirmed via `git log --oneline`.
+
+**Nine gates, each with an individual result:** G-1 accounted, G-2 pass, G-3 pass, G-4 pass, G-5
+pass, G-6 pass, G-7 pass, G-8 pass, G-9 pass across all seven watchlist items. See §2.4 for each
+gate's evidence and provenance, including the two watchlist items (6 and 7) that were unchecked
+before R-4A and were measured for this reissue.
 
 **Report complete: §2.1 through §2.8, present in order.**
 
-**One surviving open question, belonging to someone else — not this report's to resolve:** the
-9-vs-24 information architecture disagreement (§2.7) remains open. It is a product decision, it
-has never been in engineering scope, and per R4 §4/§6 it does not block this workstream's closure.
-It is named here, as R4 requires, and left there.
+**Source documents committed alongside this report — one of six.** R-4A §5 directs that six
+documents be committed to `handoff/` so the sourcing failure that caused the first issue cannot
+recur. Only one was actually reachable by this session and is committed here:
+`EXEC-DIRECTIVE-mobile-shell.md` (R-1). The other five —
+`EXEC-BRIEF-R2-remediation.md`, `EXEC-BRIEF-R3-closing.md`, `REVIEW-R3-closing.md`,
+`EXEC-BRIEF-R4-terminal.md` and the R-4A adjudication itself — were described as attached but did
+not arrive as files in this session, and are **not in the repository, its git history, or any
+path reachable from here**. Their substance reached this report only as quoted text inside the
+R-4A adjudication, which is why §2.4's gate list and §2.3d's review measurements are attributed
+to it rather than to the documents directly, and why the wording of O-1 through O-5 remains
+unrecoverable above. **The recurrence R-4A §5 set out to prevent is therefore only one-sixth
+prevented, and the remaining five documents still need to be committed by someone who holds
+them.** Recorded here rather than left as a silent gap.
+
+**Surviving open questions, owned elsewhere — none blocking closure:** the information-architecture
+disagreement, now 9 (design file) vs 24 (runtime sidebar) vs 29 (`config/routes.config.js` label
+count, F-5) — a product decision that has never been in engineering scope; F-1's touch floor
+between 641px and 900px — also a product decision; and F-2/F-3 as consistency work for whichever
+future pass owns the notify, persona and identity surfaces. Named here, as R4 requires, and left
+there.
