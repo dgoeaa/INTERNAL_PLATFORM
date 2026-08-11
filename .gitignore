@@ -1,0 +1,27 @@
+# Runtime configuration.
+#
+# config/config.example.js tells the operator to copy it to config/config.local.js and fill in
+# real Power Automate HTTP-trigger URLs, and states that "config/config.local.js is git-ignored
+# — never commit real URLs". No .gitignore existed in this repository, so that protection was
+# documented but not implemented: on a public repository a `git add .` after following those
+# instructions would have published live endpoint URLs. Each such URL carries its own SAS
+# signature and is, in the example file's own words, "effectively a credential".
+config/config.local.js
+
+# Generated tree snapshots. internalplatform.snapshot.json was a serialised copy of the very
+# tree git already versions (163 files, none of them unique to it), regenerated and re-pinned
+# by hand as the workstream moved. Git is the snapshot; a second one in the tree only drifts.
+internalplatform.snapshot.json
+internalplatform.baseline.json
+*.snapshot.json
+
+# Review/design bundles. These arrive as archives from the design tool, are not part of the
+# runtime, and are not referenced by any module. One of them shipped three live Power Automate
+# SAS URLs into this public repository; see the audit notes on the removal commit.
+*.zip
+
+# Local tooling and OS noise.
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
