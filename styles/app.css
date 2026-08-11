@@ -1414,3 +1414,10 @@ dgo-shell[data-route-pending] .dgo-route-loading{display:block}
   .dgo-topbar__controls::-webkit-scrollbar{display:none;}
   .dgo-topbar__controls>*{flex:0 0 auto;}
 }
+
+/* R3-D3 — persona popover (closes O-3). Reuses .dgo-more-menu/.dgo-more-menu__item for the
+   panel chrome and its one action (Close); this rule is only the identity row's own layout,
+   which those classes don't already provide. */
+.dgo-persona-panel__identity{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--dgo-card-border,#dfe7e2);}
+.dgo-persona-panel__identity b,.dgo-persona-panel__identity small{display:block;text-align:left;}
+.dgo-persona-panel__identity small{font-size:11px;color:var(--dgo-color-fg-muted,#626a64);overflow-wrap:anywhere;}

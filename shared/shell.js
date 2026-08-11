@@ -107,7 +107,7 @@ class Shell extends HTMLElement{
     </div>
     <div class="dgo-scrim" data-scrim hidden></div>
     <div class="dgo-live-region" aria-live="polite" data-live-region></div>
-    ${ToastHost()}${CommandPalette()}${this.notifyPanelHtml()}${this.moreMenuHtml()}`;
+    ${ToastHost()}${CommandPalette()}${this.notifyPanelHtml()}${this.moreMenuHtml()}${this.personaPanelHtml()}`;
     this.bind(); this.active(route); this.watchNavBreakpoint(); this.syncNavInert(); this.syncNavScrollHint(); addEventListener('resize',()=>this.syncNavScrollHint());
   }
   // SYSTEM contains the platform's IT-only screens (Administration, System Health) alongside
@@ -150,6 +150,12 @@ class Shell extends HTMLElement{
       else if(action==='density'){ const d=setDensity(nextDensity()); this.toast(`Density set to ${d}`,'success'); }
       else if(action==='theme'){ const t=setTheme(nextTheme()); this.toast(`Theme set to ${t}`,'success'); }
     });
+    // R3-D3 — persona joins the mutual-exclusion set. It previously had no open/close
+    // behaviour at all (aria-haspopup/aria-expanded were static markup with nothing behind
+    // them); this wires it to the same toggle/focus-trap/aria-expanded pattern notifications
+    // and the overflow menu already use.
+    this.querySelector('[data-persona]')?.addEventListener('click',()=>this.togglePersonaPanel());
+    this.querySelector('[data-persona-close]')?.addEventListener('click',()=>this.closePersonaPanel());
     // Click-outside dismissal (finding: notifications/persona have none; the overflow
     // menu is the one surface this directive requires it for). Bound once — render()
     // runs a single time per Shell instance, so this listener is never duplicated.
@@ -182,6 +188,7 @@ class Shell extends HTMLElement{
   toggleMoreMenu(){ this.querySelector('[data-more-panel]')?.hidden ? this.openMoreMenu() : this.closeMoreMenu(); }
   openMoreMenu(){
     this.closeNotifications();
+    this.closePersonaPanel();
     const panel=this.querySelector('[data-more-panel]'); if(!panel) return;
     this.renderMoreMenuItems();
     panel.hidden=false;
@@ -247,6 +254,7 @@ class Shell extends HTMLElement{
   toggleNotifications(){ this.querySelector('[data-notify-panel]')?.hidden ? this.openNotifications() : this.closeNotifications(); }
   openNotifications(){
     this.closeMoreMenu();
+    this.closePersonaPanel();
     const panel=this.querySelector('[data-notify-panel]'); if(!panel) return;
     panel.hidden=false;
     this.querySelector('[data-notify-open]')?.setAttribute('aria-expanded','true');
@@ -260,6 +268,42 @@ class Shell extends HTMLElement{
     panel._releaseTrap?.(); panel._releaseTrap=null;
     panel.hidden=true;
     const trigger=this.querySelector('[data-notify-open]');
+    trigger?.setAttribute('aria-expanded','false');
+    trigger?.focus();
+  }
+  /* R3-D3 — persona popover. The trigger (data-persona) already carried
+     aria-haspopup="menu" aria-expanded="false" in the markup but nothing behind it: no
+     panel, no click handler, no aria-expanded toggling. This gives it the same
+     open/close/focus-trap/aria-expanded contract as the overflow menu and notifications,
+     and folds it into their existing mutual exclusion (openMoreMenu/openNotifications/
+     showGuide already close it above; this closes them in the other direction). Content is
+     the same identity summary already shown in the button and the sidebar footer — there is
+     no persona-switching feature in this codebase to surface here. */
+  personaPanelHtml(){
+    const s=State.get();
+    return `<div class="dgo-more-menu dgo-persona-panel" data-persona-panel hidden role="menu" aria-label="Account">
+      <div class="dgo-persona-panel__identity">
+        <span class="dgo-avatar">${esc((s.profile.name||'R').slice(0,1).toUpperCase())}</span>
+        <span><b>${esc(s.profile.name)}</b><small>${esc(personaLabel(s.profile.persona))} &middot; ${esc(s.profile.email)}</small></span>
+      </div>
+      <button type="button" role="menuitem" class="dgo-more-menu__item" data-persona-close>${icon('i-close')}<span>Close</span></button>
+    </div>`;
+  }
+  togglePersonaPanel(){ this.querySelector('[data-persona-panel]')?.hidden ? this.openPersonaPanel() : this.closePersonaPanel(); }
+  openPersonaPanel(){
+    this.closeNotifications();
+    this.closeMoreMenu();
+    const panel=this.querySelector('[data-persona-panel]'); if(!panel) return;
+    panel.hidden=false;
+    this.querySelector('[data-persona]')?.setAttribute('aria-expanded','true');
+    createFocusTrap(panel,{onEscape:()=>this.closePersonaPanel()});
+    requestAnimationFrame(()=>panel.querySelector('button')?.focus());
+  }
+  closePersonaPanel(){
+    const panel=this.querySelector('[data-persona-panel]'); if(!panel||panel.hidden) return;
+    panel._releaseTrap?.(); panel._releaseTrap=null;
+    panel.hidden=true;
+    const trigger=this.querySelector('[data-persona]');
     trigger?.setAttribute('aria-expanded','false');
     trigger?.focus();
   }
@@ -338,10 +382,13 @@ class Shell extends HTMLElement{
   // G-6 gap: the guide dialog is modal (z-index 1300, above both popovers) so it visually
   // covered an open notify/more panel without closing it - closing the dialog afterwards
   // left the popover still open underneath, with its own aria-expanded still true. Closing
-  // both here matches the mutual exclusion openMoreMenu/openNotifications already have with
-  // each other, so exactly one of the four named surfaces (notifications, persona, guide,
-  // overflow menu) is ever open at once.
-  showGuide(){ this.closeNotifications(); this.closeMoreMenu(); const route=Router.path(); const g=guideFor(route); const title=g?.label || this.routeLabel(route); const body=`<p>${esc(g?.purpose || g?.reason || 'This workspace is governed by the DGO operating model.')}</p>${g?.owns?`<p><b>Owns:</b> ${esc(g.owns.join(', '))}</p>`:''}${g?.handoffs?`<p><b>Handoffs:</b> ${esc(g.handoffs.join(', '))}</p>`:''}`; this.dialog(title, body); }
+  // all three here matches the mutual exclusion openMoreMenu/openNotifications/
+  // openPersonaPanel already have with each other, so exactly one of the four named surfaces
+  // (notifications, persona, guide, overflow menu) is ever open at once. The reverse
+  // direction - opening one of the other three while guide is open - needs no code: guide's
+  // own backdrop (position:fixed, inset:0) and focus trap mean none of their triggers are
+  // reachable by mouse or keyboard while it is showing.
+  showGuide(){ this.closeNotifications(); this.closeMoreMenu(); this.closePersonaPanel(); const route=Router.path(); const g=guideFor(route); const title=g?.label || this.routeLabel(route); const body=`<p>${esc(g?.purpose || g?.reason || 'This workspace is governed by the DGO operating model.')}</p>${g?.owns?`<p><b>Owns:</b> ${esc(g.owns.join(', '))}</p>`:''}${g?.handoffs?`<p><b>Handoffs:</b> ${esc(g.handoffs.join(', '))}</p>`:''}`; this.dialog(title, body); }
   /* The transient half of the feedback channel. Every toast is also written to the
      notification centre before it is shown, so the 4200ms timeout below decides only how
      long the message stays in front of the user — never whether it survives at all. */
