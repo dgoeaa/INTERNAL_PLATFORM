@@ -439,8 +439,24 @@ into the existing 9-vs-24 question rather than opened as a separate one, since i
 question rather than adding a second. Explicitly **not investigated and not resolved here**, per
 R-4A §3.
 
-Beyond F-5, no defect was found during this session's review of the R-3 commits and current code
-that falls outside R4's named F-1–F-4 and the two upstream dead-CSS items already carried in §2.7.
+**F-6 — the checkbox floor interaction is unmeasured.** R3-D2's restored floor
+(`styles/app.css:1301`) selects `input` unqualified, so `type="checkbox"` falls inside its scope at
+≤640px. Three checkbox sites exist in the runtime: `modules/approvals.js:49` (Review & Approval),
+`core/welcome-experience.js:46` and `shared/welcome-runtime.js:63`. The G-9 item-7 probe added
+Review & Approval specifically to exercise the first of these and **it rendered zero fields**,
+because the route's content is data-dependent and the harness runs without a backend — so the
+interaction was never exercised on this side. The independent review measured checkboxes at
+**16×16 and unaffected**, which is reassuring but was taken at a different time under different
+conditions, and one-sided evidence is recorded as one-sided rather than promoted to a pass.
+Assessed low-risk: the floor is not new reach on that selector (R-1's D-1 specified
+`min-height:36px` on the same selector set from the outset), and the same unqualified `input`
+already carries an unconditional `width:100%` at every width (`styles/app.css:19`), predating R-3
+entirely. **Not fixed, deferred to whichever pass next runs against a live backend** — the only
+condition under which the remaining side can actually be measured.
+
+Beyond F-5 and F-6, no defect was found during this session's review of the R-3 commits and current
+code that falls outside R4's named F-1–F-4 and the two upstream dead-CSS items already carried in
+§2.7.
 
 ---
 
@@ -529,26 +545,34 @@ workstream:**
 
 ## 2.8 Definition of done
 
-**O-1 through O-5 are closed.** Three are closed by direct textual attestation in the commits
-themselves — the `app.css` comment at each commit names the objective it closes:
+**O-1 through O-5 are closed.** The objectives are reproduced below verbatim from
+`EXEC-BRIEF-R3-closing.md` §2, as supplied by the R-4B closure — this replaces the earlier
+elimination-based mapping, which is no longer needed now that the wording is on the record:
 
-| Objective | Closed by | Attestation |
-|---|---|---|
-| **O-1** | R3-D1 `a6e2288` | *"bound the topbar to one control row (closes O-1 / R-D4)"* |
-| **O-2** | R3-D2 `bc96dca` | mapping attested by elimination (below); subject matter is the restored mobile field floor |
-| **O-3** | R3-D3 `4596105` | *"persona popover (closes O-3)"* |
-| **O-4** | R3-D4 `d6b47d5` | *"touch targets (closes O-4)"* |
-| **O-5** | R3-D5 `36454da4` | mapping attested by elimination (below); subject matter is the desktop delta, evidenced as none |
+| ID | Item (as written) | Severity | Directive | Closed |
+|---|---|---|---|---|
+| **O-1** | R-D4 unimplemented: topbar height unbounded, controls can clip | **Critical** | R3-D1 | Closed — `a6e2288`, attested in the commit: *"bound the topbar to one control row (closes O-1 / R-D4)"*. Topbar held at 106.00px against a 106px token, zero clipped controls (§2.3a, G-4). |
+| **O-2** | `min-height:36px` on fields silently dropped; only the ceiling shipped | Bug | R3-D2 | Closed — `bc96dca`. Floor restored alongside the surviving ceiling: `min-height:36px;max-height:44px` (§2.3b). |
+| **O-3** | Persona not wired into popover mutual exclusion | Bug | R3-D3 | Closed — `4596105`, attested in the commit: *"persona popover (closes O-3)"*. All twelve ordered pairs verified (§2.3c, G-6). |
+| **O-4** | `.dgo-btn{min-height:40px}` absent; touch targets unverified | Bug | R3-D4 | Closed on substance — `d6b47d5`, attested: *"touch targets (closes O-4)"*. See the note below on the mechanism. |
+| **O-5** | G-1 desktop no-op never evidenced; R-2 changed desktop unconditionally | Evidence | R3-D5 | Closed — `36454da4`. Desktop delta accounted rather than asserted, and R-2's alleged desktop change shown not to be R-2's at all (§2.6, G-1). |
 
-R-4A directs that O-2 and O-5 be cited **as written** rather than inferred. This report can
-discharge the *mapping* but not the *wording*: `EXEC-BRIEF-R3-closing.md` was quoted to this
-session only for its §5 gate list, not for its objective list, so the literal text of O-1 through
-O-5 remains **not found in available records** and is not reconstructed here. The mapping itself is
-no longer a bare sequential guess, which is what R-4A objected to: O-1↔D1, O-3↔D3 and O-4↔D4 are
-each attested verbatim in their own commit, leaving exactly two objectives and two directives
-unassigned, so O-2↔D2 and O-5↔D5 follow by elimination from an attested pattern rather than from
-assumed numbering. A later reader wanting the objectives' exact wording should take it from
-`EXEC-BRIEF-R3-closing.md` directly, now committed alongside this report.
+**O-4 closed by a better mechanism than its wording implies.** The objective names one selector and
+one literal value — `.dgo-btn{min-height:40px}` absent. R3-D4 did not add that declaration. It
+found `.dgo-btn` already carried an unconditional literal `min-height:44px`, so the named selector
+was never the defect; the live gap was elsewhere, in the token `--dgo-control-target-min` dropping
+to 36px under `[data-density="compact"]`. Raising that token to 40px at ≤640px lifts every control
+class that reads it — search trigger, persona button, sidebar items, related links, `summary`,
+chips, skip link — rather than the single selector the wording pointed at. Recorded as a closure on
+substance, not on letter.
+
+This is the third such improvement in the workstream, and the pattern is worth stating once in the
+final record: R3-D1 solved a wrapping problem by introducing a wrapper the `!important` couldn't
+contest rather than escalating specificity; R3-D5 replaced a capture matrix with a diff proof that
+is exhaustive over the code rather than over a sample; R3-D4 fixed a token rather than a selector.
+In each case the directive's literal instruction would have produced a narrower or weaker result
+than the one delivered. Two of the three were declared as substitutions at the time; the third,
+R3-D5's, was not — which is why §2.6 exists.
 
 Five commits landed unsquashed — `a6e2288`, `bc96dca`, `4596105`, `d6b47d5`, `36454da4` —
 confirmed via `git log --oneline`.
@@ -560,23 +584,21 @@ before R-4A and were measured for this reissue.
 
 **Report complete: §2.1 through §2.8, present in order.**
 
-**Source documents committed alongside this report — one of six.** R-4A §5 directs that six
-documents be committed to `handoff/` so the sourcing failure that caused the first issue cannot
-recur. Only one was actually reachable by this session and is committed here:
-`EXEC-DIRECTIVE-mobile-shell.md` (R-1). The other five —
-`EXEC-BRIEF-R2-remediation.md`, `EXEC-BRIEF-R3-closing.md`, `REVIEW-R3-closing.md`,
-`EXEC-BRIEF-R4-terminal.md` and the R-4A adjudication itself — were described as attached but did
-not arrive as files in this session, and are **not in the repository, its git history, or any
-path reachable from here**. Their substance reached this report only as quoted text inside the
-R-4A adjudication, which is why §2.4's gate list and §2.3d's review measurements are attributed
-to it rather than to the documents directly, and why the wording of O-1 through O-5 remains
-unrecoverable above. **The recurrence R-4A §5 set out to prevent is therefore only one-sixth
-prevented, and the remaining five documents still need to be committed by someone who holds
-them.** Recorded here rather than left as a silent gap.
+**Source documents: one of six committed.** `EXEC-DIRECTIVE-mobile-shell.md` (R-1) is in `handoff/`;
+the other five were described as attached at both R-4A and R-4B but did not arrive as files in
+either round, so per R-4B §2 the item is now owned by the reviewer and no further attempt is made
+from here.
 
-**Surviving open questions, owned elsewhere — none blocking closure:** the information-architecture
-disagreement, now 9 (design file) vs 24 (runtime sidebar) vs 29 (`config/routes.config.js` label
-count, F-5) — a product decision that has never been in engineering scope; F-1's touch floor
-between 641px and 900px — also a product decision; and F-2/F-3 as consistency work for whichever
-future pass owns the notify, persona and identity surfaces. Named here, as R4 requires, and left
-there.
+**Surviving items, owned elsewhere — none blocking closure:**
+
+| Survives | Owner |
+|---|---|
+| Information architecture: 9 (design file) vs 24 (runtime sidebar) vs 29 (`config/routes.config.js` labels, F-5) | Product decision-maker |
+| F-1 — touch floor between 641px and 900px, compact density | Product decision-maker |
+| F-2, F-3 — click-outside dismissal and stale identity across notify / persona | Whichever pass owns those surfaces |
+| F-6 — checkbox floor interaction, evidenced on one side only | Whichever pass runs against a live backend |
+
+**The mobile shell workstream is closed.** R-1 through R-4B complete, and the record is
+self-contained in `handoff/` apart from the five documents noted above. None of the four surviving
+items blocks that closure; if any is taken up it opens as its own piece of work, against its own
+baseline, not as a continuation of this one.
