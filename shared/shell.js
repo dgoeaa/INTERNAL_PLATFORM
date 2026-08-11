@@ -290,6 +290,20 @@ class Shell extends HTMLElement{
     </div>`;
   }
   togglePersonaPanel(){ this.querySelector('[data-persona-panel]')?.hidden ? this.openPersonaPanel() : this.closePersonaPanel(); }
+  /* R4-D2 — focus ordering on cross-surface open (F-4, documented not fixed). Opening this
+     panel calls closeNotifications() and closeMoreMenu() first, and each of those returns
+     focus to its own trigger synchronously — that happens even here, mid-open, not only when
+     they are invoked as a plain close. What keeps that from reading as a focus break is timing:
+     this method's own focus move is deferred one frame, in the requestAnimationFrame call
+     below, so it always lands after whichever trigger the synchronous closes just focused,
+     overwriting it before the user perceives anything. That ordering is required, not
+     incidental — dropping the rAF in favour of a synchronous focus call here would put this
+     panel's focus first and the closed surfaces' triggers last, stranding focus on whichever
+     trigger a prior panel happened to own; making either close path conditional on which
+     surface is opening next would do the same by skipping the trigger-focus step it currently
+     always runs. The same contract governs openNotifications(), openMoreMenu() and showGuide()
+     — each closes its siblings synchronously and defers its own focus move to the next frame,
+     for the same reason. */
   openPersonaPanel(){
     this.closeNotifications();
     this.closeMoreMenu();
