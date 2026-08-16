@@ -1,0 +1,678 @@
+# 06 - Scope_SAVE_06_Review_Register_Upsert
+#
+# M15 Reviewer decisions previously died at the next run, because the register was
+#     regenerated from scratch every time. This scope provisions (once) a SharePoint
+#     list keyed on ObjectId and upserts each captured object into it.
+#
+#     Capture-owned columns are refreshed every run. The six reviewer-owned columns -
+#     Reviewer, ReviewDecision, ReviewOwner, ActionRequired, DueDate, ReviewerNotes -
+#     are created once and never appear in the update payload, so what a reviewer
+#     enters survives every subsequent capture.
+#
+#     ObjectId is indexed so the register stays queryable past the 5000 item list
+#     view threshold. Provisioning is skipped entirely when the list already exists.
+#
+# Requires one extra top-level initialiser (see 00_initialize_variables.json):
+#   varReviewRegisterListTitle = 'SharePoint Metadata Review Register'
+
+{
+  "nodeId": "Scope_SAVE_06_Review_Register_Upsert",
+  "serializedValue": {
+    "type": "Scope",
+    "actions": {
+      "GET_Review_Register_List": {
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "dataset": "@variables('varRootSiteUrl')",
+            "parameters/method": "GET",
+            "parameters/uri": "@concat('_api/web/lists/getbytitle(''', replace(variables('varReviewRegisterListTitle'), '''', ''''''), ''')?$select=Id,Title')",
+            "parameters/headers": {
+              "Accept": "application/json;odata=nometadata",
+              "Content-Type": "application/json;odata=nometadata"
+            }
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+            "connection": "shared_sharepointonline",
+            "operationId": "HttpRequest"
+          }
+        },
+        "runtimeConfiguration": {
+          "retryPolicy": {
+            "type": "exponential",
+            "count": 4,
+            "interval": "PT10S",
+            "minimumInterval": "PT5S",
+            "maximumInterval": "PT1H"
+          }
+        }
+      },
+      "Condition_Provision_Review_Register": {
+        "type": "If",
+        "expression": {
+          "not": {
+            "equals": [
+              "@actions('GET_Review_Register_List')?['status']",
+              "Succeeded"
+            ]
+          }
+        },
+        "actions": {
+          "CREATE_Review_Register_List": {
+            "type": "OpenApiConnection",
+            "inputs": {
+              "parameters": {
+                "dataset": "@variables('varRootSiteUrl')",
+                "parameters/method": "POST",
+                "parameters/uri": "_api/web/lists",
+                "parameters/headers": {
+                  "Accept": "application/json;odata=nometadata",
+                  "Content-Type": "application/json;odata=verbose"
+                },
+                "parameters/body": "{\"__metadata\":{\"type\":\"SP.List\"},\"BaseTemplate\":100,\"Title\":\"@{variables('varReviewRegisterListTitle')}\",\"Description\":\"Persistent review register for the SharePoint metadata inventory. Capture columns are refreshed by the flow on every run; Reviewer, ReviewDecision, ReviewOwner, ActionRequired, DueDate and ReviewerNotes are owned by reviewers and are never overwritten.\",\"EnableVersioning\":true,\"MajorVersionLimit\":100}"
+              },
+              "host": {
+                "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                "connection": "shared_sharepointonline",
+                "operationId": "HttpRequest"
+              }
+            },
+            "runtimeConfiguration": {
+              "retryPolicy": {
+                "type": "exponential",
+                "count": 4,
+                "interval": "PT10S",
+                "minimumInterval": "PT5S",
+                "maximumInterval": "PT1H"
+              }
+            }
+          },
+          "Compose_Review_Register_Field_Plan": {
+            "type": "Compose",
+            "inputs": [
+              {
+                "name": "ObjectId",
+                "kind": 2,
+                "metaType": "SP.FieldText"
+              },
+              {
+                "name": "WebUrl",
+                "kind": 2,
+                "metaType": "SP.FieldText"
+              },
+              {
+                "name": "ObjectKind",
+                "kind": 2,
+                "metaType": "SP.FieldText"
+              },
+              {
+                "name": "ArchitectureClassification",
+                "kind": 2,
+                "metaType": "SP.FieldText"
+              },
+              {
+                "name": "BusinessRelevance",
+                "kind": 2,
+                "metaType": "SP.FieldText"
+              },
+              {
+                "name": "ServerRelativeUrl",
+                "kind": 2,
+                "metaType": "SP.FieldText"
+              },
+              {
+                "name": "ItemCount",
+                "kind": 9,
+                "metaType": "SP.FieldNumber"
+              },
+              {
+                "name": "TotalSizeBytes",
+                "kind": 9,
+                "metaType": "SP.FieldNumber"
+              },
+              {
+                "name": "CustomFieldCount",
+                "kind": 9,
+                "metaType": "SP.FieldNumber"
+              },
+              {
+                "name": "HasUniquePermissions",
+                "kind": 8,
+                "metaType": "SP.Field"
+              },
+              {
+                "name": "HasRetentionLabel",
+                "kind": 8,
+                "metaType": "SP.Field"
+              },
+              {
+                "name": "VersioningEnabled",
+                "kind": 8,
+                "metaType": "SP.Field"
+              },
+              {
+                "name": "ContentTypesEnabled",
+                "kind": 8,
+                "metaType": "SP.Field"
+              },
+              {
+                "name": "ReviewReason",
+                "kind": 3,
+                "metaType": "SP.FieldMultiLineText"
+              },
+              {
+                "name": "RecommendedAction",
+                "kind": 3,
+                "metaType": "SP.FieldMultiLineText"
+              },
+              {
+                "name": "LastCapturedRunId",
+                "kind": 2,
+                "metaType": "SP.FieldText"
+              },
+              {
+                "name": "LastCapturedUtc",
+                "kind": 4,
+                "metaType": "SP.FieldDateTime"
+              },
+              {
+                "name": "Reviewer",
+                "kind": 2,
+                "metaType": "SP.FieldText"
+              },
+              {
+                "name": "ReviewDecision",
+                "kind": 2,
+                "metaType": "SP.FieldText"
+              },
+              {
+                "name": "ReviewOwner",
+                "kind": 2,
+                "metaType": "SP.FieldText"
+              },
+              {
+                "name": "ActionRequired",
+                "kind": 3,
+                "metaType": "SP.FieldMultiLineText"
+              },
+              {
+                "name": "DueDate",
+                "kind": 4,
+                "metaType": "SP.FieldDateTime"
+              },
+              {
+                "name": "ReviewerNotes",
+                "kind": 3,
+                "metaType": "SP.FieldMultiLineText"
+              }
+            ],
+            "runAfter": {
+              "CREATE_Review_Register_List": [
+                "Succeeded",
+                "Failed",
+                "Skipped",
+                "TimedOut"
+              ]
+            }
+          },
+          "Apply_to_each_Review_Register_Field": {
+            "type": "Foreach",
+            "foreach": "@outputs('Compose_Review_Register_Field_Plan')",
+            "actions": {
+              "CREATE_Review_Register_Field": {
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "parameters": {
+                    "dataset": "@variables('varRootSiteUrl')",
+                    "parameters/method": "POST",
+                    "parameters/uri": "@concat('_api/web/lists/getbytitle(''', replace(variables('varReviewRegisterListTitle'), '''', ''''''), ''')/fields')",
+                    "parameters/headers": {
+                      "Accept": "application/json;odata=nometadata",
+                      "Content-Type": "application/json;odata=verbose"
+                    },
+                    "parameters/body": "{\"__metadata\":{\"type\":\"@{items('Apply_to_each_Review_Register_Field')?['metaType']}\"},\"Title\":\"@{items('Apply_to_each_Review_Register_Field')?['name']}\",\"FieldTypeKind\":@{items('Apply_to_each_Review_Register_Field')?['kind']}}"
+                  },
+                  "host": {
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                    "connection": "shared_sharepointonline",
+                    "operationId": "HttpRequest"
+                  }
+                },
+                "runtimeConfiguration": {
+                  "retryPolicy": {
+                    "type": "exponential",
+                    "count": 4,
+                    "interval": "PT10S",
+                    "minimumInterval": "PT5S",
+                    "maximumInterval": "PT1H"
+                  }
+                }
+              },
+              "ADD_Field_To_Default_View": {
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "parameters": {
+                    "dataset": "@variables('varRootSiteUrl')",
+                    "parameters/method": "POST",
+                    "parameters/uri": "@concat('_api/web/lists/getbytitle(''', replace(variables('varReviewRegisterListTitle'), '''', ''''''), ''')/views/getbytitle(''All Items'')/viewfields/addviewfield(''', replace(items('Apply_to_each_Review_Register_Field')?['name'], '''', ''''''), ''')')",
+                    "parameters/headers": {
+                      "Accept": "application/json;odata=nometadata",
+                      "Content-Type": "application/json;odata=nometadata"
+                    }
+                  },
+                  "host": {
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                    "connection": "shared_sharepointonline",
+                    "operationId": "HttpRequest"
+                  }
+                },
+                "runtimeConfiguration": {
+                  "retryPolicy": {
+                    "type": "exponential",
+                    "count": 4,
+                    "interval": "PT10S",
+                    "minimumInterval": "PT5S",
+                    "maximumInterval": "PT1H"
+                  }
+                },
+                "runAfter": {
+                  "CREATE_Review_Register_Field": [
+                    "Succeeded",
+                    "Failed",
+                    "Skipped",
+                    "TimedOut"
+                  ]
+                }
+              }
+            },
+            "runAfter": {
+              "Compose_Review_Register_Field_Plan": [
+                "Succeeded"
+              ]
+            },
+            "runtimeConfiguration": {
+              "concurrency": {
+                "repetitions": 1
+              }
+            }
+          },
+          "INDEX_ObjectId_Field": {
+            "type": "OpenApiConnection",
+            "inputs": {
+              "parameters": {
+                "dataset": "@variables('varRootSiteUrl')",
+                "parameters/method": "PATCH",
+                "parameters/uri": "@concat('_api/web/lists/getbytitle(''', replace(variables('varReviewRegisterListTitle'), '''', ''''''), ''')/fields/getbyinternalnameortitle(''ObjectId'')')",
+                "parameters/headers": {
+                  "Accept": "application/json;odata=nometadata",
+                  "Content-Type": "application/json;odata=nometadata",
+                  "IF-MATCH": "*"
+                },
+                "parameters/body": {
+                  "Indexed": true
+                }
+              },
+              "host": {
+                "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                "connection": "shared_sharepointonline",
+                "operationId": "HttpRequest"
+              }
+            },
+            "runtimeConfiguration": {
+              "retryPolicy": {
+                "type": "exponential",
+                "count": 4,
+                "interval": "PT10S",
+                "minimumInterval": "PT5S",
+                "maximumInterval": "PT1H"
+              }
+            },
+            "runAfter": {
+              "Apply_to_each_Review_Register_Field": [
+                "Succeeded",
+                "Failed",
+                "Skipped",
+                "TimedOut"
+              ]
+            }
+          }
+        },
+        "else": {
+          "actions": {}
+        },
+        "runAfter": {
+          "GET_Review_Register_List": [
+            "Succeeded",
+            "Failed",
+            "Skipped",
+            "TimedOut"
+          ]
+        }
+      },
+      "Apply_to_each_Object_For_Review_Register": {
+        "type": "Foreach",
+        "foreach": "@variables('varNormalizedObjects')",
+        "actions": {
+          "GET_Existing_Review_Register_Item": {
+            "type": "OpenApiConnection",
+            "inputs": {
+              "parameters": {
+                "dataset": "@variables('varRootSiteUrl')",
+                "parameters/method": "GET",
+                "parameters/uri": "@concat('_api/web/lists/getbytitle(''', replace(variables('varReviewRegisterListTitle'), '''', ''''''), ''')/items?$select=Id&$top=1&$filter=ObjectId eq ''', replace(items('Apply_to_each_Object_For_Review_Register')?['objectId'], '''', ''''''), '''')",
+                "parameters/headers": {
+                  "Accept": "application/json;odata=nometadata",
+                  "Content-Type": "application/json;odata=nometadata"
+                }
+              },
+              "host": {
+                "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                "connection": "shared_sharepointonline",
+                "operationId": "HttpRequest"
+              }
+            },
+            "runtimeConfiguration": {
+              "retryPolicy": {
+                "type": "exponential",
+                "count": 4,
+                "interval": "PT10S",
+                "minimumInterval": "PT5S",
+                "maximumInterval": "PT1H"
+              }
+            }
+          },
+          "Compose_Existing_Review_Item_Id": {
+            "type": "Compose",
+            "inputs": "@if(equals(actions('GET_Existing_Review_Register_Item')?['status'], 'Succeeded'), string(coalesce(first(coalesce(body('GET_Existing_Review_Register_Item')?['value'], createArray()))?['Id'], '')), '')",
+            "runAfter": {
+              "GET_Existing_Review_Register_Item": [
+                "Succeeded",
+                "Failed",
+                "Skipped",
+                "TimedOut"
+              ]
+            }
+          },
+          "Compose_Review_Register_Item_Body": {
+            "type": "Compose",
+            "inputs": {
+              "Title": "@items('Apply_to_each_Object_For_Review_Register')?['title']",
+              "ObjectId": "@items('Apply_to_each_Object_For_Review_Register')?['objectId']",
+              "WebUrl": "@items('Apply_to_each_Object_For_Review_Register')?['webUrl']",
+              "ObjectKind": "@items('Apply_to_each_Object_For_Review_Register')?['objectKind']",
+              "ArchitectureClassification": "@items('Apply_to_each_Object_For_Review_Register')?['architectureClassification']",
+              "BusinessRelevance": "@items('Apply_to_each_Object_For_Review_Register')?['businessRelevance']",
+              "ServerRelativeUrl": "@items('Apply_to_each_Object_For_Review_Register')?['serverRelativeUrl']",
+              "ItemCount": "@items('Apply_to_each_Object_For_Review_Register')?['itemCount']",
+              "TotalSizeBytes": "@items('Apply_to_each_Object_For_Review_Register')?['storage']?['totalSizeBytes']",
+              "CustomFieldCount": "@items('Apply_to_each_Object_For_Review_Register')?['metrics']?['customFields']",
+              "HasUniquePermissions": "@items('Apply_to_each_Object_For_Review_Register')?['settings']?['hasUniqueRoleAssignments']",
+              "HasRetentionLabel": "@items('Apply_to_each_Object_For_Review_Register')?['hasRetentionLabel']",
+              "VersioningEnabled": "@items('Apply_to_each_Object_For_Review_Register')?['settings']?['enableVersioning']",
+              "ContentTypesEnabled": "@items('Apply_to_each_Object_For_Review_Register')?['settings']?['contentTypesEnabled']",
+              "ReviewReason": "@items('Apply_to_each_Object_For_Review_Register')?['reviewReason']",
+              "RecommendedAction": "@items('Apply_to_each_Object_For_Review_Register')?['recommendedAction']",
+              "LastCapturedRunId": "@variables('varRunId')",
+              "LastCapturedUtc": "@variables('varCapturedAtUtc')"
+            },
+            "runAfter": {
+              "Compose_Existing_Review_Item_Id": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Condition_Upsert_Review_Register_Item": {
+            "type": "If",
+            "expression": {
+              "not": {
+                "equals": [
+                  "@outputs('Compose_Existing_Review_Item_Id')",
+                  ""
+                ]
+              }
+            },
+            "actions": {
+              "PATCH_Review_Register_Item": {
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "parameters": {
+                    "dataset": "@variables('varRootSiteUrl')",
+                    "parameters/method": "PATCH",
+                    "parameters/uri": "@concat('_api/web/lists/getbytitle(''', replace(variables('varReviewRegisterListTitle'), '''', ''''''), ''')/items(', outputs('Compose_Existing_Review_Item_Id'), ')')",
+                    "parameters/headers": {
+                      "Accept": "application/json;odata=nometadata",
+                      "Content-Type": "application/json;odata=nometadata",
+                      "IF-MATCH": "*"
+                    },
+                    "parameters/body": "@outputs('Compose_Review_Register_Item_Body')"
+                  },
+                  "host": {
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                    "connection": "shared_sharepointonline",
+                    "operationId": "HttpRequest"
+                  }
+                },
+                "runtimeConfiguration": {
+                  "retryPolicy": {
+                    "type": "exponential",
+                    "count": 4,
+                    "interval": "PT10S",
+                    "minimumInterval": "PT5S",
+                    "maximumInterval": "PT1H"
+                  }
+                }
+              }
+            },
+            "else": {
+              "actions": {
+                "POST_Review_Register_Item": {
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "parameters": {
+                      "dataset": "@variables('varRootSiteUrl')",
+                      "parameters/method": "POST",
+                      "parameters/uri": "@concat('_api/web/lists/getbytitle(''', replace(variables('varReviewRegisterListTitle'), '''', ''''''), ''')/items')",
+                      "parameters/headers": {
+                        "Accept": "application/json;odata=nometadata",
+                        "Content-Type": "application/json;odata=nometadata"
+                      },
+                      "parameters/body": "@outputs('Compose_Review_Register_Item_Body')"
+                    },
+                    "host": {
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                      "connection": "shared_sharepointonline",
+                      "operationId": "HttpRequest"
+                    }
+                  },
+                  "runtimeConfiguration": {
+                    "retryPolicy": {
+                      "type": "exponential",
+                      "count": 4,
+                      "interval": "PT10S",
+                      "minimumInterval": "PT5S",
+                      "maximumInterval": "PT1H"
+                    }
+                  }
+                }
+              }
+            },
+            "runAfter": {
+              "Compose_Review_Register_Item_Body": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Condition_Log_Review_Register_Upsert_Error": {
+            "type": "If",
+            "expression": {
+              "and": [
+                {
+                  "not": {
+                    "equals": [
+                      "@actions('PATCH_Review_Register_Item')?['status']",
+                      "Succeeded"
+                    ]
+                  }
+                },
+                {
+                  "not": {
+                    "equals": [
+                      "@actions('POST_Review_Register_Item')?['status']",
+                      "Succeeded"
+                    ]
+                  }
+                }
+              ]
+            },
+            "actions": {
+              "Append_Error_Review_Register_Upsert": {
+                "type": "AppendToArrayVariable",
+                "inputs": {
+                  "name": "varSPInventoryErrors",
+                  "value": {
+                    "runId": "@variables('varRunId')",
+                    "capturedAtUtc": "@utcNow()",
+                    "severity": "Medium",
+                    "stage": "Upsert_Review_Register_Item",
+                    "objectId": "@items('Apply_to_each_Object_For_Review_Register')?['objectId']",
+                    "objectTitle": "@items('Apply_to_each_Object_For_Review_Register')?['title']",
+                    "message": "@concat('Review register upsert failed. PATCH: ', coalesce(body('PATCH_Review_Register_Item')?['error']?['message'], ''), ' POST: ', coalesce(body('POST_Review_Register_Item')?['error']?['message'], ''))"
+                  }
+                }
+              }
+            },
+            "else": {
+              "actions": {}
+            },
+            "runAfter": {
+              "Condition_Upsert_Review_Register_Item": [
+                "Succeeded",
+                "Failed",
+                "Skipped",
+                "TimedOut"
+              ]
+            }
+          }
+        },
+        "runAfter": {
+          "Condition_Provision_Review_Register": [
+            "Succeeded",
+            "Skipped"
+          ]
+        },
+        "runtimeConfiguration": {
+          "concurrency": {
+            "repetitions": 1
+          }
+        }
+      }
+    },
+    "runAfter": {
+      "Scope_SAVE_05_Archive_Package": [
+        "Succeeded"
+      ]
+    }
+  },
+  "allConnectionData": {
+    "GET_Review_Register_List": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "CREATE_Review_Register_List": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "CREATE_Review_Register_Field": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "ADD_Field_To_Default_View": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "INDEX_ObjectId_Field": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "GET_Existing_Review_Register_Item": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "PATCH_Review_Register_Item": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "POST_Review_Register_Item": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    }
+  },
+  "staticResults": {},
+  "isScopeNode": true,
+  "mslaNode": true
+}

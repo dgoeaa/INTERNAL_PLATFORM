@@ -1,0 +1,1325 @@
+# 05 - Scope_SAVE_05_Archive_Package
+#
+# H7  The archive no longer lands in Shared Documents where every site member can read
+#     permission maps and login names. On first run the flow provisions a dedicated
+#     library, breaks role inheritance with copyRoleAssignments=true (so the running
+#     identity can never lock itself out mid-provision), then removes the site's default
+#     Members and Visitors groups and grants Full Control to the site Owners group and
+#     the run identity. Group ids come from the associated-groups capture in Scope 02,
+#     so nothing is hardcoded. Existing libraries are left untouched.
+# M9  AddUsingPath / GetFolderByServerRelativePath throughout - no replace(' ','%20'),
+#     no JSON built by string interpolation. Apostrophes in any path segment are
+#     doubled for the OData string literal.
+# M5  Every file body is wrapped in string().
+# M10 The nine file writes are chained on Succeeded, Failed, Skipped and TimedOut, so
+#     one failure never skips the rest, and the manifest records per-file status,
+#     server-relative URL and the real error message.
+# M11 A missing, unprovisionable archive library sets varFatalCapture for Scope 08.
+# L1  One SharePoint connection reference. The second connection is gone.
+
+{
+  "nodeId": "Scope_SAVE_05_Archive_Package",
+  "serializedValue": {
+    "type": "Scope",
+    "actions": {
+      "GET_Current_User": {
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "dataset": "@variables('varRootSiteUrl')",
+            "parameters/method": "GET",
+            "parameters/uri": "_api/web/currentuser?$select=Id,Title,LoginName,Email",
+            "parameters/headers": {
+              "Accept": "application/json;odata=nometadata",
+              "Content-Type": "application/json;odata=nometadata"
+            }
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+            "connection": "shared_sharepointonline",
+            "operationId": "HttpRequest"
+          }
+        },
+        "runtimeConfiguration": {
+          "retryPolicy": {
+            "type": "exponential",
+            "count": 4,
+            "interval": "PT10S",
+            "minimumInterval": "PT5S",
+            "maximumInterval": "PT1H"
+          }
+        }
+      },
+      "Compose_Current_User_Safe": {
+        "type": "Compose",
+        "inputs": "@if(equals(actions('GET_Current_User')?['status'], 'Succeeded'), coalesce(body('GET_Current_User'), json('{}')), json('{}'))",
+        "runAfter": {
+          "GET_Current_User": [
+            "Succeeded",
+            "Failed",
+            "Skipped",
+            "TimedOut"
+          ]
+        }
+      },
+      "GET_Archive_Library": {
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "dataset": "@variables('varRootSiteUrl')",
+            "parameters/method": "GET",
+            "parameters/uri": "@concat('_api/web/lists/getbytitle(''', replace(variables('varArchiveLibraryTitle'), '''', ''''''), ''')?$expand=RootFolder&$select=Id,Title,RootFolder/ServerRelativeUrl')",
+            "parameters/headers": {
+              "Accept": "application/json;odata=nometadata",
+              "Content-Type": "application/json;odata=nometadata"
+            }
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+            "connection": "shared_sharepointonline",
+            "operationId": "HttpRequest"
+          }
+        },
+        "runtimeConfiguration": {
+          "retryPolicy": {
+            "type": "exponential",
+            "count": 4,
+            "interval": "PT10S",
+            "minimumInterval": "PT5S",
+            "maximumInterval": "PT1H"
+          }
+        },
+        "runAfter": {
+          "Compose_Current_User_Safe": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Condition_Provision_Archive_Library": {
+        "type": "If",
+        "expression": {
+          "not": {
+            "equals": [
+              "@actions('GET_Archive_Library')?['status']",
+              "Succeeded"
+            ]
+          }
+        },
+        "actions": {
+          "CREATE_Archive_Library": {
+            "type": "OpenApiConnection",
+            "inputs": {
+              "parameters": {
+                "dataset": "@variables('varRootSiteUrl')",
+                "parameters/method": "POST",
+                "parameters/uri": "_api/web/lists",
+                "parameters/headers": {
+                  "Accept": "application/json;odata=nometadata",
+                  "Content-Type": "application/json;odata=verbose"
+                },
+                "parameters/body": "{\"__metadata\":{\"type\":\"SP.List\"},\"BaseTemplate\":101,\"Title\":\"@{variables('varArchiveLibraryTitle')}\",\"Description\":\"Restricted archive of SharePoint metadata inventory runs. Contains permission and identity data; access is intentionally not inherited from the site.\",\"EnableVersioning\":true,\"MajorVersionLimit\":50,\"ContentTypesEnabled\":false,\"NoCrawl\":true}"
+              },
+              "host": {
+                "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                "connection": "shared_sharepointonline",
+                "operationId": "HttpRequest"
+              }
+            },
+            "runtimeConfiguration": {
+              "retryPolicy": {
+                "type": "exponential",
+                "count": 4,
+                "interval": "PT10S",
+                "minimumInterval": "PT5S",
+                "maximumInterval": "PT1H"
+              }
+            }
+          },
+          "Set_varArchiveLibraryProvisioned": {
+            "type": "SetVariable",
+            "inputs": {
+              "name": "varArchiveLibraryProvisioned",
+              "value": true
+            },
+            "runAfter": {
+              "CREATE_Archive_Library": [
+                "Succeeded"
+              ]
+            }
+          },
+          "BREAK_Archive_Library_Inheritance": {
+            "type": "OpenApiConnection",
+            "inputs": {
+              "parameters": {
+                "dataset": "@variables('varRootSiteUrl')",
+                "parameters/method": "POST",
+                "parameters/uri": "@concat('_api/web/lists/getbytitle(''', replace(variables('varArchiveLibraryTitle'), '''', ''''''), ''')/breakroleinheritance(copyRoleAssignments=true,clearSubscopes=true)')",
+                "parameters/headers": {
+                  "Accept": "application/json;odata=nometadata",
+                  "Content-Type": "application/json;odata=nometadata"
+                }
+              },
+              "host": {
+                "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                "connection": "shared_sharepointonline",
+                "operationId": "HttpRequest"
+              }
+            },
+            "runtimeConfiguration": {
+              "retryPolicy": {
+                "type": "exponential",
+                "count": 4,
+                "interval": "PT10S",
+                "minimumInterval": "PT5S",
+                "maximumInterval": "PT1H"
+              }
+            },
+            "runAfter": {
+              "Set_varArchiveLibraryProvisioned": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Condition_Remove_Members_Group": {
+            "type": "If",
+            "expression": {
+              "not": {
+                "equals": [
+                  "@string(coalesce(first(variables('varWebsCaptured'))?['associatedGroups']?['AssociatedMemberGroup']?['Id'], ''))",
+                  ""
+                ]
+              }
+            },
+            "actions": {
+              "REMOVE_Members_Group_From_Archive": {
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "parameters": {
+                    "dataset": "@variables('varRootSiteUrl')",
+                    "parameters/method": "DELETE",
+                    "parameters/uri": "@concat('_api/web/lists/getbytitle(''', replace(variables('varArchiveLibraryTitle'), '''', ''''''), ''')/roleassignments/getbyprincipalid(', string(first(variables('varWebsCaptured'))?['associatedGroups']?['AssociatedMemberGroup']?['Id']), ')')",
+                    "parameters/headers": {
+                      "Accept": "application/json;odata=nometadata",
+                      "Content-Type": "application/json;odata=nometadata"
+                    }
+                  },
+                  "host": {
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                    "connection": "shared_sharepointonline",
+                    "operationId": "HttpRequest"
+                  }
+                },
+                "runtimeConfiguration": {
+                  "retryPolicy": {
+                    "type": "exponential",
+                    "count": 4,
+                    "interval": "PT10S",
+                    "minimumInterval": "PT5S",
+                    "maximumInterval": "PT1H"
+                  }
+                }
+              }
+            },
+            "else": {
+              "actions": {}
+            },
+            "runAfter": {
+              "BREAK_Archive_Library_Inheritance": [
+                "Succeeded",
+                "Failed",
+                "Skipped",
+                "TimedOut"
+              ]
+            }
+          },
+          "Condition_Remove_Visitors_Group": {
+            "type": "If",
+            "expression": {
+              "not": {
+                "equals": [
+                  "@string(coalesce(first(variables('varWebsCaptured'))?['associatedGroups']?['AssociatedVisitorGroup']?['Id'], ''))",
+                  ""
+                ]
+              }
+            },
+            "actions": {
+              "REMOVE_Visitors_Group_From_Archive": {
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "parameters": {
+                    "dataset": "@variables('varRootSiteUrl')",
+                    "parameters/method": "DELETE",
+                    "parameters/uri": "@concat('_api/web/lists/getbytitle(''', replace(variables('varArchiveLibraryTitle'), '''', ''''''), ''')/roleassignments/getbyprincipalid(', string(first(variables('varWebsCaptured'))?['associatedGroups']?['AssociatedVisitorGroup']?['Id']), ')')",
+                    "parameters/headers": {
+                      "Accept": "application/json;odata=nometadata",
+                      "Content-Type": "application/json;odata=nometadata"
+                    }
+                  },
+                  "host": {
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                    "connection": "shared_sharepointonline",
+                    "operationId": "HttpRequest"
+                  }
+                },
+                "runtimeConfiguration": {
+                  "retryPolicy": {
+                    "type": "exponential",
+                    "count": 4,
+                    "interval": "PT10S",
+                    "minimumInterval": "PT5S",
+                    "maximumInterval": "PT1H"
+                  }
+                }
+              }
+            },
+            "else": {
+              "actions": {}
+            },
+            "runAfter": {
+              "Condition_Remove_Members_Group": [
+                "Succeeded",
+                "Skipped"
+              ]
+            }
+          },
+          "Condition_Grant_Owner_Group_Full_Control": {
+            "type": "If",
+            "expression": {
+              "not": {
+                "equals": [
+                  "@string(coalesce(first(variables('varWebsCaptured'))?['associatedGroups']?['AssociatedOwnerGroup']?['Id'], ''))",
+                  ""
+                ]
+              }
+            },
+            "actions": {
+              "GRANT_Owner_Group_Full_Control": {
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "parameters": {
+                    "dataset": "@variables('varRootSiteUrl')",
+                    "parameters/method": "POST",
+                    "parameters/uri": "@concat('_api/web/lists/getbytitle(''', replace(variables('varArchiveLibraryTitle'), '''', ''''''), ''')/roleassignments/addroleassignment(principalid=', string(first(variables('varWebsCaptured'))?['associatedGroups']?['AssociatedOwnerGroup']?['Id']), ',roledefid=1073741829)')",
+                    "parameters/headers": {
+                      "Accept": "application/json;odata=nometadata",
+                      "Content-Type": "application/json;odata=nometadata"
+                    }
+                  },
+                  "host": {
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                    "connection": "shared_sharepointonline",
+                    "operationId": "HttpRequest"
+                  }
+                },
+                "runtimeConfiguration": {
+                  "retryPolicy": {
+                    "type": "exponential",
+                    "count": 4,
+                    "interval": "PT10S",
+                    "minimumInterval": "PT5S",
+                    "maximumInterval": "PT1H"
+                  }
+                }
+              }
+            },
+            "else": {
+              "actions": {}
+            },
+            "runAfter": {
+              "Condition_Remove_Visitors_Group": [
+                "Succeeded",
+                "Skipped"
+              ]
+            }
+          },
+          "Condition_Grant_Run_Identity_Full_Control": {
+            "type": "If",
+            "expression": {
+              "not": {
+                "equals": [
+                  "@string(coalesce(outputs('Compose_Current_User_Safe')?['Id'], ''))",
+                  ""
+                ]
+              }
+            },
+            "actions": {
+              "GRANT_Run_Identity_Full_Control": {
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "parameters": {
+                    "dataset": "@variables('varRootSiteUrl')",
+                    "parameters/method": "POST",
+                    "parameters/uri": "@concat('_api/web/lists/getbytitle(''', replace(variables('varArchiveLibraryTitle'), '''', ''''''), ''')/roleassignments/addroleassignment(principalid=', string(outputs('Compose_Current_User_Safe')?['Id']), ',roledefid=1073741829)')",
+                    "parameters/headers": {
+                      "Accept": "application/json;odata=nometadata",
+                      "Content-Type": "application/json;odata=nometadata"
+                    }
+                  },
+                  "host": {
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                    "connection": "shared_sharepointonline",
+                    "operationId": "HttpRequest"
+                  }
+                },
+                "runtimeConfiguration": {
+                  "retryPolicy": {
+                    "type": "exponential",
+                    "count": 4,
+                    "interval": "PT10S",
+                    "minimumInterval": "PT5S",
+                    "maximumInterval": "PT1H"
+                  }
+                }
+              }
+            },
+            "else": {
+              "actions": {}
+            },
+            "runAfter": {
+              "Condition_Grant_Owner_Group_Full_Control": [
+                "Succeeded",
+                "Skipped"
+              ]
+            }
+          },
+          "GET_Archive_Library_After_Create": {
+            "type": "OpenApiConnection",
+            "inputs": {
+              "parameters": {
+                "dataset": "@variables('varRootSiteUrl')",
+                "parameters/method": "GET",
+                "parameters/uri": "@concat('_api/web/lists/getbytitle(''', replace(variables('varArchiveLibraryTitle'), '''', ''''''), ''')?$expand=RootFolder&$select=Id,Title,RootFolder/ServerRelativeUrl')",
+                "parameters/headers": {
+                  "Accept": "application/json;odata=nometadata",
+                  "Content-Type": "application/json;odata=nometadata"
+                }
+              },
+              "host": {
+                "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                "connection": "shared_sharepointonline",
+                "operationId": "HttpRequest"
+              }
+            },
+            "runtimeConfiguration": {
+              "retryPolicy": {
+                "type": "exponential",
+                "count": 4,
+                "interval": "PT10S",
+                "minimumInterval": "PT5S",
+                "maximumInterval": "PT1H"
+              }
+            },
+            "runAfter": {
+              "Condition_Grant_Run_Identity_Full_Control": [
+                "Succeeded",
+                "Skipped"
+              ]
+            }
+          }
+        },
+        "else": {
+          "actions": {}
+        },
+        "runAfter": {
+          "GET_Archive_Library": [
+            "Succeeded",
+            "Failed",
+            "Skipped",
+            "TimedOut"
+          ]
+        }
+      },
+      "Set_varArchiveLibraryServerRelativeUrl": {
+        "type": "SetVariable",
+        "inputs": {
+          "name": "varArchiveLibraryServerRelativeUrl",
+          "value": "@if(equals(actions('GET_Archive_Library')?['status'], 'Succeeded'), string(coalesce(body('GET_Archive_Library')?['RootFolder']?['ServerRelativeUrl'], '')), string(coalesce(body('GET_Archive_Library_After_Create')?['RootFolder']?['ServerRelativeUrl'], '')))"
+        },
+        "runAfter": {
+          "Condition_Provision_Archive_Library": [
+            "Succeeded",
+            "Skipped"
+          ]
+        }
+      },
+      "Condition_Archive_Library_Unavailable": {
+        "type": "If",
+        "expression": {
+          "equals": [
+            "@empty(variables('varArchiveLibraryServerRelativeUrl'))",
+            true
+          ]
+        },
+        "actions": {
+          "Append_Error_Archive_Library_Unavailable": {
+            "type": "AppendToArrayVariable",
+            "inputs": {
+              "name": "varSPInventoryErrors",
+              "value": {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Fatal",
+                "stage": "Provision_Archive_Library",
+                "siteUrl": "@variables('varRootSiteUrl')",
+                "httpStatus": "@coalesce(outputs('GET_Archive_Library')?['statusCode'], 0)",
+                "message": "@concat('The archive library could not be found or provisioned. ', coalesce(body('CREATE_Archive_Library')?['error']?['message'], body('CREATE_Archive_Library')?['message'], body('GET_Archive_Library')?['message'], 'No further detail was returned.'))"
+              }
+            }
+          },
+          "Set_varFatalCapture_Archive": {
+            "type": "SetVariable",
+            "inputs": {
+              "name": "varFatalCapture",
+              "value": true
+            },
+            "runAfter": {
+              "Append_Error_Archive_Library_Unavailable": [
+                "Succeeded"
+              ]
+            }
+          }
+        },
+        "else": {
+          "actions": {}
+        },
+        "runAfter": {
+          "Set_varArchiveLibraryServerRelativeUrl": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Compose_Archive_Run_Folder_ServerRelativeUrl": {
+        "type": "Compose",
+        "inputs": "@concat(variables('varArchiveLibraryServerRelativeUrl'), '/', variables('varArchiveTimestamp'), '_', variables('varRunId'))",
+        "runAfter": {
+          "Condition_Archive_Library_Unavailable": [
+            "Succeeded",
+            "Skipped"
+          ]
+        }
+      },
+      "CREATE_Archive_Run_Folder": {
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "dataset": "@variables('varRootSiteUrl')",
+            "parameters/method": "POST",
+            "parameters/uri": "@concat('_api/web/folders/addUsingPath(DecodedUrl=''', replace(outputs('Compose_Archive_Run_Folder_ServerRelativeUrl'), '''', ''''''), ''')')",
+            "parameters/headers": {
+              "Accept": "application/json;odata=nometadata",
+              "Content-Type": "application/json;odata=nometadata"
+            }
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+            "connection": "shared_sharepointonline",
+            "operationId": "HttpRequest"
+          }
+        },
+        "runtimeConfiguration": {
+          "retryPolicy": {
+            "type": "exponential",
+            "count": 4,
+            "interval": "PT10S",
+            "minimumInterval": "PT5S",
+            "maximumInterval": "PT1H"
+          }
+        },
+        "runAfter": {
+          "Compose_Archive_Run_Folder_ServerRelativeUrl": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Set_varArchiveFolderServerRelativeUrl": {
+        "type": "SetVariable",
+        "inputs": {
+          "name": "varArchiveFolderServerRelativeUrl",
+          "value": "@outputs('Compose_Archive_Run_Folder_ServerRelativeUrl')"
+        },
+        "runAfter": {
+          "CREATE_Archive_Run_Folder": [
+            "Succeeded",
+            "Failed",
+            "Skipped",
+            "TimedOut"
+          ]
+        }
+      },
+      "Set_varArchiveFolderWebUrl": {
+        "type": "SetVariable",
+        "inputs": {
+          "name": "varArchiveFolderWebUrl",
+          "value": "@concat(variables('varTenantRootUrl'), variables('varArchiveFolderServerRelativeUrl'))"
+        },
+        "runAfter": {
+          "Set_varArchiveFolderServerRelativeUrl": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Compose_File_Name_FULL_RAW_METADATA": {
+        "type": "Compose",
+        "inputs": "@concat('01_FULL_RAW_METADATA_', variables('varArchiveTimestamp'), '.json')",
+        "runAfter": {
+          "Set_varArchiveFolderWebUrl": [
+            "Succeeded"
+          ]
+        }
+      },
+      "CREATE_File_01_FULL_RAW_METADATA": {
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "dataset": "@variables('varRootSiteUrl')",
+            "parameters/method": "POST",
+            "parameters/uri": "@concat('_api/web/GetFolderByServerRelativePath(decodedurl=''', replace(variables('varArchiveFolderServerRelativeUrl'), '''', ''''''), ''')/Files/AddUsingPath(decodedurl=''', replace(outputs('Compose_File_Name_FULL_RAW_METADATA'), '''', ''''''), ''',overwrite=true)')",
+            "parameters/headers": {
+              "Accept": "application/json;odata=nometadata",
+              "Content-Type": "application/json; charset=utf-8"
+            },
+            "parameters/body": "@string(outputs('Compose_Full_Raw_Metadata'))"
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+            "connection": "shared_sharepointonline",
+            "operationId": "HttpRequest"
+          }
+        },
+        "runtimeConfiguration": {
+          "retryPolicy": {
+            "type": "exponential",
+            "count": 4,
+            "interval": "PT10S",
+            "minimumInterval": "PT5S",
+            "maximumInterval": "PT1H"
+          }
+        },
+        "runAfter": {
+          "Compose_File_Name_FULL_RAW_METADATA": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Compose_File_Name_NORMALIZED_METADATA_REGISTER": {
+        "type": "Compose",
+        "inputs": "@concat('02_NORMALIZED_METADATA_REGISTER_', variables('varArchiveTimestamp'), '.json')",
+        "runAfter": {
+          "CREATE_File_01_FULL_RAW_METADATA": [
+            "Succeeded"
+          ]
+        }
+      },
+      "CREATE_File_02_NORMALIZED_METADATA_REGISTER": {
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "dataset": "@variables('varRootSiteUrl')",
+            "parameters/method": "POST",
+            "parameters/uri": "@concat('_api/web/GetFolderByServerRelativePath(decodedurl=''', replace(variables('varArchiveFolderServerRelativeUrl'), '''', ''''''), ''')/Files/AddUsingPath(decodedurl=''', replace(outputs('Compose_File_Name_NORMALIZED_METADATA_REGISTER'), '''', ''''''), ''',overwrite=true)')",
+            "parameters/headers": {
+              "Accept": "application/json;odata=nometadata",
+              "Content-Type": "application/json; charset=utf-8"
+            },
+            "parameters/body": "@string(outputs('Compose_Normalized_Register'))"
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+            "connection": "shared_sharepointonline",
+            "operationId": "HttpRequest"
+          }
+        },
+        "runtimeConfiguration": {
+          "retryPolicy": {
+            "type": "exponential",
+            "count": 4,
+            "interval": "PT10S",
+            "minimumInterval": "PT5S",
+            "maximumInterval": "PT1H"
+          }
+        },
+        "runAfter": {
+          "Compose_File_Name_NORMALIZED_METADATA_REGISTER": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Compose_File_Name_METADATA_QUALITY_FINDINGS": {
+        "type": "Compose",
+        "inputs": "@concat('03_METADATA_QUALITY_FINDINGS_', variables('varArchiveTimestamp'), '.json')",
+        "runAfter": {
+          "CREATE_File_02_NORMALIZED_METADATA_REGISTER": [
+            "Succeeded"
+          ]
+        }
+      },
+      "CREATE_File_03_METADATA_QUALITY_FINDINGS": {
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "dataset": "@variables('varRootSiteUrl')",
+            "parameters/method": "POST",
+            "parameters/uri": "@concat('_api/web/GetFolderByServerRelativePath(decodedurl=''', replace(variables('varArchiveFolderServerRelativeUrl'), '''', ''''''), ''')/Files/AddUsingPath(decodedurl=''', replace(outputs('Compose_File_Name_METADATA_QUALITY_FINDINGS'), '''', ''''''), ''',overwrite=true)')",
+            "parameters/headers": {
+              "Accept": "application/json;odata=nometadata",
+              "Content-Type": "application/json; charset=utf-8"
+            },
+            "parameters/body": "@string(outputs('Compose_Quality_Findings_Payload'))"
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+            "connection": "shared_sharepointonline",
+            "operationId": "HttpRequest"
+          }
+        },
+        "runtimeConfiguration": {
+          "retryPolicy": {
+            "type": "exponential",
+            "count": 4,
+            "interval": "PT10S",
+            "minimumInterval": "PT5S",
+            "maximumInterval": "PT1H"
+          }
+        },
+        "runAfter": {
+          "Compose_File_Name_METADATA_QUALITY_FINDINGS": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Compose_File_Name_CAPTURE_ERROR_LOG": {
+        "type": "Compose",
+        "inputs": "@concat('04_CAPTURE_ERROR_LOG_', variables('varArchiveTimestamp'), '.json')",
+        "runAfter": {
+          "CREATE_File_03_METADATA_QUALITY_FINDINGS": [
+            "Succeeded"
+          ]
+        }
+      },
+      "CREATE_File_04_CAPTURE_ERROR_LOG": {
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "dataset": "@variables('varRootSiteUrl')",
+            "parameters/method": "POST",
+            "parameters/uri": "@concat('_api/web/GetFolderByServerRelativePath(decodedurl=''', replace(variables('varArchiveFolderServerRelativeUrl'), '''', ''''''), ''')/Files/AddUsingPath(decodedurl=''', replace(outputs('Compose_File_Name_CAPTURE_ERROR_LOG'), '''', ''''''), ''',overwrite=true)')",
+            "parameters/headers": {
+              "Accept": "application/json;odata=nometadata",
+              "Content-Type": "application/json; charset=utf-8"
+            },
+            "parameters/body": "@string(variables('varSPInventoryErrors'))"
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+            "connection": "shared_sharepointonline",
+            "operationId": "HttpRequest"
+          }
+        },
+        "runtimeConfiguration": {
+          "retryPolicy": {
+            "type": "exponential",
+            "count": 4,
+            "interval": "PT10S",
+            "minimumInterval": "PT5S",
+            "maximumInterval": "PT1H"
+          }
+        },
+        "runAfter": {
+          "Compose_File_Name_CAPTURE_ERROR_LOG": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Compose_File_Name_CAPTURE_WARNING_LOG": {
+        "type": "Compose",
+        "inputs": "@concat('05_CAPTURE_WARNING_LOG_', variables('varArchiveTimestamp'), '.json')",
+        "runAfter": {
+          "CREATE_File_04_CAPTURE_ERROR_LOG": [
+            "Succeeded"
+          ]
+        }
+      },
+      "CREATE_File_05_CAPTURE_WARNING_LOG": {
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "dataset": "@variables('varRootSiteUrl')",
+            "parameters/method": "POST",
+            "parameters/uri": "@concat('_api/web/GetFolderByServerRelativePath(decodedurl=''', replace(variables('varArchiveFolderServerRelativeUrl'), '''', ''''''), ''')/Files/AddUsingPath(decodedurl=''', replace(outputs('Compose_File_Name_CAPTURE_WARNING_LOG'), '''', ''''''), ''',overwrite=true)')",
+            "parameters/headers": {
+              "Accept": "application/json;odata=nometadata",
+              "Content-Type": "application/json; charset=utf-8"
+            },
+            "parameters/body": "@string(variables('varInventoryWarnings'))"
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+            "connection": "shared_sharepointonline",
+            "operationId": "HttpRequest"
+          }
+        },
+        "runtimeConfiguration": {
+          "retryPolicy": {
+            "type": "exponential",
+            "count": 4,
+            "interval": "PT10S",
+            "minimumInterval": "PT5S",
+            "maximumInterval": "PT1H"
+          }
+        },
+        "runAfter": {
+          "Compose_File_Name_CAPTURE_WARNING_LOG": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Compose_File_Name_HUMAN_REVIEW_REGISTER": {
+        "type": "Compose",
+        "inputs": "@concat('06_HUMAN_REVIEW_REGISTER_', variables('varArchiveTimestamp'), '.csv')",
+        "runAfter": {
+          "CREATE_File_05_CAPTURE_WARNING_LOG": [
+            "Succeeded"
+          ]
+        }
+      },
+      "CREATE_File_06_HUMAN_REVIEW_REGISTER": {
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "dataset": "@variables('varRootSiteUrl')",
+            "parameters/method": "POST",
+            "parameters/uri": "@concat('_api/web/GetFolderByServerRelativePath(decodedurl=''', replace(variables('varArchiveFolderServerRelativeUrl'), '''', ''''''), ''')/Files/AddUsingPath(decodedurl=''', replace(outputs('Compose_File_Name_HUMAN_REVIEW_REGISTER'), '''', ''''''), ''',overwrite=true)')",
+            "parameters/headers": {
+              "Accept": "application/json;odata=nometadata",
+              "Content-Type": "text/csv; charset=utf-8"
+            },
+            "parameters/body": "@variables('varHumanReviewCsv')"
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+            "connection": "shared_sharepointonline",
+            "operationId": "HttpRequest"
+          }
+        },
+        "runtimeConfiguration": {
+          "retryPolicy": {
+            "type": "exponential",
+            "count": 4,
+            "interval": "PT10S",
+            "minimumInterval": "PT5S",
+            "maximumInterval": "PT1H"
+          }
+        },
+        "runAfter": {
+          "Compose_File_Name_HUMAN_REVIEW_REGISTER": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Compose_File_Name_ARCHITECTURE_REVIEW_REPORT": {
+        "type": "Compose",
+        "inputs": "@concat('07_ARCHITECTURE_REVIEW_REPORT_', variables('varArchiveTimestamp'), '.html')",
+        "runAfter": {
+          "CREATE_File_06_HUMAN_REVIEW_REGISTER": [
+            "Succeeded"
+          ]
+        }
+      },
+      "CREATE_File_07_ARCHITECTURE_REVIEW_REPORT": {
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "dataset": "@variables('varRootSiteUrl')",
+            "parameters/method": "POST",
+            "parameters/uri": "@concat('_api/web/GetFolderByServerRelativePath(decodedurl=''', replace(variables('varArchiveFolderServerRelativeUrl'), '''', ''''''), ''')/Files/AddUsingPath(decodedurl=''', replace(outputs('Compose_File_Name_ARCHITECTURE_REVIEW_REPORT'), '''', ''''''), ''',overwrite=true)')",
+            "parameters/headers": {
+              "Accept": "application/json;odata=nometadata",
+              "Content-Type": "text/html; charset=utf-8"
+            },
+            "parameters/body": "@outputs('Compose_Architecture_Review_Report_Html')"
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+            "connection": "shared_sharepointonline",
+            "operationId": "HttpRequest"
+          }
+        },
+        "runtimeConfiguration": {
+          "retryPolicy": {
+            "type": "exponential",
+            "count": 4,
+            "interval": "PT10S",
+            "minimumInterval": "PT5S",
+            "maximumInterval": "PT1H"
+          }
+        },
+        "runAfter": {
+          "Compose_File_Name_ARCHITECTURE_REVIEW_REPORT": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Compose_Human_Review_Register_Json": {
+        "type": "Compose",
+        "inputs": {
+          "schemaVersion": "3.0",
+          "outputType": "SharePointHumanReviewRegister",
+          "purpose": "Reviewer-facing register of every SharePoint list and library captured in this run, with governance settings, quality findings and the sign-off columns held in the companion SharePoint list.",
+          "summary": "@outputs('Compose_Run_Summary')",
+          "reviewGuidance": {
+            "howToUse": [
+              "Start with objects whose businessRelevance is High, then Medium.",
+              "Confirm owner, business purpose, metadata adequacy, versioning, content types, retention and security for each.",
+              "Every object with hasUniqueRoleAssignments true needs an explicit decision on whether the broken inheritance is intentional.",
+              "Record decisions in the SharePoint list named in reviewRegisterListTitle. Decisions entered there are preserved across runs; this JSON file and the CSV are regenerated every run."
+            ],
+            "recommendedDecisions": [
+              "Approved",
+              "Approved with actions",
+              "Needs metadata improvement",
+              "Needs ownership assignment",
+              "Needs security review",
+              "Needs retention review",
+              "Archive or decommission",
+              "Exclude from business review"
+            ]
+          },
+          "reviewRegisterListTitle": "SharePoint Metadata Review Register",
+          "archive": {
+            "folderServerRelativeUrl": "@variables('varArchiveFolderServerRelativeUrl')",
+            "folderWebUrl": "@variables('varArchiveFolderWebUrl')",
+            "fullRawMetadataUrl": "@concat(variables('varTenantRootUrl'), string(coalesce(body('CREATE_File_01_FULL_RAW_METADATA')?['ServerRelativeUrl'], '')))",
+            "normalizedRegisterUrl": "@concat(variables('varTenantRootUrl'), string(coalesce(body('CREATE_File_02_NORMALIZED_METADATA_REGISTER')?['ServerRelativeUrl'], '')))",
+            "qualityFindingsUrl": "@concat(variables('varTenantRootUrl'), string(coalesce(body('CREATE_File_03_METADATA_QUALITY_FINDINGS')?['ServerRelativeUrl'], '')))",
+            "csvRegisterUrl": "@concat(variables('varTenantRootUrl'), string(coalesce(body('CREATE_File_06_HUMAN_REVIEW_REGISTER')?['ServerRelativeUrl'], '')))",
+            "htmlReportUrl": "@concat(variables('varTenantRootUrl'), string(coalesce(body('CREATE_File_07_ARCHITECTURE_REVIEW_REPORT')?['ServerRelativeUrl'], '')))"
+          },
+          "objects": "@variables('varNormalizedObjects')",
+          "qualityFindings": "@outputs('Compose_Findings_Ordered')",
+          "warnings": "@variables('varInventoryWarnings')",
+          "errors": "@variables('varSPInventoryErrors')"
+        },
+        "runAfter": {
+          "CREATE_File_07_ARCHITECTURE_REVIEW_REPORT": [
+            "Succeeded",
+            "Failed",
+            "Skipped",
+            "TimedOut"
+          ]
+        }
+      },
+      "Compose_File_Name_HUMAN_REVIEW_REGISTER_JSON": {
+        "type": "Compose",
+        "inputs": "@concat('08_HUMAN_REVIEW_REGISTER_', variables('varArchiveTimestamp'), '.json')",
+        "runAfter": {
+          "Compose_Human_Review_Register_Json": [
+            "Succeeded"
+          ]
+        }
+      },
+      "CREATE_File_08_HUMAN_REVIEW_REGISTER_JSON": {
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "dataset": "@variables('varRootSiteUrl')",
+            "parameters/method": "POST",
+            "parameters/uri": "@concat('_api/web/GetFolderByServerRelativePath(decodedurl=''', replace(variables('varArchiveFolderServerRelativeUrl'), '''', ''''''), ''')/Files/AddUsingPath(decodedurl=''', replace(outputs('Compose_File_Name_HUMAN_REVIEW_REGISTER_JSON'), '''', ''''''), ''',overwrite=true)')",
+            "parameters/headers": {
+              "Accept": "application/json;odata=nometadata",
+              "Content-Type": "application/json;odata=nometadata"
+            },
+            "parameters/body": "@string(outputs('Compose_Human_Review_Register_Json'))"
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+            "connection": "shared_sharepointonline",
+            "operationId": "HttpRequest"
+          }
+        },
+        "runtimeConfiguration": {
+          "retryPolicy": {
+            "type": "exponential",
+            "count": 4,
+            "interval": "PT10S",
+            "minimumInterval": "PT5S",
+            "maximumInterval": "PT1H"
+          }
+        },
+        "runAfter": {
+          "Compose_File_Name_HUMAN_REVIEW_REGISTER_JSON": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Compose_Run_Manifest": {
+        "type": "Compose",
+        "inputs": {
+          "manifestType": "SharePointMetadataInventoryArchitectureSourceOfTruth",
+          "schemaVersion": "3.0",
+          "runId": "@variables('varRunId')",
+          "rootSiteUrl": "@variables('varRootSiteUrl')",
+          "capturedAtUtc": "@variables('varCapturedAtUtc')",
+          "archiveFolderServerRelativeUrl": "@variables('varArchiveFolderServerRelativeUrl')",
+          "archiveFolderWebUrl": "@variables('varArchiveFolderWebUrl')",
+          "archiveLibraryTitle": "@variables('varArchiveLibraryTitle')",
+          "archiveLibraryProvisionedThisRun": "@variables('varArchiveLibraryProvisioned')",
+          "counts": "@outputs('Compose_Run_Summary')",
+          "files": [
+            {
+              "name": "@outputs('Compose_File_Name_FULL_RAW_METADATA')",
+              "status": "@actions('CREATE_File_01_FULL_RAW_METADATA')?['status']",
+              "serverRelativeUrl": "@string(coalesce(body('CREATE_File_01_FULL_RAW_METADATA')?['ServerRelativeUrl'], ''))",
+              "message": "@coalesce(body('CREATE_File_01_FULL_RAW_METADATA')?['error']?['message'], body('CREATE_File_01_FULL_RAW_METADATA')?['message'], string(coalesce(body('CREATE_File_01_FULL_RAW_METADATA'), '')), '')"
+            },
+            {
+              "name": "@outputs('Compose_File_Name_NORMALIZED_METADATA_REGISTER')",
+              "status": "@actions('CREATE_File_02_NORMALIZED_METADATA_REGISTER')?['status']",
+              "serverRelativeUrl": "@string(coalesce(body('CREATE_File_02_NORMALIZED_METADATA_REGISTER')?['ServerRelativeUrl'], ''))",
+              "message": "@coalesce(body('CREATE_File_02_NORMALIZED_METADATA_REGISTER')?['error']?['message'], body('CREATE_File_02_NORMALIZED_METADATA_REGISTER')?['message'], string(coalesce(body('CREATE_File_02_NORMALIZED_METADATA_REGISTER'), '')), '')"
+            },
+            {
+              "name": "@outputs('Compose_File_Name_METADATA_QUALITY_FINDINGS')",
+              "status": "@actions('CREATE_File_03_METADATA_QUALITY_FINDINGS')?['status']",
+              "serverRelativeUrl": "@string(coalesce(body('CREATE_File_03_METADATA_QUALITY_FINDINGS')?['ServerRelativeUrl'], ''))",
+              "message": "@coalesce(body('CREATE_File_03_METADATA_QUALITY_FINDINGS')?['error']?['message'], body('CREATE_File_03_METADATA_QUALITY_FINDINGS')?['message'], string(coalesce(body('CREATE_File_03_METADATA_QUALITY_FINDINGS'), '')), '')"
+            },
+            {
+              "name": "@outputs('Compose_File_Name_CAPTURE_ERROR_LOG')",
+              "status": "@actions('CREATE_File_04_CAPTURE_ERROR_LOG')?['status']",
+              "serverRelativeUrl": "@string(coalesce(body('CREATE_File_04_CAPTURE_ERROR_LOG')?['ServerRelativeUrl'], ''))",
+              "message": "@coalesce(body('CREATE_File_04_CAPTURE_ERROR_LOG')?['error']?['message'], body('CREATE_File_04_CAPTURE_ERROR_LOG')?['message'], string(coalesce(body('CREATE_File_04_CAPTURE_ERROR_LOG'), '')), '')"
+            },
+            {
+              "name": "@outputs('Compose_File_Name_CAPTURE_WARNING_LOG')",
+              "status": "@actions('CREATE_File_05_CAPTURE_WARNING_LOG')?['status']",
+              "serverRelativeUrl": "@string(coalesce(body('CREATE_File_05_CAPTURE_WARNING_LOG')?['ServerRelativeUrl'], ''))",
+              "message": "@coalesce(body('CREATE_File_05_CAPTURE_WARNING_LOG')?['error']?['message'], body('CREATE_File_05_CAPTURE_WARNING_LOG')?['message'], string(coalesce(body('CREATE_File_05_CAPTURE_WARNING_LOG'), '')), '')"
+            },
+            {
+              "name": "@outputs('Compose_File_Name_HUMAN_REVIEW_REGISTER')",
+              "status": "@actions('CREATE_File_06_HUMAN_REVIEW_REGISTER')?['status']",
+              "serverRelativeUrl": "@string(coalesce(body('CREATE_File_06_HUMAN_REVIEW_REGISTER')?['ServerRelativeUrl'], ''))",
+              "message": "@coalesce(body('CREATE_File_06_HUMAN_REVIEW_REGISTER')?['error']?['message'], body('CREATE_File_06_HUMAN_REVIEW_REGISTER')?['message'], string(coalesce(body('CREATE_File_06_HUMAN_REVIEW_REGISTER'), '')), '')"
+            },
+            {
+              "name": "@outputs('Compose_File_Name_ARCHITECTURE_REVIEW_REPORT')",
+              "status": "@actions('CREATE_File_07_ARCHITECTURE_REVIEW_REPORT')?['status']",
+              "serverRelativeUrl": "@string(coalesce(body('CREATE_File_07_ARCHITECTURE_REVIEW_REPORT')?['ServerRelativeUrl'], ''))",
+              "message": "@coalesce(body('CREATE_File_07_ARCHITECTURE_REVIEW_REPORT')?['error']?['message'], body('CREATE_File_07_ARCHITECTURE_REVIEW_REPORT')?['message'], string(coalesce(body('CREATE_File_07_ARCHITECTURE_REVIEW_REPORT'), '')), '')"
+            },
+            {
+              "name": "@outputs('Compose_File_Name_HUMAN_REVIEW_REGISTER_JSON')",
+              "status": "@actions('CREATE_File_08_HUMAN_REVIEW_REGISTER_JSON')?['status']",
+              "serverRelativeUrl": "@string(coalesce(body('CREATE_File_08_HUMAN_REVIEW_REGISTER_JSON')?['ServerRelativeUrl'], ''))",
+              "message": "@coalesce(body('CREATE_File_08_HUMAN_REVIEW_REGISTER_JSON')?['error']?['message'], body('CREATE_File_08_HUMAN_REVIEW_REGISTER_JSON')?['message'], string(coalesce(body('CREATE_File_08_HUMAN_REVIEW_REGISTER_JSON'), '')), '')"
+            }
+          ]
+        },
+        "runAfter": {
+          "CREATE_File_08_HUMAN_REVIEW_REGISTER_JSON": [
+            "Succeeded",
+            "Failed",
+            "Skipped",
+            "TimedOut"
+          ]
+        }
+      },
+      "Compose_File_Name_RUN_MANIFEST": {
+        "type": "Compose",
+        "inputs": "@concat('09_RUN_MANIFEST_', variables('varArchiveTimestamp'), '.json')",
+        "runAfter": {
+          "Compose_Run_Manifest": [
+            "Succeeded"
+          ]
+        }
+      },
+      "CREATE_File_09_RUN_MANIFEST": {
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "dataset": "@variables('varRootSiteUrl')",
+            "parameters/method": "POST",
+            "parameters/uri": "@concat('_api/web/GetFolderByServerRelativePath(decodedurl=''', replace(variables('varArchiveFolderServerRelativeUrl'), '''', ''''''), ''')/Files/AddUsingPath(decodedurl=''', replace(outputs('Compose_File_Name_RUN_MANIFEST'), '''', ''''''), ''',overwrite=true)')",
+            "parameters/headers": {
+              "Accept": "application/json;odata=nometadata",
+              "Content-Type": "application/json;odata=nometadata"
+            },
+            "parameters/body": "@string(outputs('Compose_Run_Manifest'))"
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+            "connection": "shared_sharepointonline",
+            "operationId": "HttpRequest"
+          }
+        },
+        "runtimeConfiguration": {
+          "retryPolicy": {
+            "type": "exponential",
+            "count": 4,
+            "interval": "PT10S",
+            "minimumInterval": "PT5S",
+            "maximumInterval": "PT1H"
+          }
+        },
+        "runAfter": {
+          "Compose_File_Name_RUN_MANIFEST": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Set_varArchivedFiles": {
+        "type": "SetVariable",
+        "inputs": {
+          "name": "varArchivedFiles",
+          "value": "@outputs('Compose_Run_Manifest')?['files']"
+        },
+        "runAfter": {
+          "CREATE_File_09_RUN_MANIFEST": [
+            "Succeeded",
+            "Failed",
+            "Skipped",
+            "TimedOut"
+          ]
+        }
+      }
+    },
+    "runAfter": {
+      "Scope_BUILD_04_Registers_Reports_And_Csv": [
+        "Succeeded"
+      ]
+    }
+  },
+  "allConnectionData": {
+    "GET_Current_User": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "GET_Archive_Library": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "CREATE_Archive_Library": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "BREAK_Archive_Library_Inheritance": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "REMOVE_Members_Group_From_Archive": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "REMOVE_Visitors_Group_From_Archive": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "GRANT_Owner_Group_Full_Control": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "GRANT_Run_Identity_Full_Control": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "GET_Archive_Library_After_Create": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "CREATE_Archive_Run_Folder": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "CREATE_File_01_FULL_RAW_METADATA": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "CREATE_File_02_NORMALIZED_METADATA_REGISTER": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "CREATE_File_03_METADATA_QUALITY_FINDINGS": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "CREATE_File_04_CAPTURE_ERROR_LOG": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "CREATE_File_05_CAPTURE_WARNING_LOG": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "CREATE_File_06_HUMAN_REVIEW_REGISTER": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "CREATE_File_07_ARCHITECTURE_REVIEW_REPORT": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "CREATE_File_08_HUMAN_REVIEW_REGISTER_JSON": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "CREATE_File_09_RUN_MANIFEST": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    }
+  },
+  "staticResults": {},
+  "isScopeNode": true,
+  "mslaNode": true
+}

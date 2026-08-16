@@ -1,0 +1,96 @@
+# 08 - Scope_FINALIZE_08_Run_Outcome
+#
+# M11 The flow can now fail. Previously every path degraded to an empty array, so a
+#     run whose very first call returned 403 still reported Succeeded, still emailed
+#     a clean-looking report and still archived an empty source of truth.
+#
+#     The run is terminated as Failed when the archive library could not be
+#     provisioned, when zero objects were captured, or when the error count exceeds
+#     varMaxErrorsBeforeFail. The notification has already gone out by this point,
+#     so operators get both the detail and an unambiguous red run.
+
+{
+  "nodeId": "Scope_FINALIZE_08_Run_Outcome",
+  "serializedValue": {
+    "type": "Scope",
+    "actions": {
+      "Compose_Run_Outcome": {
+        "type": "Compose",
+        "inputs": {
+          "runId": "@variables('varRunId')",
+          "rootSiteUrl": "@variables('varRootSiteUrl')",
+          "completedAtUtc": "@utcNow()",
+          "websCaptured": "@length(variables('varWebsCaptured'))",
+          "websLeftUncaptured": "@length(variables('varWebQueue'))",
+          "listsDiscovered": "@length(variables('varAllListsRaw'))",
+          "listsDeepCaptured": "@length(variables('varNormalizedObjects'))",
+          "qualityFindings": "@length(variables('varQualityFindings'))",
+          "warningsLogged": "@length(variables('varInventoryWarnings'))",
+          "errorsLogged": "@length(variables('varSPInventoryErrors'))",
+          "errorThreshold": "@variables('varMaxErrorsBeforeFail')",
+          "archiveFolderWebUrl": "@variables('varArchiveFolderWebUrl')",
+          "archivedFiles": "@variables('varArchivedFiles')",
+          "emailDeliveryStatus": "@variables('varDeliveryStatus')",
+          "fatalCapture": "@variables('varFatalCapture')"
+        }
+      },
+      "Condition_Fail_Run_On_Unusable_Capture": {
+        "type": "If",
+        "expression": {
+          "or": [
+            {
+              "equals": [
+                "@variables('varFatalCapture')",
+                true
+              ]
+            },
+            {
+              "equals": [
+                "@length(variables('varNormalizedObjects'))",
+                0
+              ]
+            },
+            {
+              "greater": [
+                "@length(variables('varSPInventoryErrors'))",
+                "@variables('varMaxErrorsBeforeFail')"
+              ]
+            }
+          ]
+        },
+        "actions": {
+          "Terminate_Run_As_Failed": {
+            "type": "Terminate",
+            "inputs": {
+              "runStatus": "Failed",
+              "runError": {
+                "code": "MetadataCaptureIncomplete",
+                "message": "@concat('The capture is not trustworthy and the run is being failed deliberately. Objects captured: ', string(length(variables('varNormalizedObjects'))), '. Errors logged: ', string(length(variables('varSPInventoryErrors'))), ' (threshold ', string(variables('varMaxErrorsBeforeFail')), '). Fatal capture flag: ', string(variables('varFatalCapture')), '. Archive: ', variables('varArchiveFolderWebUrl'))"
+              }
+            }
+          }
+        },
+        "else": {
+          "actions": {}
+        },
+        "runAfter": {
+          "Compose_Run_Outcome": [
+            "Succeeded"
+          ]
+        }
+      }
+    },
+    "runAfter": {
+      "Scope_DELIVER_07_Notification": [
+        "Succeeded",
+        "Failed",
+        "Skipped",
+        "TimedOut"
+      ]
+    }
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": true,
+  "mslaNode": true
+}

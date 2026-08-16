@@ -1,0 +1,185 @@
+# 07 - Scope_DELIVER_07_Notification
+#
+# M7  ONE email replaces the four near-identical messages, and the recipient comes
+#     from varNotificationRecipients rather than being hardcoded in four places.
+#     The subject carries object, finding and error counts, and importance escalates
+#     to High whenever anything failed.
+# H3  ContentBytes is explicitly base64-encoded and each attachment declares its
+#     ContentType. No object is ever passed to a byte-format parameter.
+# H2  Only the CSV register, the HTML report and the quality findings are attached.
+#     The full raw metadata stays in the archive and is linked, so the message can
+#     no longer breach mailbox attachment limits.
+# H4  This scope runs AFTER every artefact has been produced and archived, and its
+#     runAfter tolerates a failed upstream scope, so delivery can never gate the
+#     production of the review package.
+# M14 The body is an inline-styled fragment, not a full HTML document with a <style>
+#     block that Outlook strips.
+# M1  Delivery status is captured once, into varDeliveryStatus, and read from there.
+
+{
+  "nodeId": "Scope_DELIVER_07_Notification",
+  "serializedValue": {
+    "type": "Scope",
+    "actions": {
+      "Filter_Findings_High_For_Email": {
+        "type": "Query",
+        "inputs": {
+          "from": "@outputs('Compose_Findings_Ordered')",
+          "where": "@equals(item()?['severity'], 'High')"
+        }
+      },
+      "Select_Email_Finding_Rows": {
+        "type": "Select",
+        "inputs": {
+          "from": "@take(body('Filter_Findings_High_For_Email'), 20)",
+          "select": "@concat('<tr><td style=\"padding:6px;border:1px solid #d9e2dc\">', replace(replace(replace(replace(replace(string(coalesce(item()?['objectTitle'], '')), '&', '&amp;'), '<', '&lt;'), '>', '&gt;'), decodeUriComponent('%22'), '&quot;'), decodeUriComponent('%27'), '&#39;'), '</td><td style=\"padding:6px;border:1px solid #d9e2dc\">', replace(replace(replace(replace(replace(string(coalesce(item()?['findingCode'], '')), '&', '&amp;'), '<', '&lt;'), '>', '&gt;'), decodeUriComponent('%22'), '&quot;'), decodeUriComponent('%27'), '&#39;'), '</td><td style=\"padding:6px;border:1px solid #d9e2dc\">', replace(replace(replace(replace(replace(string(coalesce(item()?['message'], '')), '&', '&amp;'), '<', '&lt;'), '>', '&gt;'), decodeUriComponent('%22'), '&quot;'), decodeUriComponent('%27'), '&#39;'), '</td></tr>')"
+        },
+        "runAfter": {
+          "Filter_Findings_High_For_Email": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Compose_Email_Body_Html": {
+        "type": "Compose",
+        "inputs": "@concat('<div style=\"font-family:Segoe UI,Arial,sans-serif;color:#1f2933\"><h2 style=\"color:#00583a;margin:0 0 4px\">SharePoint metadata inventory complete</h2><p style=\"margin:0 0 14px;color:#47554e\">Architecture Source of Truth run ', replace(replace(replace(replace(replace(string(coalesce(variables('varRunId'), '')), '&', '&amp;'), '<', '&lt;'), '>', '&gt;'), decodeUriComponent('%22'), '&quot;'), decodeUriComponent('%27'), '&#39;'), ' for ', replace(replace(replace(replace(replace(string(coalesce(variables('varRootSiteUrl'), '')), '&', '&amp;'), '<', '&lt;'), '>', '&gt;'), decodeUriComponent('%22'), '&quot;'), decodeUriComponent('%27'), '&#39;'), '</p><table style=\"border-collapse:collapse;margin-bottom:16px\"><tr><td style=\"padding:8px 16px 8px 0\"><b style=\"font-size:20px;color:#00583a\">', string(length(variables('varWebsCaptured'))), '</b><br>Webs</td><td style=\"padding:8px 16px\"><b style=\"font-size:20px;color:#00583a\">', string(length(variables('varNormalizedObjects'))), '</b><br>Lists &amp; libraries</td><td style=\"padding:8px 16px\"><b style=\"font-size:20px;color:#00583a\">', string(length(variables('varQualityFindings'))), '</b><br>Findings</td><td style=\"padding:8px 16px\"><b style=\"font-size:20px;color:#b4670e\">', string(length(variables('varInventoryWarnings'))), '</b><br>Warnings</td><td style=\"padding:8px 16px\"><b style=\"font-size:20px;color:#a32013\">', string(length(variables('varSPInventoryErrors'))), '</b><br>Errors</td></tr></table>', if(equals(length(body('Select_Email_Finding_Rows')), 0), '<p>No high severity findings were raised.</p>', concat('<h3 style=\"color:#00583a;margin:0 0 6px\">High severity findings</h3><table style=\"border-collapse:collapse;font-size:13px\"><thead><tr><th style=\"background:#00583a;color:#fff;padding:6px;text-align:left\">Object</th><th style=\"background:#00583a;color:#fff;padding:6px;text-align:left\">Code</th><th style=\"background:#00583a;color:#fff;padding:6px;text-align:left\">Finding</th></tr></thead><tbody>', join(body('Select_Email_Finding_Rows'), ''), '</tbody></table>', if(greater(length(body('Filter_Findings_High_For_Email')), 20), concat('<p style=\"color:#47554e\">Showing 20 of ', string(length(body('Filter_Findings_High_For_Email'))), ' high severity findings. The full set is in the attached report.</p>'), '')), '<h3 style=\"color:#00583a;margin:16px 0 6px\">Archive</h3><ul><li><a href=\"', variables('varArchiveFolderWebUrl'), '\">Run archive folder</a> (9 files)</li><li>Review register list: <b>', replace(replace(replace(replace(replace(string(coalesce(variables('varReviewRegisterListTitle'), '')), '&', '&amp;'), '<', '&lt;'), '>', '&gt;'), decodeUriComponent('%22'), '&quot;'), decodeUriComponent('%27'), '&#39;'), '</b> &mdash; decisions recorded there are preserved across runs</li></ul><p style=\"color:#6b7a72;font-size:12px\">The CSV register, the full HTML report and the quality findings are attached. The complete raw metadata capture is in the archive folder rather than attached, to keep this message within mailbox attachment limits.</p></div>')",
+        "runAfter": {
+          "Select_Email_Finding_Rows": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Compose_Email_Attachments": {
+        "type": "Compose",
+        "inputs": [
+          {
+            "Name": "@outputs('Compose_File_Name_HUMAN_REVIEW_REGISTER')",
+            "ContentBytes": "@base64(variables('varHumanReviewCsv'))",
+            "ContentType": "text/csv"
+          },
+          {
+            "Name": "@outputs('Compose_File_Name_ARCHITECTURE_REVIEW_REPORT')",
+            "ContentBytes": "@base64(outputs('Compose_Architecture_Review_Report_Html'))",
+            "ContentType": "text/html"
+          },
+          {
+            "Name": "@outputs('Compose_File_Name_METADATA_QUALITY_FINDINGS')",
+            "ContentBytes": "@base64(string(outputs('Compose_Quality_Findings_Payload')))",
+            "ContentType": "application/json"
+          }
+        ],
+        "runAfter": {
+          "Compose_Email_Body_Html": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Send_Metadata_Inventory_Notification": {
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "emailMessage/To": "@variables('varNotificationRecipients')",
+            "emailMessage/Subject": "@concat('SharePoint metadata inventory - ', variables('varArchiveTimestamp'), ' - ', string(length(variables('varNormalizedObjects'))), ' objects, ', string(length(variables('varQualityFindings'))), ' findings, ', string(length(variables('varSPInventoryErrors'))), ' errors')",
+            "emailMessage/Body": "@outputs('Compose_Email_Body_Html')",
+            "emailMessage/Attachments": "@outputs('Compose_Email_Attachments')",
+            "emailMessage/Importance": "@if(greater(length(variables('varSPInventoryErrors')), 0), 'High', 'Normal')"
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365",
+            "connection": "shared_office365",
+            "operationId": "SendEmailV2"
+          }
+        },
+        "runtimeConfiguration": {
+          "retryPolicy": {
+            "type": "exponential",
+            "count": 4,
+            "interval": "PT10S",
+            "minimumInterval": "PT5S",
+            "maximumInterval": "PT1H"
+          }
+        },
+        "runAfter": {
+          "Compose_Email_Attachments": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Set_varDeliveryStatus": {
+        "type": "SetVariable",
+        "inputs": {
+          "name": "varDeliveryStatus",
+          "value": "@actions('Send_Metadata_Inventory_Notification')?['status']"
+        },
+        "runAfter": {
+          "Send_Metadata_Inventory_Notification": [
+            "Succeeded",
+            "Failed",
+            "Skipped",
+            "TimedOut"
+          ]
+        }
+      },
+      "Condition_Log_Delivery_Failure": {
+        "type": "If",
+        "expression": {
+          "not": {
+            "equals": [
+              "@variables('varDeliveryStatus')",
+              "Succeeded"
+            ]
+          }
+        },
+        "actions": {
+          "Append_Error_Delivery": {
+            "type": "AppendToArrayVariable",
+            "inputs": {
+              "name": "varSPInventoryErrors",
+              "value": {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Medium",
+                "stage": "Send_Metadata_Inventory_Notification",
+                "status": "@variables('varDeliveryStatus')",
+                "message": "@coalesce(body('Send_Metadata_Inventory_Notification')?['error']?['message'], body('Send_Metadata_Inventory_Notification')?['message'], string(coalesce(body('Send_Metadata_Inventory_Notification'), '')), '')"
+              }
+            }
+          }
+        },
+        "else": {
+          "actions": {}
+        },
+        "runAfter": {
+          "Set_varDeliveryStatus": [
+            "Succeeded"
+          ]
+        }
+      }
+    },
+    "runAfter": {
+      "Scope_SAVE_06_Review_Register_Upsert": [
+        "Succeeded",
+        "Failed",
+        "Skipped",
+        "TimedOut"
+      ]
+    }
+  },
+  "allConnectionData": {
+    "Send_Metadata_Inventory_Notification": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_office365"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_office365/connections/c0b9e7a5b0854c39a435fd8ce92f48ad"
+        },
+        "connectionName": "c0b9e7a5b0854c39a435fd8ce92f48ad"
+      },
+      "referenceKey": "shared_office365"
+    }
+  },
+  "staticResults": {},
+  "isScopeNode": true,
+  "mslaNode": true
+}

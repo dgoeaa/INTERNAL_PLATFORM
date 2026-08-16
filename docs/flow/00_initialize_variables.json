@@ -1,0 +1,790 @@
+# 00 - TOP-LEVEL VARIABLE INITIALISERS
+#
+# Power Automate only permits 'Initialize variable' at the ROOT of a flow (never
+# inside a Scope), so these 35 actions paste as root-level siblings, in the order
+# below, immediately AFTER the existing 'Sharepoint_Site_url' initialiser and
+# BEFORE Scope_PREP_01_Run_Context.
+#
+# varRootSiteUrl seeds itself from the flow's existing Sharepoint_Site_url variable,
+# so the trigger wiring is untouched while every downstream reference now uses the
+# var* convention (L4).
+# varRunId is the single run identifier used by every artefact (M13).
+# varInventoryWarnings is populated by Scope 02/03 and is no longer dead (M12).
+# var_SharePoint_Metadata_Report is deleted outright (B3).
+
+{
+  "nodeId": "Initialize_varRootSiteUrl",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varRootSiteUrl",
+          "type": "string",
+          "value": "@trim(coalesce(variables('Sharepoint_Site_url'), ''))"
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varRunId",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varRunId",
+          "type": "string",
+          "value": "@workflow()?['run']?['name']"
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varCapturedAtUtc",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varCapturedAtUtc",
+          "type": "string",
+          "value": "@utcNow()"
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varTenantRootUrl",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varTenantRootUrl",
+          "type": "string",
+          "value": ""
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varSiteServerRelativeUrl",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varSiteServerRelativeUrl",
+          "type": "string",
+          "value": ""
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varArchiveLibraryTitle",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varArchiveLibraryTitle",
+          "type": "string",
+          "value": "Architecture Source of Truth"
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varReviewRegisterListTitle",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varReviewRegisterListTitle",
+          "type": "string",
+          "value": "SharePoint Metadata Review Register"
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varNotificationRecipients",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varNotificationRecipients",
+          "type": "string",
+          "value": "dgsRegistry@nitda.gov.ng"
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varIncludeHiddenLists",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varIncludeHiddenLists",
+          "type": "boolean",
+          "value": true
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varIncludeSchemaXml",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varIncludeSchemaXml",
+          "type": "boolean",
+          "value": true
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varMaxWebs",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varMaxWebs",
+          "type": "integer",
+          "value": 200
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varMaxErrorsBeforeFail",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varMaxErrorsBeforeFail",
+          "type": "integer",
+          "value": 25
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varWebQueue",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varWebQueue",
+          "type": "array",
+          "value": []
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varWebsCaptured",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varWebsCaptured",
+          "type": "array",
+          "value": []
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varWebTraversalDone",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varWebTraversalDone",
+          "type": "boolean",
+          "value": false
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varCurrentWebUrl",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varCurrentWebUrl",
+          "type": "string",
+          "value": ""
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varWebCollections",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varWebCollections",
+          "type": "object",
+          "value": {}
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varListCollections",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varListCollections",
+          "type": "object",
+          "value": {}
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varListRetrievalStatus",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varListRetrievalStatus",
+          "type": "object",
+          "value": {}
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varCollectionAccumulator",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varCollectionAccumulator",
+          "type": "array",
+          "value": []
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varCollectionNextUri",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varCollectionNextUri",
+          "type": "string",
+          "value": ""
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varCollectionPagingDone",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varCollectionPagingDone",
+          "type": "boolean",
+          "value": false
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varAllListsRaw",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varAllListsRaw",
+          "type": "array",
+          "value": []
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varNormalizedObjects",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varNormalizedObjects",
+          "type": "array",
+          "value": []
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varSPInventoryRows",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varSPInventoryRows",
+          "type": "array",
+          "value": []
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varSPInventoryErrors",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varSPInventoryErrors",
+          "type": "array",
+          "value": []
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varInventoryWarnings",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varInventoryWarnings",
+          "type": "array",
+          "value": []
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varQualityFindings",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varQualityFindings",
+          "type": "array",
+          "value": []
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varArchiveTimestamp",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varArchiveTimestamp",
+          "type": "string",
+          "value": ""
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varArchiveLibraryServerRelativeUrl",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varArchiveLibraryServerRelativeUrl",
+          "type": "string",
+          "value": ""
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varArchiveLibraryProvisioned",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varArchiveLibraryProvisioned",
+          "type": "boolean",
+          "value": false
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varArchiveFolderServerRelativeUrl",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varArchiveFolderServerRelativeUrl",
+          "type": "string",
+          "value": ""
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varArchiveFolderWebUrl",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varArchiveFolderWebUrl",
+          "type": "string",
+          "value": ""
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varArchivedFiles",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varArchivedFiles",
+          "type": "array",
+          "value": []
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varHumanReviewCsv",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varHumanReviewCsv",
+          "type": "string",
+          "value": ""
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varDeliveryStatus",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varDeliveryStatus",
+          "type": "string",
+          "value": ""
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
+  "nodeId": "Initialize_varFatalCapture",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varFatalCapture",
+          "type": "boolean",
+          "value": false
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}

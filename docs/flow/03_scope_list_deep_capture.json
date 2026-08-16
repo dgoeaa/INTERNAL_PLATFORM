@@ -1,0 +1,1335 @@
+# 03 - Scope_GET_03_List_And_Library_Deep_Capture
+#
+# B1  Every Select/Query/Table output is read with body(). outputs() is never used on a
+#     Select again, so Filter_Custom_Metadata_Fields receives a real array.
+# B2  Apply_to_each_List_Or_Library and Apply_to_each_List_Collection both run at
+#     concurrency 1, so no array variable is ever mutated by parallel iterations.
+# H1  One HTTP action, sequential, with an explicit exponential retry policy - the four
+#     simultaneous unretried calls per iteration are gone.
+# H5  Classification is structural: a 47-entry BaseTemplate catalog plus IsCatalog,
+#     IsApplicationList, IsSystemList and Hidden. The contains(title,'app') substring
+#     test is deleted, so Approvals-style libraries are no longer filed as system lists.
+# H6  RoleAssignments is requested only when HasUniqueRoleAssignments is true, and the
+#     inheritance state is recorded explicitly on every object.
+# H9  One catalog, one classifier, one relevance scale. businessRelevance and
+#     reviewPriority are the same computed value, so they cannot drift.
+# H10 Fields, views and content types are fetched without $select, so choices, lookup
+#     targets, taxonomy term set ids, calculated formulas, view CAML, view fields and
+#     content type field links all arrive. Root folder adds StorageMetrics and the
+#     retention label. WorkflowAssociations are captured.
+# M16 Until_List_Collection_Paged follows odata.nextLink to exhaustion.
+# M12 varInventoryWarnings carries real per-object signal.
+#
+# 14 quality rules and 4 warning rules are evaluated in a single pass per object
+# instead of one condition per rule.
+
+{
+  "nodeId": "Scope_GET_03_List_And_Library_Deep_Capture",
+  "serializedValue": {
+    "type": "Scope",
+    "actions": {
+      "Compose_Base_Template_Catalog": {
+        "type": "Compose",
+        "inputs": [
+          {
+            "template": 100,
+            "kind": "Custom List",
+            "category": "List"
+          },
+          {
+            "template": 101,
+            "kind": "Document Library",
+            "category": "Library"
+          },
+          {
+            "template": 102,
+            "kind": "Survey",
+            "category": "List"
+          },
+          {
+            "template": 103,
+            "kind": "Links List",
+            "category": "List"
+          },
+          {
+            "template": 104,
+            "kind": "Announcements List",
+            "category": "List"
+          },
+          {
+            "template": 105,
+            "kind": "Contacts List",
+            "category": "List"
+          },
+          {
+            "template": 106,
+            "kind": "Calendar",
+            "category": "List"
+          },
+          {
+            "template": 107,
+            "kind": "Tasks List",
+            "category": "List"
+          },
+          {
+            "template": 108,
+            "kind": "Discussion Board",
+            "category": "List"
+          },
+          {
+            "template": 109,
+            "kind": "Picture Library",
+            "category": "Library"
+          },
+          {
+            "template": 110,
+            "kind": "Data Sources Library",
+            "category": "System"
+          },
+          {
+            "template": 111,
+            "kind": "Site Template Gallery",
+            "category": "System"
+          },
+          {
+            "template": 112,
+            "kind": "User Information List",
+            "category": "System"
+          },
+          {
+            "template": 113,
+            "kind": "Web Part Gallery",
+            "category": "System"
+          },
+          {
+            "template": 114,
+            "kind": "List Template Gallery",
+            "category": "System"
+          },
+          {
+            "template": 115,
+            "kind": "Form Library",
+            "category": "Library"
+          },
+          {
+            "template": 116,
+            "kind": "Master Page Gallery",
+            "category": "System"
+          },
+          {
+            "template": 117,
+            "kind": "No-Code Workflow Library",
+            "category": "System"
+          },
+          {
+            "template": 118,
+            "kind": "Workflow Process List",
+            "category": "System"
+          },
+          {
+            "template": 119,
+            "kind": "Site Pages Library",
+            "category": "Library"
+          },
+          {
+            "template": 120,
+            "kind": "Custom Grid List",
+            "category": "List"
+          },
+          {
+            "template": 121,
+            "kind": "Solution Catalog",
+            "category": "System"
+          },
+          {
+            "template": 122,
+            "kind": "No-Code Public Workflow Library",
+            "category": "System"
+          },
+          {
+            "template": 123,
+            "kind": "Theme Catalog",
+            "category": "System"
+          },
+          {
+            "template": 124,
+            "kind": "Design Catalog",
+            "category": "System"
+          },
+          {
+            "template": 125,
+            "kind": "Apps for SharePoint Catalog",
+            "category": "System"
+          },
+          {
+            "template": 130,
+            "kind": "Data Connection Library",
+            "category": "Library"
+          },
+          {
+            "template": 140,
+            "kind": "Workflow History List",
+            "category": "System"
+          },
+          {
+            "template": 150,
+            "kind": "Project Tasks List",
+            "category": "List"
+          },
+          {
+            "template": 170,
+            "kind": "Promoted Links List",
+            "category": "List"
+          },
+          {
+            "template": 171,
+            "kind": "Tasks List",
+            "category": "List"
+          },
+          {
+            "template": 175,
+            "kind": "Microfeed List",
+            "category": "System"
+          },
+          {
+            "template": 200,
+            "kind": "Meeting Series List",
+            "category": "List"
+          },
+          {
+            "template": 301,
+            "kind": "Blog Posts List",
+            "category": "List"
+          },
+          {
+            "template": 302,
+            "kind": "Blog Comments List",
+            "category": "List"
+          },
+          {
+            "template": 303,
+            "kind": "Blog Categories List",
+            "category": "List"
+          },
+          {
+            "template": 402,
+            "kind": "Workflow Tasks List",
+            "category": "System"
+          },
+          {
+            "template": 403,
+            "kind": "User Information List",
+            "category": "System"
+          },
+          {
+            "template": 404,
+            "kind": "Workflow Tasks List",
+            "category": "System"
+          },
+          {
+            "template": 600,
+            "kind": "External List",
+            "category": "List"
+          },
+          {
+            "template": 700,
+            "kind": "Health Rules List",
+            "category": "System"
+          },
+          {
+            "template": 701,
+            "kind": "Health Reports List",
+            "category": "System"
+          },
+          {
+            "template": 850,
+            "kind": "Publishing Pages Library",
+            "category": "Library"
+          },
+          {
+            "template": 851,
+            "kind": "Asset Library",
+            "category": "Library"
+          },
+          {
+            "template": 1100,
+            "kind": "Issue Tracking List",
+            "category": "List"
+          },
+          {
+            "template": 10102,
+            "kind": "Pages Library",
+            "category": "Library"
+          }
+        ]
+      },
+      "Compose_List_Collection_Plan_Template": {
+        "type": "Compose",
+        "inputs": [
+          {
+            "key": "fields",
+            "suffix": "/fields?$top=5000"
+          },
+          {
+            "key": "contentTypes",
+            "suffix": "/ContentTypes?$expand=FieldLinks&$top=5000"
+          },
+          {
+            "key": "views",
+            "suffix": "/Views?$expand=ViewFields&$top=5000"
+          },
+          {
+            "key": "workflowAssociations",
+            "suffix": "/WorkflowAssociations?$top=5000"
+          },
+          {
+            "key": "rootFolder",
+            "suffix": "/RootFolder?$expand=StorageMetrics,Properties"
+          },
+          {
+            "key": "roleAssignments",
+            "suffix": "/RoleAssignments?$expand=Member,RoleDefinitionBindings&$top=5000"
+          }
+        ],
+        "runAfter": {
+          "Compose_Base_Template_Catalog": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Filter_Lists_For_Deep_Capture": {
+        "type": "Query",
+        "inputs": {
+          "from": "@variables('varAllListsRaw')",
+          "where": "@or(equals(variables('varIncludeHiddenLists'), true), not(equals(item()?['Hidden'], true)))"
+        },
+        "runAfter": {
+          "Compose_List_Collection_Plan_Template": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Apply_to_each_List_Or_Library": {
+        "type": "Foreach",
+        "foreach": "@body('Filter_Lists_For_Deep_Capture')",
+        "actions": {
+          "Set_varListCollections_Reset": {
+            "type": "SetVariable",
+            "inputs": {
+              "name": "varListCollections",
+              "value": "@json('{}')"
+            }
+          },
+          "Set_varListRetrievalStatus_Reset": {
+            "type": "SetVariable",
+            "inputs": {
+              "name": "varListRetrievalStatus",
+              "value": "@json('{}')"
+            },
+            "runAfter": {
+              "Set_varListCollections_Reset": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Filter_List_Collection_Plan": {
+            "type": "Query",
+            "inputs": {
+              "from": "@outputs('Compose_List_Collection_Plan_Template')",
+              "where": "@or(not(equals(item()?['key'], 'roleAssignments')), equals(items('Apply_to_each_List_Or_Library')?['HasUniqueRoleAssignments'], true))"
+            },
+            "runAfter": {
+              "Set_varListRetrievalStatus_Reset": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Select_List_Collection_Plan": {
+            "type": "Select",
+            "inputs": {
+              "from": "@body('Filter_List_Collection_Plan')",
+              "select": {
+                "key": "@item()?['key']",
+                "uri": "@concat('_api/web/lists(guid''', items('Apply_to_each_List_Or_Library')?['Id'], ''')', item()?['suffix'])"
+              }
+            },
+            "runAfter": {
+              "Filter_List_Collection_Plan": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Apply_to_each_List_Collection": {
+            "type": "Foreach",
+            "foreach": "@body('Select_List_Collection_Plan')",
+            "actions": {
+              "Set_varCollectionAccumulator_Reset_List": {
+                "type": "SetVariable",
+                "inputs": {
+                  "name": "varCollectionAccumulator",
+                  "value": []
+                }
+              },
+              "Set_varCollectionNextUri_Seed_List": {
+                "type": "SetVariable",
+                "inputs": {
+                  "name": "varCollectionNextUri",
+                  "value": "@items('Apply_to_each_List_Collection')?['uri']"
+                },
+                "runAfter": {
+                  "Set_varCollectionAccumulator_Reset_List": [
+                    "Succeeded"
+                  ]
+                }
+              },
+              "Set_varCollectionPagingDone_Reset_List": {
+                "type": "SetVariable",
+                "inputs": {
+                  "name": "varCollectionPagingDone",
+                  "value": false
+                },
+                "runAfter": {
+                  "Set_varCollectionNextUri_Seed_List": [
+                    "Succeeded"
+                  ]
+                }
+              },
+              "Until_List_Collection_Paged": {
+                "type": "Until",
+                "expression": "@equals(variables('varCollectionPagingDone'), true)",
+                "limit": {
+                  "count": 500,
+                  "timeout": "PT1H"
+                },
+                "actions": {
+                  "GET_List_Collection_Page": {
+                    "type": "OpenApiConnection",
+                    "inputs": {
+                      "parameters": {
+                        "dataset": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                        "parameters/method": "GET",
+                        "parameters/uri": "@variables('varCollectionNextUri')",
+                        "parameters/headers": {
+                          "Accept": "application/json;odata=nometadata",
+                          "Content-Type": "application/json;odata=nometadata"
+                        }
+                      },
+                      "host": {
+                        "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                        "connection": "shared_sharepointonline",
+                        "operationId": "HttpRequest"
+                      }
+                    },
+                    "runtimeConfiguration": {
+                      "retryPolicy": {
+                        "type": "exponential",
+                        "count": 4,
+                        "interval": "PT10S",
+                        "minimumInterval": "PT5S",
+                        "maximumInterval": "PT1H"
+                      }
+                    }
+                  },
+                  "Compose_List_Collection_Page_Items": {
+                    "type": "Compose",
+                    "inputs": "@if(equals(actions('GET_List_Collection_Page')?['status'], 'Succeeded'), coalesce(body('GET_List_Collection_Page')?['value'], createArray(body('GET_List_Collection_Page'))), createArray())",
+                    "runAfter": {
+                      "GET_List_Collection_Page": [
+                        "Succeeded",
+                        "Failed",
+                        "Skipped",
+                        "TimedOut"
+                      ]
+                    }
+                  },
+                  "Set_varCollectionAccumulator_Append_List": {
+                    "type": "SetVariable",
+                    "inputs": {
+                      "name": "varCollectionAccumulator",
+                      "value": "@concat(variables('varCollectionAccumulator'), outputs('Compose_List_Collection_Page_Items'))"
+                    },
+                    "runAfter": {
+                      "Compose_List_Collection_Page_Items": [
+                        "Succeeded"
+                      ]
+                    }
+                  },
+                  "Compose_List_Collection_Next_Link": {
+                    "type": "Compose",
+                    "inputs": "@if(equals(actions('GET_List_Collection_Page')?['status'], 'Succeeded'), string(coalesce(body('GET_List_Collection_Page')?['odata.nextLink'], '')), '')",
+                    "runAfter": {
+                      "Set_varCollectionAccumulator_Append_List": [
+                        "Succeeded"
+                      ]
+                    }
+                  },
+                  "Set_varCollectionNextUri_Next_List": {
+                    "type": "SetVariable",
+                    "inputs": {
+                      "name": "varCollectionNextUri",
+                      "value": "@if(contains(outputs('Compose_List_Collection_Next_Link'), '/_api/'), concat('_api/', last(split(outputs('Compose_List_Collection_Next_Link'), '/_api/'))), '')"
+                    },
+                    "runAfter": {
+                      "Compose_List_Collection_Next_Link": [
+                        "Succeeded"
+                      ]
+                    }
+                  },
+                  "Set_varCollectionPagingDone_List": {
+                    "type": "SetVariable",
+                    "inputs": {
+                      "name": "varCollectionPagingDone",
+                      "value": "@empty(variables('varCollectionNextUri'))"
+                    },
+                    "runAfter": {
+                      "Set_varCollectionNextUri_Next_List": [
+                        "Succeeded"
+                      ]
+                    }
+                  }
+                },
+                "runAfter": {
+                  "Set_varCollectionPagingDone_Reset_List": [
+                    "Succeeded"
+                  ]
+                }
+              },
+              "Set_varListCollections_Store": {
+                "type": "SetVariable",
+                "inputs": {
+                  "name": "varListCollections",
+                  "value": "@setProperty(variables('varListCollections'), items('Apply_to_each_List_Collection')?['key'], variables('varCollectionAccumulator'))"
+                },
+                "runAfter": {
+                  "Until_List_Collection_Paged": [
+                    "Succeeded"
+                  ]
+                }
+              },
+              "Set_varListRetrievalStatus_Store": {
+                "type": "SetVariable",
+                "inputs": {
+                  "name": "varListRetrievalStatus",
+                  "value": "@setProperty(variables('varListRetrievalStatus'), items('Apply_to_each_List_Collection')?['key'], string(actions('GET_List_Collection_Page')?['status']))"
+                },
+                "runAfter": {
+                  "Set_varListCollections_Store": [
+                    "Succeeded"
+                  ]
+                }
+              },
+              "Condition_Log_List_Collection_Error": {
+                "type": "If",
+                "expression": {
+                  "not": {
+                    "equals": [
+                      "@actions('GET_List_Collection_Page')?['status']",
+                      "Succeeded"
+                    ]
+                  }
+                },
+                "actions": {
+                  "Append_Error_List_Collection": {
+                    "type": "AppendToArrayVariable",
+                    "inputs": {
+                      "name": "varSPInventoryErrors",
+                      "value": {
+                        "runId": "@variables('varRunId')",
+                        "capturedAtUtc": "@utcNow()",
+                        "severity": "High",
+                        "stage": "GET_List_Collection",
+                        "collection": "@items('Apply_to_each_List_Collection')?['key']",
+                        "siteUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                        "listId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                        "listTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                        "endpoint": "@items('Apply_to_each_List_Collection')?['uri']",
+                        "status": "@actions('GET_List_Collection_Page')?['status']",
+                        "httpStatus": "@coalesce(outputs('GET_List_Collection_Page')?['statusCode'], 0)",
+                        "message": "@coalesce(body('GET_List_Collection_Page')?['error']?['message'], body('GET_List_Collection_Page')?['message'], string(coalesce(body('GET_List_Collection_Page'), '')), '')"
+                      }
+                    }
+                  }
+                },
+                "else": {
+                  "actions": {}
+                },
+                "runAfter": {
+                  "Set_varListRetrievalStatus_Store": [
+                    "Succeeded"
+                  ]
+                }
+              }
+            },
+            "runAfter": {
+              "Select_List_Collection_Plan": [
+                "Succeeded"
+              ]
+            },
+            "runtimeConfiguration": {
+              "concurrency": {
+                "repetitions": 1
+              }
+            }
+          },
+          "Select_Normalized_Fields_For_Current_List": {
+            "type": "Select",
+            "inputs": {
+              "from": "@coalesce(variables('varListCollections')?['fields'], createArray())",
+              "select": {
+                "fieldId": "@item()?['Id']",
+                "title": "@item()?['Title']",
+                "internalName": "@item()?['InternalName']",
+                "staticName": "@item()?['StaticName']",
+                "entityPropertyName": "@item()?['EntityPropertyName']",
+                "typeAsString": "@item()?['TypeAsString']",
+                "typeDisplayName": "@item()?['TypeDisplayName']",
+                "fieldTypeKind": "@item()?['FieldTypeKind']",
+                "description": "@item()?['Description']",
+                "group": "@item()?['Group']",
+                "defaultValue": "@item()?['DefaultValue']",
+                "required": "@equals(item()?['Required'], true)",
+                "hidden": "@equals(item()?['Hidden'], true)",
+                "readOnly": "@equals(item()?['ReadOnlyField'], true)",
+                "sealed": "@equals(item()?['Sealed'], true)",
+                "canBeDeleted": "@equals(item()?['CanBeDeleted'], true)",
+                "fromBaseType": "@equals(item()?['FromBaseType'], true)",
+                "indexed": "@equals(item()?['Indexed'], true)",
+                "enforceUniqueValues": "@equals(item()?['EnforceUniqueValues'], true)",
+                "sortable": "@equals(item()?['Sortable'], true)",
+                "filterable": "@equals(item()?['Filterable'], true)",
+                "choices": "@coalesce(item()?['Choices'], createArray())",
+                "lookupListId": "@string(coalesce(item()?['LookupList'], ''))",
+                "lookupField": "@string(coalesce(item()?['LookupField'], ''))",
+                "lookupWebId": "@string(coalesce(item()?['LookupWebId'], ''))",
+                "allowMultipleValues": "@equals(item()?['AllowMultipleValues'], true)",
+                "relationshipDeleteBehavior": "@item()?['RelationshipDeleteBehavior']",
+                "termSetId": "@string(coalesce(item()?['TermSetId'], ''))",
+                "termStoreId": "@string(coalesce(item()?['SspId'], ''))",
+                "anchorId": "@string(coalesce(item()?['AnchorId'], ''))",
+                "isPathRendered": "@equals(item()?['IsPathRendered'], true)",
+                "isKeyword": "@equals(item()?['IsKeyword'], true)",
+                "openTermCreation": "@equals(item()?['Open'], true)",
+                "formula": "@string(coalesce(item()?['Formula'], ''))",
+                "outputType": "@item()?['OutputType']",
+                "maxLength": "@item()?['MaxLength']",
+                "numberOfLines": "@item()?['NumberOfLines']",
+                "richText": "@equals(item()?['RichText'], true)",
+                "appendOnly": "@equals(item()?['AppendOnly'], true)",
+                "displayFormat": "@item()?['DisplayFormat']",
+                "dateTimeCalendarType": "@item()?['DateTimeCalendarType']",
+                "minimumValue": "@item()?['MinimumValue']",
+                "maximumValue": "@item()?['MaximumValue']",
+                "currencyLocaleId": "@item()?['CurrencyLocaleId']",
+                "validationFormula": "@string(coalesce(item()?['ValidationFormula'], ''))",
+                "validationMessage": "@string(coalesce(item()?['ValidationMessage'], ''))",
+                "schemaXml": "@if(equals(variables('varIncludeSchemaXml'), true), string(coalesce(item()?['SchemaXml'], '')), '')",
+                "isCustomBusinessMetadata": "@and(not(equals(item()?['FromBaseType'], true)), equals(item()?['CanBeDeleted'], true), not(equals(item()?['Hidden'], true)))",
+                "isSystemField": "@or(equals(item()?['Hidden'], true), equals(item()?['ReadOnlyField'], true), equals(item()?['Sealed'], true), equals(item()?['FromBaseType'], true))",
+                "isGovernanceRelevant": "@or(equals(item()?['Required'], true), equals(item()?['EnforceUniqueValues'], true), equals(item()?['Indexed'], true), contains(createArray('TaxonomyFieldType','TaxonomyFieldTypeMulti','User','UserMulti','Lookup','LookupMulti','DateTime'), string(item()?['TypeAsString'])))",
+                "fieldClassification": "@if(equals(item()?['Hidden'], true), 'Hidden Field', if(equals(item()?['Sealed'], true), 'Sealed/System Field', if(equals(item()?['ReadOnlyField'], true), 'Read-only Field', if(contains(createArray('TaxonomyFieldType','TaxonomyFieldTypeMulti'), string(item()?['TypeAsString'])), 'Managed Metadata Field', if(contains(createArray('User','UserMulti'), string(item()?['TypeAsString'])), 'Person/Group Field', if(contains(createArray('Lookup','LookupMulti'), string(item()?['TypeAsString'])), 'Lookup/Relationship Field', if(equals(item()?['TypeAsString'], 'DateTime'), 'Date/Retention Field', if(and(not(equals(item()?['FromBaseType'], true)), equals(item()?['CanBeDeleted'], true)), 'Custom Business Metadata', 'Default SharePoint Field'))))))))"
+              }
+            },
+            "runAfter": {
+              "Apply_to_each_List_Collection": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Filter_Custom_Metadata_Fields": {
+            "type": "Query",
+            "inputs": {
+              "from": "@body('Select_Normalized_Fields_For_Current_List')",
+              "where": "@equals(item()?['isCustomBusinessMetadata'], true)"
+            },
+            "runAfter": {
+              "Select_Normalized_Fields_For_Current_List": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Filter_Hidden_Fields": {
+            "type": "Query",
+            "inputs": {
+              "from": "@body('Select_Normalized_Fields_For_Current_List')",
+              "where": "@equals(item()?['hidden'], true)"
+            },
+            "runAfter": {
+              "Filter_Custom_Metadata_Fields": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Filter_Required_Fields": {
+            "type": "Query",
+            "inputs": {
+              "from": "@body('Select_Normalized_Fields_For_Current_List')",
+              "where": "@equals(item()?['required'], true)"
+            },
+            "runAfter": {
+              "Filter_Hidden_Fields": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Filter_Governance_Fields": {
+            "type": "Query",
+            "inputs": {
+              "from": "@body('Select_Normalized_Fields_For_Current_List')",
+              "where": "@equals(item()?['isGovernanceRelevant'], true)"
+            },
+            "runAfter": {
+              "Filter_Required_Fields": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Filter_Base_Template_Match": {
+            "type": "Query",
+            "inputs": {
+              "from": "@outputs('Compose_Base_Template_Catalog')",
+              "where": "@equals(item()?['template'], int(coalesce(items('Apply_to_each_List_Or_Library')?['BaseTemplate'], 0)))"
+            },
+            "runAfter": {
+              "Filter_Governance_Fields": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_Object_Kind": {
+            "type": "Compose",
+            "inputs": "@string(coalesce(first(body('Filter_Base_Template_Match'))?['kind'], concat('Other SharePoint Object (template ', string(coalesce(items('Apply_to_each_List_Or_Library')?['BaseTemplate'], 0)), ')')))",
+            "runAfter": {
+              "Filter_Base_Template_Match": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_Object_Category": {
+            "type": "Compose",
+            "inputs": "@string(coalesce(first(body('Filter_Base_Template_Match'))?['category'], 'Unknown'))",
+            "runAfter": {
+              "Compose_Object_Kind": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_Architecture_Classification": {
+            "type": "Compose",
+            "inputs": "@if(or(equals(items('Apply_to_each_List_Or_Library')?['IsCatalog'], true), equals(items('Apply_to_each_List_Or_Library')?['IsApplicationList'], true)), 'System/Internal Catalog', if(equals(items('Apply_to_each_List_Or_Library')?['IsSystemList'], true), 'System List', if(equals(items('Apply_to_each_List_Or_Library')?['Hidden'], true), 'Hidden/System Object', if(equals(outputs('Compose_Object_Category'), 'System'), 'System/Internal List', if(equals(outputs('Compose_Object_Category'), 'Library'), 'Business Document Library', if(equals(outputs('Compose_Object_Category'), 'List'), 'Business List', 'Unclassified SharePoint Object'))))))",
+            "runAfter": {
+              "Compose_Object_Category": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_Is_Business_Object": {
+            "type": "Compose",
+            "inputs": "@and(not(equals(items('Apply_to_each_List_Or_Library')?['Hidden'], true)), not(equals(items('Apply_to_each_List_Or_Library')?['IsCatalog'], true)), not(equals(items('Apply_to_each_List_Or_Library')?['IsApplicationList'], true)), not(equals(items('Apply_to_each_List_Or_Library')?['IsSystemList'], true)), contains(createArray('Library','List'), outputs('Compose_Object_Category')))",
+            "runAfter": {
+              "Compose_Architecture_Classification": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_Business_Relevance": {
+            "type": "Compose",
+            "inputs": "@if(not(equals(outputs('Compose_Is_Business_Object'), true)), 'System', if(or(greater(int(coalesce(items('Apply_to_each_List_Or_Library')?['ItemCount'], 0)), 100), equals(items('Apply_to_each_List_Or_Library')?['HasUniqueRoleAssignments'], true)), 'High', if(or(greater(length(body('Filter_Custom_Metadata_Fields')), 0), greater(int(coalesce(items('Apply_to_each_List_Or_Library')?['ItemCount'], 0)), 0)), 'Medium', 'Low')))",
+            "runAfter": {
+              "Compose_Is_Business_Object": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_List_Root_Folder": {
+            "type": "Compose",
+            "inputs": "@coalesce(first(variables('varListCollections')?['rootFolder']), json('{}'))",
+            "runAfter": {
+              "Compose_Business_Relevance": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_Retention_Label": {
+            "type": "Compose",
+            "inputs": "@string(coalesce(outputs('Compose_List_Root_Folder')?['Properties']?['_ip_UnifiedCompliancePolicyProperties'], ''))",
+            "runAfter": {
+              "Compose_List_Root_Folder": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_Storage_Metrics": {
+            "type": "Compose",
+            "inputs": {
+              "totalSizeBytes": "@int(coalesce(outputs('Compose_List_Root_Folder')?['StorageMetrics']?['TotalSize'], 0))",
+              "totalFileCount": "@int(coalesce(outputs('Compose_List_Root_Folder')?['StorageMetrics']?['TotalFileCount'], 0))",
+              "totalFileStreamSizeBytes": "@int(coalesce(outputs('Compose_List_Root_Folder')?['StorageMetrics']?['TotalFileStreamSize'], 0))",
+              "lastModified": "@string(coalesce(outputs('Compose_List_Root_Folder')?['StorageMetrics']?['LastModified'], ''))"
+            },
+            "runAfter": {
+              "Compose_Retention_Label": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_Review_Reason": {
+            "type": "Compose",
+            "inputs": "@if(not(equals(outputs('Compose_Is_Business_Object'), true)), 'Hidden, catalog or system object. Review only where architecture or security impact is expected.', if(equals(items('Apply_to_each_List_Or_Library')?['HasUniqueRoleAssignments'], true), 'Permission inheritance is broken on this object. Confirm the unique permissions are intentional and correctly scoped.', if(greater(int(coalesce(items('Apply_to_each_List_Or_Library')?['ItemCount'], 0)), 100), 'High item count or operational importance. Prioritise governance review.', if(equals(outputs('Compose_Object_Category'), 'Library'), 'Visible document library. Review document governance, metadata, versioning, content types, retention and ownership.', 'Visible business list. Review metadata, ownership, data purpose and retention.'))))",
+            "runAfter": {
+              "Compose_Storage_Metrics": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_Recommended_Action": {
+            "type": "Compose",
+            "inputs": "@if(and(equals(outputs('Compose_Is_Business_Object'), true), equals(items('Apply_to_each_List_Or_Library')?['EnableVersioning'], false)), 'Enable versioning for this object before it is used for business records.', if(and(equals(outputs('Compose_Is_Business_Object'), true), greater(length(body('Filter_Custom_Metadata_Fields')), 0), equals(items('Apply_to_each_List_Or_Library')?['ContentTypesEnabled'], false)), 'Enable content types so the custom metadata on this object is standardised.', if(and(equals(outputs('Compose_Is_Business_Object'), true), equals(length(body('Filter_Custom_Metadata_Fields')), 0)), 'Add business metadata, ownership, classification or retention columns, or confirm none are required.', 'Review and confirm classification, ownership, retention and security requirements.')))",
+            "runAfter": {
+              "Compose_Review_Reason": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Append_Normalized_Object": {
+            "type": "AppendToArrayVariable",
+            "inputs": {
+              "name": "varNormalizedObjects",
+              "value": {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@variables('varCapturedAtUtc')",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "webServerRelativeUrl": "@items('Apply_to_each_List_Or_Library')?['__webServerRelativeUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "title": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "description": "@string(coalesce(items('Apply_to_each_List_Or_Library')?['Description'], ''))",
+                "serverRelativeUrl": "@string(coalesce(items('Apply_to_each_List_Or_Library')?['RootFolder']?['ServerRelativeUrl'], ''))",
+                "defaultViewUrl": "@string(coalesce(items('Apply_to_each_List_Or_Library')?['DefaultViewUrl'], ''))",
+                "entityTypeName": "@string(coalesce(items('Apply_to_each_List_Or_Library')?['EntityTypeName'], ''))",
+                "listItemEntityTypeFullName": "@string(coalesce(items('Apply_to_each_List_Or_Library')?['ListItemEntityTypeFullName'], ''))",
+                "baseTemplate": "@int(coalesce(items('Apply_to_each_List_Or_Library')?['BaseTemplate'], 0))",
+                "baseType": "@items('Apply_to_each_List_Or_Library')?['BaseType']",
+                "templateFeatureId": "@string(coalesce(items('Apply_to_each_List_Or_Library')?['TemplateFeatureId'], ''))",
+                "objectKind": "@outputs('Compose_Object_Kind')",
+                "objectCategory": "@outputs('Compose_Object_Category')",
+                "architectureClassification": "@outputs('Compose_Architecture_Classification')",
+                "isBusinessObject": "@outputs('Compose_Is_Business_Object')",
+                "businessRelevance": "@outputs('Compose_Business_Relevance')",
+                "reviewPriority": "@outputs('Compose_Business_Relevance')",
+                "reviewReason": "@outputs('Compose_Review_Reason')",
+                "recommendedAction": "@outputs('Compose_Recommended_Action')",
+                "itemCount": "@int(coalesce(items('Apply_to_each_List_Or_Library')?['ItemCount'], 0))",
+                "created": "@string(coalesce(items('Apply_to_each_List_Or_Library')?['Created'], ''))",
+                "lastModified": "@string(coalesce(items('Apply_to_each_List_Or_Library')?['LastItemModifiedDate'], ''))",
+                "lastItemUserModifiedDate": "@string(coalesce(items('Apply_to_each_List_Or_Library')?['LastItemUserModifiedDate'], ''))",
+                "settings": {
+                  "hidden": "@equals(items('Apply_to_each_List_Or_Library')?['Hidden'], true)",
+                  "isSystemList": "@equals(items('Apply_to_each_List_Or_Library')?['IsSystemList'], true)",
+                  "isCatalog": "@equals(items('Apply_to_each_List_Or_Library')?['IsCatalog'], true)",
+                  "isApplicationList": "@equals(items('Apply_to_each_List_Or_Library')?['IsApplicationList'], true)",
+                  "isPrivate": "@equals(items('Apply_to_each_List_Or_Library')?['IsPrivate'], true)",
+                  "onQuickLaunch": "@equals(items('Apply_to_each_List_Or_Library')?['OnQuickLaunch'], true)",
+                  "enableVersioning": "@equals(items('Apply_to_each_List_Or_Library')?['EnableVersioning'], true)",
+                  "enableMinorVersions": "@equals(items('Apply_to_each_List_Or_Library')?['EnableMinorVersions'], true)",
+                  "majorVersionLimit": "@int(coalesce(items('Apply_to_each_List_Or_Library')?['MajorVersionLimit'], 0))",
+                  "majorWithMinorVersionsLimit": "@int(coalesce(items('Apply_to_each_List_Or_Library')?['MajorWithMinorVersionsLimit'], 0))",
+                  "draftVersionVisibility": "@items('Apply_to_each_List_Or_Library')?['DraftVersionVisibility']",
+                  "enableModeration": "@equals(items('Apply_to_each_List_Or_Library')?['EnableModeration'], true)",
+                  "forceCheckout": "@equals(items('Apply_to_each_List_Or_Library')?['ForceCheckout'], true)",
+                  "enableAttachments": "@equals(items('Apply_to_each_List_Or_Library')?['EnableAttachments'], true)",
+                  "enableFolderCreation": "@equals(items('Apply_to_each_List_Or_Library')?['EnableFolderCreation'], true)",
+                  "contentTypesEnabled": "@equals(items('Apply_to_each_List_Or_Library')?['ContentTypesEnabled'], true)",
+                  "allowContentTypes": "@equals(items('Apply_to_each_List_Or_Library')?['AllowContentTypes'], true)",
+                  "allowDeletion": "@equals(items('Apply_to_each_List_Or_Library')?['AllowDeletion'], true)",
+                  "noCrawl": "@equals(items('Apply_to_each_List_Or_Library')?['NoCrawl'], true)",
+                  "crawlNonDefaultViews": "@equals(items('Apply_to_each_List_Or_Library')?['CrawlNonDefaultViews'], true)",
+                  "hasExternalDataSource": "@equals(items('Apply_to_each_List_Or_Library')?['HasExternalDataSource'], true)",
+                  "readSecurity": "@int(coalesce(items('Apply_to_each_List_Or_Library')?['ReadSecurity'], 0))",
+                  "writeSecurity": "@int(coalesce(items('Apply_to_each_List_Or_Library')?['WriteSecurity'], 0))",
+                  "irmEnabled": "@equals(items('Apply_to_each_List_Or_Library')?['IrmEnabled'], true)",
+                  "irmExpire": "@equals(items('Apply_to_each_List_Or_Library')?['IrmExpire'], true)",
+                  "irmReject": "@equals(items('Apply_to_each_List_Or_Library')?['IrmReject'], true)",
+                  "exemptFromBlockDownloadOfNonViewableFiles": "@equals(items('Apply_to_each_List_Or_Library')?['ExemptFromBlockDownloadOfNonViewableFiles'], true)",
+                  "validationFormula": "@string(coalesce(items('Apply_to_each_List_Or_Library')?['ValidationFormula'], ''))",
+                  "validationMessage": "@string(coalesce(items('Apply_to_each_List_Or_Library')?['ValidationMessage'], ''))",
+                  "documentTemplateUrl": "@string(coalesce(items('Apply_to_each_List_Or_Library')?['DocumentTemplateUrl'], ''))",
+                  "hasUniqueRoleAssignments": "@equals(items('Apply_to_each_List_Or_Library')?['HasUniqueRoleAssignments'], true)",
+                  "permissionInheritance": "@if(equals(items('Apply_to_each_List_Or_Library')?['HasUniqueRoleAssignments'], true), 'Broken - unique permissions on this object', 'Inherited from parent web')"
+                },
+                "retentionLabelRaw": "@outputs('Compose_Retention_Label')",
+                "hasRetentionLabel": "@not(empty(outputs('Compose_Retention_Label')))",
+                "storage": "@outputs('Compose_Storage_Metrics')",
+                "metrics": {
+                  "totalFields": "@length(body('Select_Normalized_Fields_For_Current_List'))",
+                  "customFields": "@length(body('Filter_Custom_Metadata_Fields'))",
+                  "hiddenFields": "@length(body('Filter_Hidden_Fields'))",
+                  "requiredFields": "@length(body('Filter_Required_Fields'))",
+                  "governanceRelevantFields": "@length(body('Filter_Governance_Fields'))",
+                  "contentTypes": "@length(coalesce(variables('varListCollections')?['contentTypes'], createArray()))",
+                  "views": "@length(coalesce(variables('varListCollections')?['views'], createArray()))",
+                  "workflowAssociations": "@length(coalesce(variables('varListCollections')?['workflowAssociations'], createArray()))",
+                  "permissionAssignments": "@length(coalesce(variables('varListCollections')?['roleAssignments'], createArray()))"
+                },
+                "retrievalStatus": {
+                  "fields": "@string(coalesce(variables('varListRetrievalStatus')?['fields'], 'NotAttempted'))",
+                  "contentTypes": "@string(coalesce(variables('varListRetrievalStatus')?['contentTypes'], 'NotAttempted'))",
+                  "views": "@string(coalesce(variables('varListRetrievalStatus')?['views'], 'NotAttempted'))",
+                  "workflowAssociations": "@string(coalesce(variables('varListRetrievalStatus')?['workflowAssociations'], 'NotAttempted'))",
+                  "rootFolder": "@string(coalesce(variables('varListRetrievalStatus')?['rootFolder'], 'NotAttempted'))",
+                  "roleAssignments": "@string(coalesce(variables('varListRetrievalStatus')?['roleAssignments'], 'NotAttempted'))"
+                },
+                "fields": "@body('Select_Normalized_Fields_For_Current_List')",
+                "contentTypes": "@coalesce(variables('varListCollections')?['contentTypes'], createArray())",
+                "views": "@coalesce(variables('varListCollections')?['views'], createArray())",
+                "workflowAssociations": "@coalesce(variables('varListCollections')?['workflowAssociations'], createArray())",
+                "permissions": "@coalesce(variables('varListCollections')?['roleAssignments'], createArray())",
+                "rootFolder": "@outputs('Compose_List_Root_Folder')",
+                "rawList": "@items('Apply_to_each_List_Or_Library')"
+              }
+            },
+            "runAfter": {
+              "Compose_Recommended_Action": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Append_Inventory_Row": {
+            "type": "AppendToArrayVariable",
+            "inputs": {
+              "name": "varSPInventoryRows",
+              "value": {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@variables('varCapturedAtUtc')",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "listId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "title": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "objectKind": "@outputs('Compose_Object_Kind')",
+                "architectureClassification": "@outputs('Compose_Architecture_Classification')",
+                "businessRelevance": "@outputs('Compose_Business_Relevance')",
+                "baseTemplate": "@int(coalesce(items('Apply_to_each_List_Or_Library')?['BaseTemplate'], 0))",
+                "hidden": "@equals(items('Apply_to_each_List_Or_Library')?['Hidden'], true)",
+                "itemCount": "@int(coalesce(items('Apply_to_each_List_Or_Library')?['ItemCount'], 0))",
+                "totalSizeBytes": "@outputs('Compose_Storage_Metrics')?['totalSizeBytes']",
+                "fieldCount": "@length(body('Select_Normalized_Fields_For_Current_List'))",
+                "customFieldCount": "@length(body('Filter_Custom_Metadata_Fields'))",
+                "contentTypeCount": "@length(coalesce(variables('varListCollections')?['contentTypes'], createArray()))",
+                "viewCount": "@length(coalesce(variables('varListCollections')?['views'], createArray()))",
+                "hasUniqueRoleAssignments": "@equals(items('Apply_to_each_List_Or_Library')?['HasUniqueRoleAssignments'], true)",
+                "hasRetentionLabel": "@not(empty(outputs('Compose_Retention_Label')))",
+                "serverRelativeUrl": "@string(coalesce(items('Apply_to_each_List_Or_Library')?['RootFolder']?['ServerRelativeUrl'], ''))"
+              }
+            },
+            "runAfter": {
+              "Append_Normalized_Object": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_Quality_Candidates": {
+            "type": "Compose",
+            "inputs": [
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "High",
+                "category": "Metadata Governance",
+                "findingCode": "NO_CUSTOM_METADATA",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "objectTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "objectKind": "@outputs('Compose_Object_Kind')",
+                "message": "Visible business object has no custom business metadata fields.",
+                "recommendation": "Review whether this object requires business metadata, ownership, classification, retention or process tracking columns.",
+                "applies": "@and(equals(outputs('Compose_Is_Business_Object'), true), equals(length(body('Filter_Custom_Metadata_Fields')), 0))"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Medium",
+                "category": "Information Management",
+                "findingCode": "VERSIONING_DISABLED",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "objectTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "objectKind": "@outputs('Compose_Object_Kind')",
+                "message": "Visible business object has versioning disabled.",
+                "recommendation": "Enable versioning for auditability, document history and recovery.",
+                "applies": "@and(equals(outputs('Compose_Is_Business_Object'), true), equals(items('Apply_to_each_List_Or_Library')?['EnableVersioning'], false))"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Medium",
+                "category": "Information Management",
+                "findingCode": "NO_VERSION_LIMIT",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "objectTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "objectKind": "@outputs('Compose_Object_Kind')",
+                "message": "Versioning is enabled but no major version limit is set, so versions accumulate without bound.",
+                "recommendation": "Set MajorVersionLimit to a retention-appropriate number of versions.",
+                "applies": "@and(equals(items('Apply_to_each_List_Or_Library')?['EnableVersioning'], true), equals(int(coalesce(items('Apply_to_each_List_Or_Library')?['MajorVersionLimit'], 0)), 0))"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Medium",
+                "category": "Metadata Architecture",
+                "findingCode": "CONTENT_TYPES_DISABLED",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "objectTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "objectKind": "@outputs('Compose_Object_Kind')",
+                "message": "Custom metadata exists but content types are not enabled.",
+                "recommendation": "Enable content types to standardise metadata and document classification.",
+                "applies": "@and(greater(length(body('Filter_Custom_Metadata_Fields')), 0), equals(items('Apply_to_each_List_Or_Library')?['ContentTypesEnabled'], false))"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "High",
+                "category": "Security",
+                "findingCode": "BROKEN_PERMISSION_INHERITANCE",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "objectTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "objectKind": "@outputs('Compose_Object_Kind')",
+                "message": "Permission inheritance is broken on this object; it carries its own access control list.",
+                "recommendation": "Confirm the unique permissions are intentional, documented and correctly scoped, and record the owner.",
+                "applies": "@equals(items('Apply_to_each_List_Or_Library')?['HasUniqueRoleAssignments'], true)"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Medium",
+                "category": "Security",
+                "findingCode": "ITEM_LEVEL_SECURITY_NON_DEFAULT",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "objectTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "objectKind": "@outputs('Compose_Object_Kind')",
+                "message": "Item-level read or write security is set to a non-default restriction.",
+                "recommendation": "Confirm the item-level restriction is intentional and documented.",
+                "applies": "@or(greater(int(coalesce(items('Apply_to_each_List_Or_Library')?['ReadSecurity'], 1)), 1), greater(int(coalesce(items('Apply_to_each_List_Or_Library')?['WriteSecurity'], 1)), 1))"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Medium",
+                "category": "Discoverability",
+                "findingCode": "EXCLUDED_FROM_SEARCH",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "objectTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "objectKind": "@outputs('Compose_Object_Kind')",
+                "message": "Visible business object is excluded from search indexing.",
+                "recommendation": "Confirm the search exclusion is intentional; otherwise re-enable crawling so content is discoverable.",
+                "applies": "@and(equals(outputs('Compose_Is_Business_Object'), true), equals(items('Apply_to_each_List_Or_Library')?['NoCrawl'], true))"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Medium",
+                "category": "Integration",
+                "findingCode": "EXTERNAL_DATA_SOURCE",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "objectTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "objectKind": "@outputs('Compose_Object_Kind')",
+                "message": "Object is backed by an external data source.",
+                "recommendation": "Record the upstream system, its owner and the refresh/authentication model.",
+                "applies": "@equals(items('Apply_to_each_List_Or_Library')?['HasExternalDataSource'], true)"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Medium",
+                "category": "Scalability",
+                "findingCode": "ABOVE_LIST_VIEW_THRESHOLD",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "objectTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "objectKind": "@outputs('Compose_Object_Kind')",
+                "message": "Object holds more than 5000 items and is above the SharePoint list view threshold.",
+                "recommendation": "Add indexed columns, filtered views or a folder/archive strategy to keep views performant.",
+                "applies": "@greater(int(coalesce(items('Apply_to_each_List_Or_Library')?['ItemCount'], 0)), 5000)"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Medium",
+                "category": "Retention",
+                "findingCode": "NO_RETENTION_LABEL",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "objectTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "objectKind": "@outputs('Compose_Object_Kind')",
+                "message": "Visible business object has no default retention or compliance label applied.",
+                "recommendation": "Apply a retention label appropriate to the records held, or record why none is required.",
+                "applies": "@and(equals(outputs('Compose_Is_Business_Object'), true), empty(outputs('Compose_Retention_Label')))"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Medium",
+                "category": "Information Management",
+                "findingCode": "MODERATION_WITHOUT_VERSIONING",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "objectTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "objectKind": "@outputs('Compose_Object_Kind')",
+                "message": "Content approval is enabled but versioning is disabled, so approved and draft states cannot be reconstructed.",
+                "recommendation": "Enable versioning wherever content approval is in use.",
+                "applies": "@and(equals(items('Apply_to_each_List_Or_Library')?['EnableModeration'], true), equals(items('Apply_to_each_List_Or_Library')?['EnableVersioning'], false))"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Low",
+                "category": "Documentation",
+                "findingCode": "NO_DESCRIPTION",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "objectTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "objectKind": "@outputs('Compose_Object_Kind')",
+                "message": "Visible business object has no description.",
+                "recommendation": "Add a short description stating the object's business purpose and owner.",
+                "applies": "@and(equals(outputs('Compose_Is_Business_Object'), true), empty(trim(string(coalesce(items('Apply_to_each_List_Or_Library')?['Description'], '')))))"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "High",
+                "category": "Capture Integrity",
+                "findingCode": "DETAIL_RETRIEVAL_INCOMPLETE",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "objectTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "objectKind": "@outputs('Compose_Object_Kind')",
+                "message": "One or more detail calls for this object did not succeed, so its captured detail is incomplete.",
+                "recommendation": "Re-run the capture for this object. Do not treat its field, content type or view counts as authoritative.",
+                "applies": "@not(and(equals(string(coalesce(variables('varListRetrievalStatus')?['fields'], 'NotAttempted')), 'Succeeded'), equals(string(coalesce(variables('varListRetrievalStatus')?['contentTypes'], 'NotAttempted')), 'Succeeded'), equals(string(coalesce(variables('varListRetrievalStatus')?['views'], 'NotAttempted')), 'Succeeded')))"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Medium",
+                "category": "Capture Integrity",
+                "findingCode": "STORAGE_AND_RETENTION_UNAVAILABLE",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "objectTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "objectKind": "@outputs('Compose_Object_Kind')",
+                "message": "Root folder detail could not be retrieved, so storage metrics and retention label are unknown for this object.",
+                "recommendation": "Re-run the capture, or confirm the connection identity can read the object's root folder.",
+                "applies": "@not(equals(string(coalesce(variables('varListRetrievalStatus')?['rootFolder'], 'NotAttempted')), 'Succeeded'))"
+              }
+            ],
+            "runAfter": {
+              "Append_Inventory_Row": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Filter_Quality_Findings_Applicable": {
+            "type": "Query",
+            "inputs": {
+              "from": "@outputs('Compose_Quality_Candidates')",
+              "where": "@equals(item()?['applies'], true)"
+            },
+            "runAfter": {
+              "Compose_Quality_Candidates": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Select_Quality_Findings_Clean": {
+            "type": "Select",
+            "inputs": {
+              "from": "@body('Filter_Quality_Findings_Applicable')",
+              "select": {
+                "runId": "@item()?['runId']",
+                "capturedAtUtc": "@item()?['capturedAtUtc']",
+                "severity": "@item()?['severity']",
+                "category": "@item()?['category']",
+                "findingCode": "@item()?['findingCode']",
+                "webUrl": "@item()?['webUrl']",
+                "objectId": "@item()?['objectId']",
+                "objectTitle": "@item()?['objectTitle']",
+                "objectKind": "@item()?['objectKind']",
+                "message": "@item()?['message']",
+                "recommendation": "@item()?['recommendation']"
+              }
+            },
+            "runAfter": {
+              "Filter_Quality_Findings_Applicable": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Set_varQualityFindings_Append": {
+            "type": "SetVariable",
+            "inputs": {
+              "name": "varQualityFindings",
+              "value": "@concat(variables('varQualityFindings'), body('Select_Quality_Findings_Clean'))"
+            },
+            "runAfter": {
+              "Select_Quality_Findings_Clean": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_List_Warning_Candidates": {
+            "type": "Compose",
+            "inputs": [
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Low",
+                "warningCode": "PERMISSIONS_INHERITED",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "objectTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "message": "Object inherits permissions from its parent web, so no object-level role assignments were requested. Web-level assignments in the web capture record are authoritative for this object.",
+                "applies": "@not(equals(items('Apply_to_each_List_Or_Library')?['HasUniqueRoleAssignments'], true))"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Medium",
+                "warningCode": "PERMISSIONS_RETRIEVAL_FAILED",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "objectTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "message": "Object has unique permissions but the role assignment call did not succeed, so its access control list is unknown.",
+                "applies": "@and(equals(items('Apply_to_each_List_Or_Library')?['HasUniqueRoleAssignments'], true), not(equals(string(coalesce(variables('varListRetrievalStatus')?['roleAssignments'], 'NotAttempted')), 'Succeeded')))"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Low",
+                "warningCode": "WORKFLOW_RETRIEVAL_FAILED",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "objectTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "message": "Workflow associations could not be retrieved for this object.",
+                "applies": "@not(equals(string(coalesce(variables('varListRetrievalStatus')?['workflowAssociations'], 'NotAttempted')), 'Succeeded'))"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Low",
+                "warningCode": "SCHEMA_XML_CAPTURE_DISABLED",
+                "webUrl": "@items('Apply_to_each_List_Or_Library')?['__webUrl']",
+                "objectId": "@items('Apply_to_each_List_Or_Library')?['Id']",
+                "objectTitle": "@items('Apply_to_each_List_Or_Library')?['Title']",
+                "message": "Field SchemaXml capture is switched off for this run, so archived field definitions carry the parsed properties only.",
+                "applies": "@equals(variables('varIncludeSchemaXml'), false)"
+              }
+            ],
+            "runAfter": {
+              "Set_varQualityFindings_Append": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Filter_List_Warnings_Applicable": {
+            "type": "Query",
+            "inputs": {
+              "from": "@outputs('Compose_List_Warning_Candidates')",
+              "where": "@equals(item()?['applies'], true)"
+            },
+            "runAfter": {
+              "Compose_List_Warning_Candidates": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Select_List_Warnings_Clean": {
+            "type": "Select",
+            "inputs": {
+              "from": "@body('Filter_List_Warnings_Applicable')",
+              "select": {
+                "runId": "@item()?['runId']",
+                "capturedAtUtc": "@item()?['capturedAtUtc']",
+                "severity": "@item()?['severity']",
+                "warningCode": "@item()?['warningCode']",
+                "webUrl": "@item()?['webUrl']",
+                "objectId": "@item()?['objectId']",
+                "objectTitle": "@item()?['objectTitle']",
+                "message": "@item()?['message']"
+              }
+            },
+            "runAfter": {
+              "Filter_List_Warnings_Applicable": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Set_varInventoryWarnings_Append": {
+            "type": "SetVariable",
+            "inputs": {
+              "name": "varInventoryWarnings",
+              "value": "@concat(variables('varInventoryWarnings'), body('Select_List_Warnings_Clean'))"
+            },
+            "runAfter": {
+              "Select_List_Warnings_Clean": [
+                "Succeeded"
+              ]
+            }
+          }
+        },
+        "runAfter": {
+          "Filter_Lists_For_Deep_Capture": [
+            "Succeeded"
+          ]
+        },
+        "runtimeConfiguration": {
+          "concurrency": {
+            "repetitions": 1
+          }
+        }
+      },
+      "Compose_Deep_Capture_Checkpoint": {
+        "type": "Compose",
+        "inputs": {
+          "listsDiscovered": "@length(variables('varAllListsRaw'))",
+          "listsDeepCaptured": "@length(variables('varNormalizedObjects'))",
+          "inventoryRows": "@length(variables('varSPInventoryRows'))",
+          "qualityFindings": "@length(variables('varQualityFindings'))",
+          "warnings": "@length(variables('varInventoryWarnings'))",
+          "errors": "@length(variables('varSPInventoryErrors'))"
+        },
+        "runAfter": {
+          "Apply_to_each_List_Or_Library": [
+            "Succeeded",
+            "Failed",
+            "Skipped",
+            "TimedOut"
+          ]
+        }
+      }
+    },
+    "runAfter": {
+      "Scope_GET_02_Site_And_Web_Intelligence": [
+        "Succeeded"
+      ]
+    }
+  },
+  "allConnectionData": {
+    "GET_List_Collection_Page": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    }
+  },
+  "staticResults": {},
+  "isScopeNode": true,
+  "mslaNode": true
+}

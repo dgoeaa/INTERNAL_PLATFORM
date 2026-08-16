@@ -1,0 +1,1066 @@
+# 02 - Scope_GET_02_Site_And_Web_Intelligence
+#
+# Closes the whole site-level half of H10. Breadth-first traversal over every web in
+# the site collection (subsites were previously never visited at all), capturing per web:
+#   _api/web, AllProperties, RegionalSettings+TimeZone, associated Owner/Member/Visitor
+#   groups, Navigation (QuickLaunch + TopNavigationBar), EffectiveBasePermissions,
+#   site columns, site content types (+FieldLinks), site users, site groups (+Users),
+#   role definitions, web role assignments, features, subsites and lists.
+# Site-collection level adds _api/site and _api/site/usage.
+#
+# Lists are queried WITHOUT $select and with $expand=RootFolder, so every list property
+# arrives - MajorVersionLimit, MajorWithMinorVersionsLimit, DraftVersionVisibility,
+# ReadSecurity, WriteSecurity, IrmEnabled/IrmReject/IrmExpire, HasUniqueRoleAssignments,
+# TemplateFeatureId, ListItemEntityTypeFullName - with no property-name risk (H10, H6).
+#
+# Apply_to_each_Web_Collection + Until_Web_Collection_Paged is a single generic
+# paginator that follows odata.nextLink for all nine collections (M16). Every HTTP
+# action carries an explicit exponential retry policy (H1). Errors are harvested once
+# per web from a status array rather than one condition per call, and carry the real
+# connector message plus the HTTP status code (M2).
+#
+# Group membership for H6 is resolved by joining webRoleAssignments[].Member.Id to
+# siteGroups[].Id (captured with $expand=Users), avoiding the Member/Users expand that
+# fails whenever a role assignment principal is a user rather than a group.
+
+{
+  "nodeId": "Scope_GET_02_Site_And_Web_Intelligence",
+  "serializedValue": {
+    "type": "Scope",
+    "actions": {
+      "Compose_Web_Collection_Plan": {
+        "type": "Compose",
+        "inputs": [
+          {
+            "key": "lists",
+            "uri": "_api/web/lists?$expand=RootFolder&$top=5000"
+          },
+          {
+            "key": "subWebs",
+            "uri": "_api/web/webs?$select=Id,Title,Url,ServerRelativeUrl,Description,Created,LastItemModifiedDate,WebTemplate,Configuration,Language&$top=5000"
+          },
+          {
+            "key": "siteColumns",
+            "uri": "_api/web/fields?$top=5000"
+          },
+          {
+            "key": "siteContentTypes",
+            "uri": "_api/web/ContentTypes?$expand=FieldLinks&$top=5000"
+          },
+          {
+            "key": "siteUsers",
+            "uri": "_api/web/siteusers?$top=5000"
+          },
+          {
+            "key": "siteGroups",
+            "uri": "_api/web/sitegroups?$expand=Users&$top=5000"
+          },
+          {
+            "key": "roleDefinitions",
+            "uri": "_api/web/roledefinitions?$top=5000"
+          },
+          {
+            "key": "webRoleAssignments",
+            "uri": "_api/web/roleassignments?$expand=Member,RoleDefinitionBindings&$top=5000"
+          },
+          {
+            "key": "features",
+            "uri": "_api/web/Features?$top=5000"
+          }
+        ]
+      },
+      "GET_Site_Properties": {
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "dataset": "@variables('varRootSiteUrl')",
+            "parameters/method": "GET",
+            "parameters/uri": "_api/site",
+            "parameters/headers": {
+              "Accept": "application/json;odata=nometadata",
+              "Content-Type": "application/json;odata=nometadata"
+            }
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+            "connection": "shared_sharepointonline",
+            "operationId": "HttpRequest"
+          }
+        },
+        "runtimeConfiguration": {
+          "retryPolicy": {
+            "type": "exponential",
+            "count": 4,
+            "interval": "PT10S",
+            "minimumInterval": "PT5S",
+            "maximumInterval": "PT1H"
+          }
+        },
+        "runAfter": {
+          "Compose_Web_Collection_Plan": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Compose_Site_Properties_Safe": {
+        "type": "Compose",
+        "inputs": "@if(equals(actions('GET_Site_Properties')?['status'], 'Succeeded'), coalesce(body('GET_Site_Properties'), json('{}')), json('{}'))",
+        "runAfter": {
+          "GET_Site_Properties": [
+            "Succeeded",
+            "Failed",
+            "Skipped",
+            "TimedOut"
+          ]
+        }
+      },
+      "GET_Site_Usage": {
+        "type": "OpenApiConnection",
+        "inputs": {
+          "parameters": {
+            "dataset": "@variables('varRootSiteUrl')",
+            "parameters/method": "GET",
+            "parameters/uri": "_api/site/usage",
+            "parameters/headers": {
+              "Accept": "application/json;odata=nometadata",
+              "Content-Type": "application/json;odata=nometadata"
+            }
+          },
+          "host": {
+            "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+            "connection": "shared_sharepointonline",
+            "operationId": "HttpRequest"
+          }
+        },
+        "runtimeConfiguration": {
+          "retryPolicy": {
+            "type": "exponential",
+            "count": 4,
+            "interval": "PT10S",
+            "minimumInterval": "PT5S",
+            "maximumInterval": "PT1H"
+          }
+        },
+        "runAfter": {
+          "Compose_Site_Properties_Safe": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Compose_Site_Usage_Safe": {
+        "type": "Compose",
+        "inputs": "@if(equals(actions('GET_Site_Usage')?['status'], 'Succeeded'), coalesce(body('GET_Site_Usage'), json('{}')), json('{}'))",
+        "runAfter": {
+          "GET_Site_Usage": [
+            "Succeeded",
+            "Failed",
+            "Skipped",
+            "TimedOut"
+          ]
+        }
+      },
+      "Until_Web_Traversal": {
+        "type": "Until",
+        "expression": "@equals(variables('varWebTraversalDone'), true)",
+        "limit": {
+          "count": 1000,
+          "timeout": "PT4H"
+        },
+        "actions": {
+          "Set_varCurrentWebUrl": {
+            "type": "SetVariable",
+            "inputs": {
+              "name": "varCurrentWebUrl",
+              "value": "@first(variables('varWebQueue'))"
+            }
+          },
+          "Set_varWebQueue_Dequeue": {
+            "type": "SetVariable",
+            "inputs": {
+              "name": "varWebQueue",
+              "value": "@skip(variables('varWebQueue'), 1)"
+            },
+            "runAfter": {
+              "Set_varCurrentWebUrl": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Set_varWebCollections_Reset": {
+            "type": "SetVariable",
+            "inputs": {
+              "name": "varWebCollections",
+              "value": "@json('{}')"
+            },
+            "runAfter": {
+              "Set_varWebQueue_Dequeue": [
+                "Succeeded"
+              ]
+            }
+          },
+          "GET_Web_Properties": {
+            "type": "OpenApiConnection",
+            "inputs": {
+              "parameters": {
+                "dataset": "@variables('varCurrentWebUrl')",
+                "parameters/method": "GET",
+                "parameters/uri": "_api/web",
+                "parameters/headers": {
+                  "Accept": "application/json;odata=nometadata",
+                  "Content-Type": "application/json;odata=nometadata"
+                }
+              },
+              "host": {
+                "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                "connection": "shared_sharepointonline",
+                "operationId": "HttpRequest"
+              }
+            },
+            "runtimeConfiguration": {
+              "retryPolicy": {
+                "type": "exponential",
+                "count": 4,
+                "interval": "PT10S",
+                "minimumInterval": "PT5S",
+                "maximumInterval": "PT1H"
+              }
+            },
+            "runAfter": {
+              "Set_varWebCollections_Reset": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_Web_Properties_Safe": {
+            "type": "Compose",
+            "inputs": "@if(equals(actions('GET_Web_Properties')?['status'], 'Succeeded'), coalesce(body('GET_Web_Properties'), json('{}')), json('{}'))",
+            "runAfter": {
+              "GET_Web_Properties": [
+                "Succeeded",
+                "Failed",
+                "Skipped",
+                "TimedOut"
+              ]
+            }
+          },
+          "GET_Web_All_Properties": {
+            "type": "OpenApiConnection",
+            "inputs": {
+              "parameters": {
+                "dataset": "@variables('varCurrentWebUrl')",
+                "parameters/method": "GET",
+                "parameters/uri": "_api/web/AllProperties",
+                "parameters/headers": {
+                  "Accept": "application/json;odata=nometadata",
+                  "Content-Type": "application/json;odata=nometadata"
+                }
+              },
+              "host": {
+                "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                "connection": "shared_sharepointonline",
+                "operationId": "HttpRequest"
+              }
+            },
+            "runtimeConfiguration": {
+              "retryPolicy": {
+                "type": "exponential",
+                "count": 4,
+                "interval": "PT10S",
+                "minimumInterval": "PT5S",
+                "maximumInterval": "PT1H"
+              }
+            },
+            "runAfter": {
+              "Compose_Web_Properties_Safe": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_Web_All_Properties_Safe": {
+            "type": "Compose",
+            "inputs": "@if(equals(actions('GET_Web_All_Properties')?['status'], 'Succeeded'), coalesce(body('GET_Web_All_Properties'), json('{}')), json('{}'))",
+            "runAfter": {
+              "GET_Web_All_Properties": [
+                "Succeeded",
+                "Failed",
+                "Skipped",
+                "TimedOut"
+              ]
+            }
+          },
+          "GET_Web_Regional_Settings": {
+            "type": "OpenApiConnection",
+            "inputs": {
+              "parameters": {
+                "dataset": "@variables('varCurrentWebUrl')",
+                "parameters/method": "GET",
+                "parameters/uri": "_api/web/RegionalSettings?$expand=TimeZone",
+                "parameters/headers": {
+                  "Accept": "application/json;odata=nometadata",
+                  "Content-Type": "application/json;odata=nometadata"
+                }
+              },
+              "host": {
+                "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                "connection": "shared_sharepointonline",
+                "operationId": "HttpRequest"
+              }
+            },
+            "runtimeConfiguration": {
+              "retryPolicy": {
+                "type": "exponential",
+                "count": 4,
+                "interval": "PT10S",
+                "minimumInterval": "PT5S",
+                "maximumInterval": "PT1H"
+              }
+            },
+            "runAfter": {
+              "Compose_Web_All_Properties_Safe": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_Web_Regional_Settings_Safe": {
+            "type": "Compose",
+            "inputs": "@if(equals(actions('GET_Web_Regional_Settings')?['status'], 'Succeeded'), coalesce(body('GET_Web_Regional_Settings'), json('{}')), json('{}'))",
+            "runAfter": {
+              "GET_Web_Regional_Settings": [
+                "Succeeded",
+                "Failed",
+                "Skipped",
+                "TimedOut"
+              ]
+            }
+          },
+          "GET_Web_Associated_Groups": {
+            "type": "OpenApiConnection",
+            "inputs": {
+              "parameters": {
+                "dataset": "@variables('varCurrentWebUrl')",
+                "parameters/method": "GET",
+                "parameters/uri": "_api/web?$expand=AssociatedOwnerGroup,AssociatedMemberGroup,AssociatedVisitorGroup&$select=Id,Title,AssociatedOwnerGroup/Id,AssociatedOwnerGroup/Title,AssociatedOwnerGroup/LoginName,AssociatedMemberGroup/Id,AssociatedMemberGroup/Title,AssociatedMemberGroup/LoginName,AssociatedVisitorGroup/Id,AssociatedVisitorGroup/Title,AssociatedVisitorGroup/LoginName",
+                "parameters/headers": {
+                  "Accept": "application/json;odata=nometadata",
+                  "Content-Type": "application/json;odata=nometadata"
+                }
+              },
+              "host": {
+                "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                "connection": "shared_sharepointonline",
+                "operationId": "HttpRequest"
+              }
+            },
+            "runtimeConfiguration": {
+              "retryPolicy": {
+                "type": "exponential",
+                "count": 4,
+                "interval": "PT10S",
+                "minimumInterval": "PT5S",
+                "maximumInterval": "PT1H"
+              }
+            },
+            "runAfter": {
+              "Compose_Web_Regional_Settings_Safe": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_Web_Associated_Groups_Safe": {
+            "type": "Compose",
+            "inputs": "@if(equals(actions('GET_Web_Associated_Groups')?['status'], 'Succeeded'), coalesce(body('GET_Web_Associated_Groups'), json('{}')), json('{}'))",
+            "runAfter": {
+              "GET_Web_Associated_Groups": [
+                "Succeeded",
+                "Failed",
+                "Skipped",
+                "TimedOut"
+              ]
+            }
+          },
+          "GET_Web_Navigation": {
+            "type": "OpenApiConnection",
+            "inputs": {
+              "parameters": {
+                "dataset": "@variables('varCurrentWebUrl')",
+                "parameters/method": "GET",
+                "parameters/uri": "_api/web/Navigation?$expand=QuickLaunch,TopNavigationBar",
+                "parameters/headers": {
+                  "Accept": "application/json;odata=nometadata",
+                  "Content-Type": "application/json;odata=nometadata"
+                }
+              },
+              "host": {
+                "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                "connection": "shared_sharepointonline",
+                "operationId": "HttpRequest"
+              }
+            },
+            "runtimeConfiguration": {
+              "retryPolicy": {
+                "type": "exponential",
+                "count": 4,
+                "interval": "PT10S",
+                "minimumInterval": "PT5S",
+                "maximumInterval": "PT1H"
+              }
+            },
+            "runAfter": {
+              "Compose_Web_Associated_Groups_Safe": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_Web_Navigation_Safe": {
+            "type": "Compose",
+            "inputs": "@if(equals(actions('GET_Web_Navigation')?['status'], 'Succeeded'), coalesce(body('GET_Web_Navigation'), json('{}')), json('{}'))",
+            "runAfter": {
+              "GET_Web_Navigation": [
+                "Succeeded",
+                "Failed",
+                "Skipped",
+                "TimedOut"
+              ]
+            }
+          },
+          "GET_Web_Effective_Permissions": {
+            "type": "OpenApiConnection",
+            "inputs": {
+              "parameters": {
+                "dataset": "@variables('varCurrentWebUrl')",
+                "parameters/method": "GET",
+                "parameters/uri": "_api/web/EffectiveBasePermissions",
+                "parameters/headers": {
+                  "Accept": "application/json;odata=nometadata",
+                  "Content-Type": "application/json;odata=nometadata"
+                }
+              },
+              "host": {
+                "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                "connection": "shared_sharepointonline",
+                "operationId": "HttpRequest"
+              }
+            },
+            "runtimeConfiguration": {
+              "retryPolicy": {
+                "type": "exponential",
+                "count": 4,
+                "interval": "PT10S",
+                "minimumInterval": "PT5S",
+                "maximumInterval": "PT1H"
+              }
+            },
+            "runAfter": {
+              "Compose_Web_Navigation_Safe": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_Web_Effective_Permissions_Safe": {
+            "type": "Compose",
+            "inputs": "@if(equals(actions('GET_Web_Effective_Permissions')?['status'], 'Succeeded'), coalesce(body('GET_Web_Effective_Permissions'), json('{}')), json('{}'))",
+            "runAfter": {
+              "GET_Web_Effective_Permissions": [
+                "Succeeded",
+                "Failed",
+                "Skipped",
+                "TimedOut"
+              ]
+            }
+          },
+          "Apply_to_each_Web_Collection": {
+            "type": "Foreach",
+            "foreach": "@outputs('Compose_Web_Collection_Plan')",
+            "actions": {
+              "Set_varCollectionAccumulator_Reset": {
+                "type": "SetVariable",
+                "inputs": {
+                  "name": "varCollectionAccumulator",
+                  "value": []
+                }
+              },
+              "Set_varCollectionNextUri_Seed": {
+                "type": "SetVariable",
+                "inputs": {
+                  "name": "varCollectionNextUri",
+                  "value": "@items('Apply_to_each_Web_Collection')?['uri']"
+                },
+                "runAfter": {
+                  "Set_varCollectionAccumulator_Reset": [
+                    "Succeeded"
+                  ]
+                }
+              },
+              "Set_varCollectionPagingDone_Reset": {
+                "type": "SetVariable",
+                "inputs": {
+                  "name": "varCollectionPagingDone",
+                  "value": false
+                },
+                "runAfter": {
+                  "Set_varCollectionNextUri_Seed": [
+                    "Succeeded"
+                  ]
+                }
+              },
+              "Until_Web_Collection_Paged": {
+                "type": "Until",
+                "expression": "@equals(variables('varCollectionPagingDone'), true)",
+                "limit": {
+                  "count": 500,
+                  "timeout": "PT1H"
+                },
+                "actions": {
+                  "GET_Web_Collection_Page": {
+                    "type": "OpenApiConnection",
+                    "inputs": {
+                      "parameters": {
+                        "dataset": "@variables('varCurrentWebUrl')",
+                        "parameters/method": "GET",
+                        "parameters/uri": "@variables('varCollectionNextUri')",
+                        "parameters/headers": {
+                          "Accept": "application/json;odata=nometadata",
+                          "Content-Type": "application/json;odata=nometadata"
+                        }
+                      },
+                      "host": {
+                        "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+                        "connection": "shared_sharepointonline",
+                        "operationId": "HttpRequest"
+                      }
+                    },
+                    "runtimeConfiguration": {
+                      "retryPolicy": {
+                        "type": "exponential",
+                        "count": 4,
+                        "interval": "PT10S",
+                        "minimumInterval": "PT5S",
+                        "maximumInterval": "PT1H"
+                      }
+                    }
+                  },
+                  "Compose_Web_Collection_Page_Items": {
+                    "type": "Compose",
+                    "inputs": "@if(equals(actions('GET_Web_Collection_Page')?['status'], 'Succeeded'), coalesce(body('GET_Web_Collection_Page')?['value'], createArray(body('GET_Web_Collection_Page'))), createArray())",
+                    "runAfter": {
+                      "GET_Web_Collection_Page": [
+                        "Succeeded",
+                        "Failed",
+                        "Skipped",
+                        "TimedOut"
+                      ]
+                    }
+                  },
+                  "Set_varCollectionAccumulator_Append": {
+                    "type": "SetVariable",
+                    "inputs": {
+                      "name": "varCollectionAccumulator",
+                      "value": "@concat(variables('varCollectionAccumulator'), outputs('Compose_Web_Collection_Page_Items'))"
+                    },
+                    "runAfter": {
+                      "Compose_Web_Collection_Page_Items": [
+                        "Succeeded"
+                      ]
+                    }
+                  },
+                  "Compose_Web_Collection_Next_Link": {
+                    "type": "Compose",
+                    "inputs": "@if(equals(actions('GET_Web_Collection_Page')?['status'], 'Succeeded'), string(coalesce(body('GET_Web_Collection_Page')?['odata.nextLink'], '')), '')",
+                    "runAfter": {
+                      "Set_varCollectionAccumulator_Append": [
+                        "Succeeded"
+                      ]
+                    }
+                  },
+                  "Set_varCollectionNextUri_Next": {
+                    "type": "SetVariable",
+                    "inputs": {
+                      "name": "varCollectionNextUri",
+                      "value": "@if(contains(outputs('Compose_Web_Collection_Next_Link'), '/_api/'), concat('_api/', last(split(outputs('Compose_Web_Collection_Next_Link'), '/_api/'))), '')"
+                    },
+                    "runAfter": {
+                      "Compose_Web_Collection_Next_Link": [
+                        "Succeeded"
+                      ]
+                    }
+                  },
+                  "Set_varCollectionPagingDone": {
+                    "type": "SetVariable",
+                    "inputs": {
+                      "name": "varCollectionPagingDone",
+                      "value": "@empty(variables('varCollectionNextUri'))"
+                    },
+                    "runAfter": {
+                      "Set_varCollectionNextUri_Next": [
+                        "Succeeded"
+                      ]
+                    }
+                  }
+                },
+                "runAfter": {
+                  "Set_varCollectionPagingDone_Reset": [
+                    "Succeeded"
+                  ]
+                }
+              },
+              "Set_varWebCollections_Store": {
+                "type": "SetVariable",
+                "inputs": {
+                  "name": "varWebCollections",
+                  "value": "@setProperty(variables('varWebCollections'), items('Apply_to_each_Web_Collection')?['key'], variables('varCollectionAccumulator'))"
+                },
+                "runAfter": {
+                  "Until_Web_Collection_Paged": [
+                    "Succeeded"
+                  ]
+                }
+              },
+              "Append_Web_Collection_Error": {
+                "type": "If",
+                "expression": {
+                  "not": {
+                    "equals": [
+                      "@actions('GET_Web_Collection_Page')?['status']",
+                      "Succeeded"
+                    ]
+                  }
+                },
+                "actions": {
+                  "Append_Error_Web_Collection": {
+                    "type": "AppendToArrayVariable",
+                    "inputs": {
+                      "name": "varSPInventoryErrors",
+                      "value": {
+                        "runId": "@variables('varRunId')",
+                        "capturedAtUtc": "@utcNow()",
+                        "severity": "High",
+                        "stage": "GET_Web_Collection",
+                        "collection": "@items('Apply_to_each_Web_Collection')?['key']",
+                        "siteUrl": "@variables('varCurrentWebUrl')",
+                        "endpoint": "@items('Apply_to_each_Web_Collection')?['uri']",
+                        "status": "@actions('GET_Web_Collection_Page')?['status']",
+                        "httpStatus": "@coalesce(outputs('GET_Web_Collection_Page')?['statusCode'], 0)",
+                        "message": "@coalesce(body('GET_Web_Collection_Page')?['error']?['message'], body('GET_Web_Collection_Page')?['message'], string(coalesce(body('GET_Web_Collection_Page'), '')), '')"
+                      }
+                    }
+                  }
+                },
+                "else": {
+                  "actions": {}
+                },
+                "runAfter": {
+                  "Set_varWebCollections_Store": [
+                    "Succeeded"
+                  ]
+                }
+              }
+            },
+            "runAfter": {
+              "Compose_Web_Effective_Permissions_Safe": [
+                "Succeeded"
+              ]
+            },
+            "runtimeConfiguration": {
+              "concurrency": {
+                "repetitions": 1
+              }
+            }
+          },
+          "Select_Web_Lists_Annotated": {
+            "type": "Select",
+            "inputs": {
+              "from": "@coalesce(variables('varWebCollections')?['lists'], createArray())",
+              "select": "@addProperty(addProperty(item(), '__webUrl', variables('varCurrentWebUrl')), '__webServerRelativeUrl', string(coalesce(outputs('Compose_Web_Properties_Safe')?['ServerRelativeUrl'], '')))"
+            },
+            "runAfter": {
+              "Apply_to_each_Web_Collection": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Set_varAllListsRaw_Append": {
+            "type": "SetVariable",
+            "inputs": {
+              "name": "varAllListsRaw",
+              "value": "@concat(variables('varAllListsRaw'), body('Select_Web_Lists_Annotated'))"
+            },
+            "runAfter": {
+              "Select_Web_Lists_Annotated": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Select_Sub_Web_Urls": {
+            "type": "Select",
+            "inputs": {
+              "from": "@coalesce(variables('varWebCollections')?['subWebs'], createArray())",
+              "select": "@string(coalesce(item()?['Url'], ''))"
+            },
+            "runAfter": {
+              "Set_varAllListsRaw_Append": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Filter_Sub_Web_Urls": {
+            "type": "Query",
+            "inputs": {
+              "from": "@body('Select_Sub_Web_Urls')",
+              "where": "@and(not(empty(item())), startsWith(toLower(item()), 'https://'))"
+            },
+            "runAfter": {
+              "Select_Sub_Web_Urls": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Set_varWebQueue_Enqueue": {
+            "type": "SetVariable",
+            "inputs": {
+              "name": "varWebQueue",
+              "value": "@concat(variables('varWebQueue'), body('Filter_Sub_Web_Urls'))"
+            },
+            "runAfter": {
+              "Filter_Sub_Web_Urls": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Append_Web_Capture_Record": {
+            "type": "AppendToArrayVariable",
+            "inputs": {
+              "name": "varWebsCaptured",
+              "value": {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@variables('varCapturedAtUtc')",
+                "webUrl": "@variables('varCurrentWebUrl')",
+                "isRootWeb": "@equals(variables('varCurrentWebUrl'), variables('varRootSiteUrl'))",
+                "web": "@outputs('Compose_Web_Properties_Safe')",
+                "webAllProperties": "@outputs('Compose_Web_All_Properties_Safe')",
+                "regionalSettings": "@outputs('Compose_Web_Regional_Settings_Safe')",
+                "associatedGroups": "@outputs('Compose_Web_Associated_Groups_Safe')",
+                "navigation": "@outputs('Compose_Web_Navigation_Safe')",
+                "effectiveBasePermissions": "@outputs('Compose_Web_Effective_Permissions_Safe')",
+                "siteColumns": "@coalesce(variables('varWebCollections')?['siteColumns'], createArray())",
+                "siteContentTypes": "@coalesce(variables('varWebCollections')?['siteContentTypes'], createArray())",
+                "siteUsers": "@coalesce(variables('varWebCollections')?['siteUsers'], createArray())",
+                "siteGroups": "@coalesce(variables('varWebCollections')?['siteGroups'], createArray())",
+                "roleDefinitions": "@coalesce(variables('varWebCollections')?['roleDefinitions'], createArray())",
+                "webRoleAssignments": "@coalesce(variables('varWebCollections')?['webRoleAssignments'], createArray())",
+                "features": "@coalesce(variables('varWebCollections')?['features'], createArray())",
+                "subWebUrls": "@body('Filter_Sub_Web_Urls')",
+                "counts": {
+                  "lists": "@length(coalesce(variables('varWebCollections')?['lists'], createArray()))",
+                  "siteColumns": "@length(coalesce(variables('varWebCollections')?['siteColumns'], createArray()))",
+                  "siteContentTypes": "@length(coalesce(variables('varWebCollections')?['siteContentTypes'], createArray()))",
+                  "siteUsers": "@length(coalesce(variables('varWebCollections')?['siteUsers'], createArray()))",
+                  "siteGroups": "@length(coalesce(variables('varWebCollections')?['siteGroups'], createArray()))",
+                  "webRoleAssignments": "@length(coalesce(variables('varWebCollections')?['webRoleAssignments'], createArray()))",
+                  "features": "@length(coalesce(variables('varWebCollections')?['features'], createArray()))",
+                  "subWebs": "@length(body('Filter_Sub_Web_Urls'))"
+                },
+                "retrievalStatus": {
+                  "web": "@actions('GET_Web_Properties')?['status']",
+                  "allProperties": "@actions('GET_Web_All_Properties')?['status']",
+                  "regionalSettings": "@actions('GET_Web_Regional_Settings')?['status']",
+                  "associatedGroups": "@actions('GET_Web_Associated_Groups')?['status']",
+                  "navigation": "@actions('GET_Web_Navigation')?['status']",
+                  "effectiveBasePermissions": "@actions('GET_Web_Effective_Permissions')?['status']"
+                }
+              }
+            },
+            "runAfter": {
+              "Set_varWebQueue_Enqueue": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Compose_Web_Stage_Statuses": {
+            "type": "Compose",
+            "inputs": [
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "High",
+                "stage": "GET_Web_Properties",
+                "siteUrl": "@variables('varCurrentWebUrl')",
+                "status": "@actions('GET_Web_Properties')?['status']",
+                "httpStatus": "@coalesce(outputs('GET_Web_Properties')?['statusCode'], 0)",
+                "message": "@coalesce(body('GET_Web_Properties')?['error']?['message'], body('GET_Web_Properties')?['message'], string(coalesce(body('GET_Web_Properties'), '')), '')"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "High",
+                "stage": "GET_Web_All_Properties",
+                "siteUrl": "@variables('varCurrentWebUrl')",
+                "status": "@actions('GET_Web_All_Properties')?['status']",
+                "httpStatus": "@coalesce(outputs('GET_Web_All_Properties')?['statusCode'], 0)",
+                "message": "@coalesce(body('GET_Web_All_Properties')?['error']?['message'], body('GET_Web_All_Properties')?['message'], string(coalesce(body('GET_Web_All_Properties'), '')), '')"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "High",
+                "stage": "GET_Web_Regional_Settings",
+                "siteUrl": "@variables('varCurrentWebUrl')",
+                "status": "@actions('GET_Web_Regional_Settings')?['status']",
+                "httpStatus": "@coalesce(outputs('GET_Web_Regional_Settings')?['statusCode'], 0)",
+                "message": "@coalesce(body('GET_Web_Regional_Settings')?['error']?['message'], body('GET_Web_Regional_Settings')?['message'], string(coalesce(body('GET_Web_Regional_Settings'), '')), '')"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "High",
+                "stage": "GET_Web_Associated_Groups",
+                "siteUrl": "@variables('varCurrentWebUrl')",
+                "status": "@actions('GET_Web_Associated_Groups')?['status']",
+                "httpStatus": "@coalesce(outputs('GET_Web_Associated_Groups')?['statusCode'], 0)",
+                "message": "@coalesce(body('GET_Web_Associated_Groups')?['error']?['message'], body('GET_Web_Associated_Groups')?['message'], string(coalesce(body('GET_Web_Associated_Groups'), '')), '')"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "High",
+                "stage": "GET_Web_Navigation",
+                "siteUrl": "@variables('varCurrentWebUrl')",
+                "status": "@actions('GET_Web_Navigation')?['status']",
+                "httpStatus": "@coalesce(outputs('GET_Web_Navigation')?['statusCode'], 0)",
+                "message": "@coalesce(body('GET_Web_Navigation')?['error']?['message'], body('GET_Web_Navigation')?['message'], string(coalesce(body('GET_Web_Navigation'), '')), '')"
+              },
+              {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "High",
+                "stage": "GET_Web_Effective_Permissions",
+                "siteUrl": "@variables('varCurrentWebUrl')",
+                "status": "@actions('GET_Web_Effective_Permissions')?['status']",
+                "httpStatus": "@coalesce(outputs('GET_Web_Effective_Permissions')?['statusCode'], 0)",
+                "message": "@coalesce(body('GET_Web_Effective_Permissions')?['error']?['message'], body('GET_Web_Effective_Permissions')?['message'], string(coalesce(body('GET_Web_Effective_Permissions'), '')), '')"
+              }
+            ],
+            "runAfter": {
+              "Append_Web_Capture_Record": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Filter_Web_Stage_Errors": {
+            "type": "Query",
+            "inputs": {
+              "from": "@outputs('Compose_Web_Stage_Statuses')",
+              "where": "@not(equals(item()?['status'], 'Succeeded'))"
+            },
+            "runAfter": {
+              "Compose_Web_Stage_Statuses": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Set_varSPInventoryErrors_Web": {
+            "type": "SetVariable",
+            "inputs": {
+              "name": "varSPInventoryErrors",
+              "value": "@concat(variables('varSPInventoryErrors'), body('Filter_Web_Stage_Errors'))"
+            },
+            "runAfter": {
+              "Filter_Web_Stage_Errors": [
+                "Succeeded"
+              ]
+            }
+          },
+          "Set_varWebTraversalDone": {
+            "type": "SetVariable",
+            "inputs": {
+              "name": "varWebTraversalDone",
+              "value": "@or(empty(variables('varWebQueue')), greaterOrEquals(length(variables('varWebsCaptured')), variables('varMaxWebs')))"
+            },
+            "runAfter": {
+              "Set_varSPInventoryErrors_Web": [
+                "Succeeded"
+              ]
+            }
+          }
+        },
+        "runAfter": {
+          "Compose_Site_Usage_Safe": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Condition_Warn_Web_Traversal_Cap": {
+        "type": "If",
+        "expression": {
+          "and": [
+            {
+              "not": {
+                "equals": [
+                  "@length(variables('varWebQueue'))",
+                  0
+                ]
+              }
+            }
+          ]
+        },
+        "actions": {
+          "Append_Warning_Traversal_Cap": {
+            "type": "AppendToArrayVariable",
+            "inputs": {
+              "name": "varInventoryWarnings",
+              "value": {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Medium",
+                "stage": "Until_Web_Traversal",
+                "message": "@concat('Web traversal stopped at the varMaxWebs cap of ', string(variables('varMaxWebs')), ' webs. ', string(length(variables('varWebQueue'))), ' web(s) were left uncaptured.')",
+                "uncapturedWebUrls": "@variables('varWebQueue')"
+              }
+            }
+          }
+        },
+        "else": {
+          "actions": {}
+        },
+        "runAfter": {
+          "Until_Web_Traversal": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Compose_Site_And_Web_Checkpoint": {
+        "type": "Compose",
+        "inputs": {
+          "websCaptured": "@length(variables('varWebsCaptured'))",
+          "listsDiscovered": "@length(variables('varAllListsRaw'))",
+          "websLeftUncaptured": "@length(variables('varWebQueue'))",
+          "errorsLogged": "@length(variables('varSPInventoryErrors'))",
+          "warningsLogged": "@length(variables('varInventoryWarnings'))"
+        },
+        "runAfter": {
+          "Condition_Warn_Web_Traversal_Cap": [
+            "Succeeded",
+            "Skipped"
+          ]
+        }
+      }
+    },
+    "runAfter": {
+      "Scope_PREP_01_Run_Context": [
+        "Succeeded"
+      ]
+    }
+  },
+  "allConnectionData": {
+    "GET_Site_Properties": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "GET_Site_Usage": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "GET_Web_Collection_Page": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "GET_Web_Properties": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "GET_Web_All_Properties": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "GET_Web_Regional_Settings": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "GET_Web_Associated_Groups": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "GET_Web_Navigation": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    },
+    "GET_Web_Effective_Permissions": {
+      "connectionReference": {
+        "api": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+        },
+        "connection": {
+          "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline/connections/3f1943c5955a4cb8b301e8f22f2b590d"
+        },
+        "connectionName": "3f1943c5955a4cb8b301e8f22f2b590d"
+      },
+      "referenceKey": "shared_sharepointonline"
+    }
+  },
+  "staticResults": {},
+  "isScopeNode": true,
+  "mslaNode": true
+}

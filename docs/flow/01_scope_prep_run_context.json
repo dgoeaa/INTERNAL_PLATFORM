@@ -1,0 +1,163 @@
+# 01 - Scope_PREP_01_Run_Context
+#
+# Derives tenant root and site-server-relative URL from the site URL (no hardcoding),
+# normalises the trailing slash so composed web URLs never double up (L6), stamps one
+# run identifier and one capture timestamp for every artefact (M13), and terminates
+# the run outright when the site URL cannot be used (M11).
+#
+# Paste position: first scope, directly after the top-level initialisers.
+
+{
+  "nodeId": "Scope_PREP_01_Run_Context",
+  "serializedValue": {
+    "type": "Scope",
+    "actions": {
+      "Set_varRootSiteUrl_Normalized": {
+        "type": "SetVariable",
+        "inputs": {
+          "name": "varRootSiteUrl",
+          "value": "@if(endsWith(trim(variables('varRootSiteUrl')), '/'), substring(trim(variables('varRootSiteUrl')), 0, sub(length(trim(variables('varRootSiteUrl'))), 1)), trim(variables('varRootSiteUrl')))"
+        }
+      },
+      "Set_varTenantRootUrl": {
+        "type": "SetVariable",
+        "inputs": {
+          "name": "varTenantRootUrl",
+          "value": "@concat(first(split(variables('varRootSiteUrl'), '/')), '//', last(take(split(variables('varRootSiteUrl'), '/'), 3)))"
+        },
+        "runAfter": {
+          "Set_varRootSiteUrl_Normalized": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Set_varSiteServerRelativeUrl": {
+        "type": "SetVariable",
+        "inputs": {
+          "name": "varSiteServerRelativeUrl",
+          "value": "@if(lessOrEquals(length(split(variables('varRootSiteUrl'), '/')), 3), '', concat('/', join(skip(split(variables('varRootSiteUrl'), '/'), 3), '/')))"
+        },
+        "runAfter": {
+          "Set_varTenantRootUrl": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Set_varArchiveTimestamp": {
+        "type": "SetVariable",
+        "inputs": {
+          "name": "varArchiveTimestamp",
+          "value": "@formatDateTime(variables('varCapturedAtUtc'), 'yyyyMMdd_HHmmss')"
+        },
+        "runAfter": {
+          "Set_varSiteServerRelativeUrl": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Compose_Run_Context": {
+        "type": "Compose",
+        "inputs": {
+          "schemaVersion": "3.0",
+          "runId": "@variables('varRunId')",
+          "flowName": "@workflow()?['name']",
+          "rootSiteUrl": "@variables('varRootSiteUrl')",
+          "tenantRootUrl": "@variables('varTenantRootUrl')",
+          "siteServerRelativeUrl": "@variables('varSiteServerRelativeUrl')",
+          "capturedAtUtc": "@variables('varCapturedAtUtc')",
+          "archiveTimestamp": "@variables('varArchiveTimestamp')",
+          "options": {
+            "includeHiddenLists": "@variables('varIncludeHiddenLists')",
+            "includeSchemaXml": "@variables('varIncludeSchemaXml')",
+            "maxWebs": "@variables('varMaxWebs')",
+            "maxErrorsBeforeFail": "@variables('varMaxErrorsBeforeFail')"
+          }
+        },
+        "runAfter": {
+          "Set_varArchiveTimestamp": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Condition_Validate_Root_Site_Url": {
+        "type": "If",
+        "expression": {
+          "or": [
+            {
+              "equals": [
+                "@empty(variables('varRootSiteUrl'))",
+                true
+              ]
+            },
+            {
+              "not": {
+                "startsWith": [
+                  "@toLower(variables('varRootSiteUrl'))",
+                  "https://"
+                ]
+              }
+            }
+          ]
+        },
+        "actions": {
+          "Append_Fatal_Invalid_Site_Url": {
+            "type": "AppendToArrayVariable",
+            "inputs": {
+              "name": "varSPInventoryErrors",
+              "value": {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Fatal",
+                "stage": "Validate_Root_Site_Url",
+                "siteUrl": "@variables('varRootSiteUrl')",
+                "httpStatus": 0,
+                "message": "Root site URL is empty or is not an absolute https URL. Nothing can be captured."
+              }
+            }
+          },
+          "Terminate_Invalid_Site_Url": {
+            "type": "Terminate",
+            "inputs": {
+              "runStatus": "Failed",
+              "runError": {
+                "code": "InvalidRootSiteUrl",
+                "message": "@concat('Root site URL is not usable: ''', variables('varRootSiteUrl'), '''. Set Sharepoint_Site_url to an absolute https site URL.')"
+              }
+            },
+            "runAfter": {
+              "Append_Fatal_Invalid_Site_Url": [
+                "Succeeded"
+              ]
+            }
+          }
+        },
+        "else": {
+          "actions": {}
+        },
+        "runAfter": {
+          "Compose_Run_Context": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Set_varWebQueue_Seed": {
+        "type": "SetVariable",
+        "inputs": {
+          "name": "varWebQueue",
+          "value": "@createArray(variables('varRootSiteUrl'))"
+        },
+        "runAfter": {
+          "Condition_Validate_Root_Site_Url": [
+            "Succeeded",
+            "Skipped"
+          ]
+        }
+      }
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": true,
+  "mslaNode": true
+}
