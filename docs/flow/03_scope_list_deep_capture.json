@@ -443,15 +443,26 @@
                     }
                   },
                   "Set_varCollectionAccumulator_Append_List": {
-                    "type": "SetVariable",
-                    "inputs": {
-                      "name": "varCollectionAccumulator",
-                      "value": "@concat(variables('varCollectionAccumulator'), outputs('Compose_List_Collection_Page_Items'))"
+                    "type": "Foreach",
+                    "foreach": "@outputs('Compose_List_Collection_Page_Items')",
+                    "actions": {
+                      "Append_Set_varCollectionAccumulator_Append_List": {
+                        "type": "AppendToArrayVariable",
+                        "inputs": {
+                          "name": "varCollectionAccumulator",
+                          "value": "@item()"
+                        }
+                      }
                     },
                     "runAfter": {
                       "Compose_List_Collection_Page_Items": [
                         "Succeeded"
                       ]
+                    },
+                    "runtimeConfiguration": {
+                      "concurrency": {
+                        "repetitions": 1
+                      }
                     }
                   },
                   "Compose_List_Collection_Next_Link": {
@@ -1167,15 +1178,26 @@
             }
           },
           "Set_varQualityFindings_Append": {
-            "type": "SetVariable",
-            "inputs": {
-              "name": "varQualityFindings",
-              "value": "@concat(variables('varQualityFindings'), body('Select_Quality_Findings_Clean'))"
+            "type": "Foreach",
+            "foreach": "@body('Select_Quality_Findings_Clean')",
+            "actions": {
+              "Append_Set_varQualityFindings_Append": {
+                "type": "AppendToArrayVariable",
+                "inputs": {
+                  "name": "varQualityFindings",
+                  "value": "@item()"
+                }
+              }
             },
             "runAfter": {
               "Select_Quality_Findings_Clean": [
                 "Succeeded"
               ]
+            },
+            "runtimeConfiguration": {
+              "concurrency": {
+                "repetitions": 1
+              }
             }
           },
           "Compose_List_Warning_Candidates": {
@@ -1266,15 +1288,26 @@
             }
           },
           "Set_varInventoryWarnings_Append": {
-            "type": "SetVariable",
-            "inputs": {
-              "name": "varInventoryWarnings",
-              "value": "@concat(variables('varInventoryWarnings'), body('Select_List_Warnings_Clean'))"
+            "type": "Foreach",
+            "foreach": "@body('Select_List_Warnings_Clean')",
+            "actions": {
+              "Append_Set_varInventoryWarnings_Append": {
+                "type": "AppendToArrayVariable",
+                "inputs": {
+                  "name": "varInventoryWarnings",
+                  "value": "@item()"
+                }
+              }
             },
             "runAfter": {
               "Select_List_Warnings_Clean": [
                 "Succeeded"
               ]
+            },
+            "runtimeConfiguration": {
+              "concurrency": {
+                "repetitions": 1
+              }
             }
           }
         },

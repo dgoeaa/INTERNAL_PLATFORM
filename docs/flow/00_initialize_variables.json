@@ -601,6 +601,27 @@
 }
 
 {
+  "nodeId": "Initialize_varFindingsOrdered",
+  "serializedValue": {
+    "type": "InitializeVariable",
+    "inputs": {
+      "variables": [
+        {
+          "name": "varFindingsOrdered",
+          "type": "array",
+          "value": []
+        }
+      ]
+    },
+    "runAfter": {}
+  },
+  "allConnectionData": {},
+  "staticResults": {},
+  "isScopeNode": false,
+  "mslaNode": true
+}
+
+{
   "nodeId": "Initialize_varArchiveTimestamp",
   "serializedValue": {
     "type": "InitializeVariable",

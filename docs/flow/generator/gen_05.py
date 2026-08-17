@@ -111,6 +111,23 @@ A["Set_varArchiveFolderServerRelativeUrl"] = setvar("varArchiveFolderServerRelat
 A["Set_varArchiveFolderWebUrl"] = setvar("varArchiveFolderWebUrl",
     "@concat(variables('varTenantRootUrl'), variables('varArchiveFolderServerRelativeUrl'))",
     after("Set_varArchiveFolderServerRelativeUrl"))
+# SELF-REVIEW FIX 4 - the run folder is timestamp+runId so it cannot pre-exist;
+# a creation failure therefore dooms all nine file writes and is genuinely fatal.
+A["Condition_Archive_Folder_Unavailable"] = cond(
+    {"not": {"equals": [st("CREATE_Archive_Run_Folder"), "Succeeded"]}},
+    collections.OrderedDict([
+        ("Append_Error_Archive_Folder", appendarr("varSPInventoryErrors", collections.OrderedDict([
+            ("runId", "@variables(%svarRunId%s)" % (chr(39), chr(39))),
+            ("capturedAtUtc", "@utcNow()"), ("severity", "Fatal"),
+            ("stage", "CREATE_Archive_Run_Folder"),
+            ("endpoint", "@variables(%svarArchiveFolderServerRelativeUrl%s)" % (chr(39), chr(39))),
+            ("status", st("CREATE_Archive_Run_Folder")),
+            ("httpStatus", code("CREATE_Archive_Run_Folder")),
+            ("message", msg("CREATE_Archive_Run_Folder"))]))),
+        ("Set_varFatalCapture_Folder", setvar("varFatalCapture", True,
+            after("Append_Error_Archive_Folder"))),
+    ]),
+    run_after=after("Set_varArchiveFolderWebUrl"))
 
 FILES = [
     ("01", "FULL_RAW_METADATA", "json", "@string(outputs('Compose_Full_Raw_Metadata'))", "application/json; charset=utf-8"),
@@ -121,7 +138,7 @@ FILES = [
     ("06", "HUMAN_REVIEW_REGISTER", "csv", "@variables('varHumanReviewCsv')", "text/csv; charset=utf-8"),
     ("07", "ARCHITECTURE_REVIEW_REPORT", "html", "@outputs('Compose_Architecture_Review_Report_Html')", "text/html; charset=utf-8"),
 ]
-prev = "Set_varArchiveFolderWebUrl"
+prev = "Condition_Archive_Folder_Unavailable"
 for num, name, ext, body, ctype in FILES:
     nm = "Compose_File_Name_%s" % name
     A[nm] = compose("@concat('%s_%s_', variables('varArchiveTimestamp'), '.%s')" % (num, name, ext),

@@ -114,11 +114,80 @@
           ]
         }
       },
-      "Compose_Findings_Ordered": {
-        "type": "Compose",
-        "inputs": "@concat(body('Filter_Findings_High'), body('Filter_Findings_Medium'), body('Filter_Findings_Low'))",
+      "Set_varFindingsOrdered_High": {
+        "type": "Foreach",
+        "foreach": "@body('Filter_Findings_High')",
+        "actions": {
+          "Append_Set_varFindingsOrdered_High": {
+            "type": "AppendToArrayVariable",
+            "inputs": {
+              "name": "varFindingsOrdered",
+              "value": "@item()"
+            }
+          }
+        },
         "runAfter": {
           "Filter_Findings_Low": [
+            "Succeeded"
+          ]
+        },
+        "runtimeConfiguration": {
+          "concurrency": {
+            "repetitions": 1
+          }
+        }
+      },
+      "Set_varFindingsOrdered_Medium": {
+        "type": "Foreach",
+        "foreach": "@body('Filter_Findings_Medium')",
+        "actions": {
+          "Append_Set_varFindingsOrdered_Medium": {
+            "type": "AppendToArrayVariable",
+            "inputs": {
+              "name": "varFindingsOrdered",
+              "value": "@item()"
+            }
+          }
+        },
+        "runAfter": {
+          "Set_varFindingsOrdered_High": [
+            "Succeeded"
+          ]
+        },
+        "runtimeConfiguration": {
+          "concurrency": {
+            "repetitions": 1
+          }
+        }
+      },
+      "Set_varFindingsOrdered_Low": {
+        "type": "Foreach",
+        "foreach": "@body('Filter_Findings_Low')",
+        "actions": {
+          "Append_Set_varFindingsOrdered_Low": {
+            "type": "AppendToArrayVariable",
+            "inputs": {
+              "name": "varFindingsOrdered",
+              "value": "@item()"
+            }
+          }
+        },
+        "runAfter": {
+          "Set_varFindingsOrdered_Medium": [
+            "Succeeded"
+          ]
+        },
+        "runtimeConfiguration": {
+          "concurrency": {
+            "repetitions": 1
+          }
+        }
+      },
+      "Compose_Findings_Ordered": {
+        "type": "Compose",
+        "inputs": "@variables('varFindingsOrdered')",
+        "runAfter": {
+          "Set_varFindingsOrdered_Low": [
             "Succeeded"
           ]
         }

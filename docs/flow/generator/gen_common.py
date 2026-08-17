@@ -143,7 +143,58 @@ def action_blob(node_id, action):
     ])
 
 
+
+
+# ---------------------------------------------------------------------------
+# SELF-REVIEW FIX 1
+# "@concat(variables('X'), <src>)" relies on concat() accepting arrays. concat()
+# is documented as a STRING function; array support is idiomatic but not
+# contractual. Every array accumulator write is rewritten into a sequential
+# Foreach + AppendToArrayVariable, whose array semantics are guaranteed. The
+# rewritten node keeps the original action name and runAfter, so no sibling
+# rewiring is needed.
+# ---------------------------------------------------------------------------
+import re as _re
+_ACC = _re.compile(r"^@concat\(variables\('([^']+)'\),\s*(.+)\)$")
+
+def _rewrite(actions):
+    out = collections.OrderedDict()
+    for name, a in actions.items():
+        if isinstance(a, dict):
+            for key in ("actions",):
+                if key in a and isinstance(a[key], dict):
+                    a[key] = _rewrite(a[key])
+            if "else" in a and isinstance(a.get("else"), dict) and isinstance(a["else"].get("actions"), dict):
+                a["else"]["actions"] = _rewrite(a["else"]["actions"])
+        if (isinstance(a, dict) and a.get("type") == "SetVariable"
+                and isinstance(a.get("inputs", {}).get("value"), str)):
+            m = _ACC.match(a["inputs"]["value"].strip())
+            if m and m.group(1) == a["inputs"]["name"]:
+                target, source = m.group(1), m.group(2).strip()
+                inner = collections.OrderedDict([
+                    ("Append_%s" % name, collections.OrderedDict([
+                        ("type", "AppendToArrayVariable"),
+                        ("inputs", {"name": target, "value": "@item()"})]))])
+                fe = collections.OrderedDict([
+                    ("type", "Foreach"), ("foreach", "@" + source), ("actions", inner)])
+                if "runAfter" in a:
+                    fe["runAfter"] = a["runAfter"]
+                fe["runtimeConfiguration"] = SEQ
+                out[name] = fe
+                continue
+        out[name] = a
+    return out
+
+
+def apply_self_review_fixes(blob):
+    sv = blob.get("serializedValue", {})
+    if sv.get("type") == "Scope" and isinstance(sv.get("actions"), dict):
+        sv["actions"] = _rewrite(sv["actions"])
+    return blob
+
+
 def write(path, blobs, header_lines):
+    blobs = [apply_self_review_fixes(b) for b in blobs]
     out = []
     out.extend(header_lines)
     for b in blobs:

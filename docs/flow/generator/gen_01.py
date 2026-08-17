@@ -34,6 +34,7 @@ VARS = [
     ("varSPInventoryErrors", "array", []),
     ("varInventoryWarnings", "array", []),
     ("varQualityFindings", "array", []),
+    ("varFindingsOrdered", "array", []),
     ("varArchiveTimestamp", "string", ""),
     ("varArchiveLibraryServerRelativeUrl", "string", ""),
     ("varArchiveLibraryProvisioned", "boolean", False),

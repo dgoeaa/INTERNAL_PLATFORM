@@ -552,15 +552,26 @@
                     }
                   },
                   "Set_varCollectionAccumulator_Append": {
-                    "type": "SetVariable",
-                    "inputs": {
-                      "name": "varCollectionAccumulator",
-                      "value": "@concat(variables('varCollectionAccumulator'), outputs('Compose_Web_Collection_Page_Items'))"
+                    "type": "Foreach",
+                    "foreach": "@outputs('Compose_Web_Collection_Page_Items')",
+                    "actions": {
+                      "Append_Set_varCollectionAccumulator_Append": {
+                        "type": "AppendToArrayVariable",
+                        "inputs": {
+                          "name": "varCollectionAccumulator",
+                          "value": "@item()"
+                        }
+                      }
                     },
                     "runAfter": {
                       "Compose_Web_Collection_Page_Items": [
                         "Succeeded"
                       ]
+                    },
+                    "runtimeConfiguration": {
+                      "concurrency": {
+                        "repetitions": 1
+                      }
                     }
                   },
                   "Compose_Web_Collection_Next_Link": {
@@ -679,15 +690,26 @@
             }
           },
           "Set_varAllListsRaw_Append": {
-            "type": "SetVariable",
-            "inputs": {
-              "name": "varAllListsRaw",
-              "value": "@concat(variables('varAllListsRaw'), body('Select_Web_Lists_Annotated'))"
+            "type": "Foreach",
+            "foreach": "@body('Select_Web_Lists_Annotated')",
+            "actions": {
+              "Append_Set_varAllListsRaw_Append": {
+                "type": "AppendToArrayVariable",
+                "inputs": {
+                  "name": "varAllListsRaw",
+                  "value": "@item()"
+                }
+              }
             },
             "runAfter": {
               "Select_Web_Lists_Annotated": [
                 "Succeeded"
               ]
+            },
+            "runtimeConfiguration": {
+              "concurrency": {
+                "repetitions": 1
+              }
             }
           },
           "Select_Sub_Web_Urls": {
@@ -715,15 +737,26 @@
             }
           },
           "Set_varWebQueue_Enqueue": {
-            "type": "SetVariable",
-            "inputs": {
-              "name": "varWebQueue",
-              "value": "@concat(variables('varWebQueue'), body('Filter_Sub_Web_Urls'))"
+            "type": "Foreach",
+            "foreach": "@body('Filter_Sub_Web_Urls')",
+            "actions": {
+              "Append_Set_varWebQueue_Enqueue": {
+                "type": "AppendToArrayVariable",
+                "inputs": {
+                  "name": "varWebQueue",
+                  "value": "@item()"
+                }
+              }
             },
             "runAfter": {
               "Filter_Sub_Web_Urls": [
                 "Succeeded"
               ]
+            },
+            "runtimeConfiguration": {
+              "concurrency": {
+                "repetitions": 1
+              }
             }
           },
           "Append_Web_Capture_Record": {
@@ -858,15 +891,26 @@
             }
           },
           "Set_varSPInventoryErrors_Web": {
-            "type": "SetVariable",
-            "inputs": {
-              "name": "varSPInventoryErrors",
-              "value": "@concat(variables('varSPInventoryErrors'), body('Filter_Web_Stage_Errors'))"
+            "type": "Foreach",
+            "foreach": "@body('Filter_Web_Stage_Errors')",
+            "actions": {
+              "Append_Set_varSPInventoryErrors_Web": {
+                "type": "AppendToArrayVariable",
+                "inputs": {
+                  "name": "varSPInventoryErrors",
+                  "value": "@item()"
+                }
+              }
             },
             "runAfter": {
               "Filter_Web_Stage_Errors": [
                 "Succeeded"
               ]
+            },
+            "runtimeConfiguration": {
+              "concurrency": {
+                "repetitions": 1
+              }
             }
           },
           "Set_varWebTraversalDone": {

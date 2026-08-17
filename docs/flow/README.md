@@ -2,7 +2,7 @@
 
 Complete rebuild of the Power Automate flow reviewed in
 `docs/POWER-AUTOMATE-SHAREPOINT-METADATA-FLOW-REVIEW.md`. All 40 findings are applied.
-**205 actions, 37 variables, 9 paste files.** Every file is in the same designer clipboard
+**221 actions, 38 variables.** Available as a **single consolidated upload** or as nine individual packages. Every file is in the same designer clipboard
 format as the original (`nodeId` / `serializedValue` / `allConnectionData` / `staticResults` /
 `isScopeNode` / `mslaNode`) and pastes directly into the Power Automate designer.
 
@@ -12,11 +12,39 @@ The stray second SharePoint connection is gone (L1).
 
 ---
 
+## Upload routes
+
+Pick one. Both carry identical content; the audit covers both.
+
+### Route A — single upload (recommended)
+
+**`FLOW_COMPLETE_CLIPBOARD.json`** — all 46 clipboard blobs concatenated in dependency order,
+one file, one paste. This is exactly the format of the original export you supplied (multiple
+JSON objects concatenated), so it pastes into the designer in a single operation and preserves
+your existing trigger and `Sharepoint_Site_url` initialiser.
+
+Verified: 46/46 blobs re-parse byte-identical to their source packages.
+
+### Route B — whole-flow definition
+
+**`FLOW_COMPLETE_DEFINITION.json`** — a complete workflow definition for advanced mode or a
+solution import: 47 top-level actions, 260 including nested. It adds an HTTP `Request` trigger
+taking `{ "siteUrl": "https://..." }` and initialises `Sharepoint_Site_url` from it, matching the
+Power Automate HTTP-trigger pattern this platform already uses (`config/config.example.js`).
+Connection hosts use the `connectionName` form that the definition schema expects, rather than
+the clipboard `connection` form.
+
+Use Route B for a brand-new flow; use Route A to upgrade the existing one.
+
+### Route C — the nine individual packages
+
+Still provided, in the order below, if you prefer to paste scope by scope.
+
 ## Paste order
 
 | # | File | What to paste | Where |
 |---|------|---------------|-------|
-| 0 | `00_initialize_variables.json` | 37 individual `Initialize variable` actions | **Root level**, in file order, immediately after your existing `Sharepoint_Site_url` initialiser |
+| 0 | `00_initialize_variables.json` | 38 individual `Initialize variable` actions | **Root level**, in file order, immediately after your existing `Sharepoint_Site_url` initialiser |
 | 1 | `01_scope_prep_run_context.json` | `Scope_PREP_01_Run_Context` | after the initialisers |
 | 2 | `02_scope_site_and_web_intelligence.json` | `Scope_GET_02_Site_And_Web_Intelligence` | after scope 01 |
 | 3 | `03_scope_list_deep_capture.json` | `Scope_GET_03_List_And_Library_Deep_Capture` | after scope 02 |
@@ -186,3 +214,44 @@ Plus the persistent **SharePoint Metadata Review Register** list, upserted per o
 - `ItemCount` includes folders.
 - Sequential capture trades wall-clock time for correctness. Expect roughly
   *(webs × 15 calls) + (lists × 5–6 calls)* requests per run.
+
+
+---
+
+## Critical self-review — 5 further defects found and fixed
+
+After the packages were built, they were re-audited as adversarially as the original flow was.
+Five genuine defects were found in my own output and fixed. All numbers below are reproducible
+by running `generator/audit.py`.
+
+| # | Defect | Why it mattered | Fix |
+|---|--------|-----------------|-----|
+| S1 | **Array accumulation relied on `concat()`.** 10 accumulator writes used `@concat(variables('X'), <array>)`. `concat()` is documented as a **string** function; array support is idiomatic but not contractual. | Had the runtime coerced instead of concatenating, every register would have silently become a string — precisely the class of silent corruption flagged as B2 in the original review. | All 10 rewritten as sequential `Foreach` + `AppendToArrayVariable`, whose array semantics are guaranteed. Node names and `runAfter` preserved, so nothing else changed. |
+| S2 | **`Compose_Email_Body_Html` had an unbalanced parenthesis.** The outer `if()` never closed, making the archive HTML an invalid 4th argument. | **Compile-blocking.** The flow would have failed to save. Caught only by parsing the expression with string literals stripped — no amount of regex checking would have found it. | One `)` added. All 809 expressions now parse with 0 problems. |
+| S3 | **Review-register columns were only created when the list was created.** | A list that existed but had lost a column (partial earlier run, manual deletion) would never self-heal, and upserts would silently drop that field. | Field creation moved outside the provisioning condition and runs every time, tolerating the "column already exists" failure that is the normal steady state. |
+| S4 | **`first()` on a possibly-absent key.** `Compose_List_Root_Folder` called `first(varListCollections?['rootFolder'])`; `first(null)` throws. | Would have failed the object mid-loop if the root-folder key were ever absent. | Wrapped in `coalesce(..., createArray())`. |
+| S5 | **A failed run-folder creation was not fatal.** The folder name is `timestamp_runId` so it cannot pre-exist; a failure therefore dooms all nine file writes. | The run would have reported success with an empty archive — the exact failure mode M11 exists to prevent. | Added `Condition_Archive_Folder_Unavailable`, which logs a Fatal error and sets `varFatalCapture` for Scope 08. |
+
+### Verification evidence
+
+`AUDIT_EVIDENCE.txt` and `NODE_LEDGER.txt` are committed alongside the packages and are
+regenerable with `python3 generator/audit.py` and `python3 generator/ledger.py`.
+
+| Check | Result |
+|-------|--------|
+| Packages / clipboard blobs / nodes | 9 / 46 / **259** |
+| JSON values visited (every scalar and container) | **3,831** |
+| Expressions extracted and parsed | **809**, problems: **0** |
+| Distinct functions used | 44, all in the Logic Apps catalog, **0 unknown** |
+| Action blocks graph-checked | 58, unreachable/cyclic: **0** |
+| Variables declared / written / type mismatches | 38 / 29 / **0** |
+| HTTP actions | 37 — GET 15, POST 18, DELETE 2, PATCH 2 |
+| Deprecated folder API or `%20` hand-encoding | **0** |
+| `outputs()` on a Select/Query/Table | **0** |
+| `Foreach` without `repetitions: 1` | **0** |
+| HTTP actions without a retry policy | **0** |
+| Max nesting depth | 5 (limit 8) |
+| Total actions | 221 (limit 500) |
+
+Every node in every package is listed by name, depth and type in `NODE_LEDGER.txt` — that file
+is the coverage proof: 259 rows, one per node, none omitted.

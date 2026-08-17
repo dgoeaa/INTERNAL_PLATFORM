@@ -558,11 +558,60 @@
           ]
         }
       },
+      "Condition_Archive_Folder_Unavailable": {
+        "type": "If",
+        "expression": {
+          "not": {
+            "equals": [
+              "@actions('CREATE_Archive_Run_Folder')?['status']",
+              "Succeeded"
+            ]
+          }
+        },
+        "actions": {
+          "Append_Error_Archive_Folder": {
+            "type": "AppendToArrayVariable",
+            "inputs": {
+              "name": "varSPInventoryErrors",
+              "value": {
+                "runId": "@variables('varRunId')",
+                "capturedAtUtc": "@utcNow()",
+                "severity": "Fatal",
+                "stage": "CREATE_Archive_Run_Folder",
+                "endpoint": "@variables('varArchiveFolderServerRelativeUrl')",
+                "status": "@actions('CREATE_Archive_Run_Folder')?['status']",
+                "httpStatus": "@coalesce(outputs('CREATE_Archive_Run_Folder')?['statusCode'], 0)",
+                "message": "@coalesce(body('CREATE_Archive_Run_Folder')?['error']?['message'], body('CREATE_Archive_Run_Folder')?['message'], string(coalesce(body('CREATE_Archive_Run_Folder'), '')), '')"
+              }
+            }
+          },
+          "Set_varFatalCapture_Folder": {
+            "type": "SetVariable",
+            "inputs": {
+              "name": "varFatalCapture",
+              "value": true
+            },
+            "runAfter": {
+              "Append_Error_Archive_Folder": [
+                "Succeeded"
+              ]
+            }
+          }
+        },
+        "else": {
+          "actions": {}
+        },
+        "runAfter": {
+          "Set_varArchiveFolderWebUrl": [
+            "Succeeded"
+          ]
+        }
+      },
       "Compose_File_Name_FULL_RAW_METADATA": {
         "type": "Compose",
         "inputs": "@concat('01_FULL_RAW_METADATA_', variables('varArchiveTimestamp'), '.json')",
         "runAfter": {
-          "Set_varArchiveFolderWebUrl": [
+          "Condition_Archive_Folder_Unavailable": [
             "Succeeded"
           ]
         }

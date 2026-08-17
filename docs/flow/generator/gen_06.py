@@ -46,9 +46,6 @@ PR["CREATE_Review_Register_List"] = sp(ROOT, "_api/web/lists", "POST", headers=V
           "Capture columns are refreshed by the flow on every run; Reviewer, ReviewDecision, "
           "ReviewOwner, ActionRequired, DueDate and ReviewerNotes are owned by reviewers and are "
           "never overwritten.\",\"EnableVersioning\":true,\"MajorVersionLimit\":100}"))
-PR["Compose_Review_Register_Field_Plan"] = compose(
-    [{"name": n, "kind": k, "metaType": m} for n, k, m in FIELDS],
-    after("CREATE_Review_Register_List", states=OK_ANY))
 FLD = collections.OrderedDict()
 FLD["CREATE_Review_Register_Field"] = sp(ROOT,
     "@concat('_api/web/lists/getbytitle(''', %s, ''')/fields')" % spq(REG), "POST", headers=VERBOSE,
@@ -59,16 +56,23 @@ FLD["ADD_Field_To_Default_View"] = sp(ROOT,
     "@concat('_api/web/lists/getbytitle(''', %s, ''')/views/getbytitle(''All Items'')/viewfields/addviewfield(''', %s, ''')')"
     % (spq(REG), spq("items('Apply_to_each_Review_Register_Field')?['name']")),
     "POST", run_after=after("CREATE_Review_Register_Field", states=OK_ANY))
-PR["Apply_to_each_Review_Register_Field"] = foreach(
-    "@outputs('Compose_Review_Register_Field_Plan')", FLD, after("Compose_Review_Register_Field_Plan"))
-# index the lookup key so the register stays queryable past the list view threshold
-PR["INDEX_ObjectId_Field"] = sp(ROOT,
-    "@concat('_api/web/lists/getbytitle(''', %s, ''')/fields/getbyinternalnameortitle(''ObjectId'')')" % spq(REG),
-    "PATCH", headers=MERGE, body={"Indexed": True},
-    run_after=after("Apply_to_each_Review_Register_Field", states=OK_ANY))
 A6["Condition_Provision_Review_Register"] = cond(
     {"not": {"equals": [st("GET_Review_Register_List"), "Succeeded"]}}, PR,
     run_after=after("GET_Review_Register_List", states=OK_ANY))
+
+# SELF-REVIEW FIX 2 - field creation runs on EVERY run, outside the provisioning
+# condition, so a register list that exists but has lost a column self-heals. Each
+# CREATE tolerates the "column already exists" failure, the normal steady state.
+A6["Compose_Review_Register_Field_Plan_Ensure"] = compose(
+    [{"name": n, "kind": k, "metaType": m} for n, k, m in FIELDS],
+    after("Condition_Provision_Review_Register", states=OK_DONE))
+A6["Apply_to_each_Review_Register_Field"] = foreach(
+    "@outputs('Compose_Review_Register_Field_Plan_Ensure')", FLD, after("Compose_Review_Register_Field_Plan_Ensure"))
+# index the lookup key so the register stays queryable past the list view threshold
+A6["INDEX_ObjectId_Field"] = sp(ROOT,
+    "@concat('_api/web/lists/getbytitle(''', %s, ''')/fields/getbyinternalnameortitle(''ObjectId'')')" % spq(REG),
+    "PATCH", headers=MERGE, body={"Indexed": True},
+    run_after=after("Apply_to_each_Review_Register_Field", states=OK_ANY))
 
 UP = collections.OrderedDict()
 UP["GET_Existing_Review_Register_Item"] = sp(ROOT,
@@ -121,7 +125,7 @@ UP["Condition_Log_Review_Register_Upsert_Error"] = cond(
     run_after=after("Condition_Upsert_Review_Register_Item", states=OK_ANY))
 A6["Apply_to_each_Object_For_Review_Register"] = foreach(
     "@variables('varNormalizedObjects')", UP,
-    after("Condition_Provision_Review_Register", states=OK_DONE))
+    after("INDEX_ObjectId_Field", states=OK_ANY))
 
 blob6 = scope_blob("Scope_SAVE_06_Review_Register_Upsert", A6,
     after("Scope_SAVE_05_Archive_Package"),
@@ -167,7 +171,7 @@ A7["Compose_Email_Body_Html"] = compose(
     "join(body('Select_Email_Finding_Rows'), ''), '</tbody></table>', "
     "if(greater(length(body('Filter_Findings_High_For_Email')), 20), "
     "concat('<p style=\"color:#47554e\">Showing 20 of ', string(length(body('Filter_Findings_High_For_Email'))), "
-    "' high severity findings. The full set is in the attached report.</p>'), '')), "
+    "' high severity findings. The full set is in the attached report.</p>'), ''))), "
     "'<h3 style=\"color:#00583a;margin:16px 0 6px\">Archive</h3><ul>"
     "<li><a href=\"', variables('varArchiveFolderWebUrl'), '\">Run archive folder</a> (9 files)</li>"
     "<li>Review register list: <b>', " + hesc("variables('varReviewRegisterListTitle')") + ", '</b> "

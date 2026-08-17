@@ -1,0 +1,113 @@
+==============================================================================
+COVERAGE LEDGER  (proof that the whole content was traversed)
+==============================================================================
+packages (files)            : 9
+clipboard blobs             : 46
+nodes enumerated            : 259
+max nesting depth           : 5  (Power Automate limit 8)
+JSON scalars/containers visited:
+   object     1073
+   array       263
+   string     2350
+   number      130
+   bool         15
+   null          0
+total JSON values visited   : 3831
+expressions extracted       : 809
+
+node type census:
+   Compose                    57
+   InitializeVariable         38
+   OpenApiConnection          38
+   SetVariable                33
+   AppendToArrayVariable      21
+   If                         16
+   Foreach                    15
+   Query                      15
+   Select                     13
+   Scope                       8
+   Until                       3
+   Terminate                   2
+
+==============================================================================
+EXPRESSION AUDIT  (every expression parsed, literals stripped)
+==============================================================================
+expressions parsed          : 809
+distinct functions used     : 44
+problems found              : 0
+
+function usage (top 25):
+   variables               299
+   items                   166
+   coalesce                158
+   outputs                 122
+   item                    106
+   string                  106
+   equals                  103
+   body                     89
+   length                   70
+   concat                   62
+   actions                  47
+   utcNow                   36
+   createArray              36
+   replace                  33
+   if                       30
+   int                      18
+   and                      16
+   not                      16
+   json                     13
+   first                    12
+   empty                    10
+   decodeUriComponent       10
+   greater                   9
+   or                        8
+   contains                  6
+functions used that are NOT in the Logic Apps catalog: NONE
+
+==============================================================================
+GRAPH AUDIT
+==============================================================================
+action blocks analysed      : 58
+blocks with unreachable actions (cycle/orphan): NONE
+
+==============================================================================
+VARIABLE LIFECYCLE AUDIT
+==============================================================================
+variables declared          : 38
+variables written           : 29
+type/operation mismatches   : NONE
+object variables (setProperty targets): varListCollections, varListRetrievalStatus, varWebCollections
+
+==============================================================================
+SHAREPOINT REST ENDPOINT AUDIT
+==============================================================================
+HTTP actions with a URI     : 37
+methods                     : {'GET': 15, 'POST': 18, 'DELETE': 2, 'PATCH': 2}
+literal (non-expression) URIs:
+   GET_Site_Properties              GET    _api/site
+   GET_Site_Usage                   GET    _api/site/usage
+   GET_Web_Properties               GET    _api/web
+   GET_Web_All_Properties           GET    _api/web/AllProperties
+   GET_Web_Regional_Settings        GET    _api/web/RegionalSettings?$expand=TimeZone
+   GET_Web_Associated_Groups        GET    _api/web?$expand=AssociatedOwnerGroup,AssociatedMemberGroup,AssociatedVisitorGroup&$select=Id,Title,Associated
+   GET_Web_Navigation               GET    _api/web/Navigation?$expand=QuickLaunch,TopNavigationBar
+   GET_Web_Effective_Permissions    GET    _api/web/EffectiveBasePermissions
+   GET_Current_User                 GET    _api/web/currentuser?$select=Id,Title,LoginName,Email
+   CREATE_Archive_Library           POST   _api/web/lists
+   CREATE_Review_Register_List      POST   _api/web/lists
+deprecated folder API / %20 hand-encoding: NONE
+
+==============================================================================
+PACKAGE INTEGRITY (SHA-256)
+==============================================================================
+   00_initialize_variables.json                   985e4fe24e58cac8e66b14eaa8e8db18    15686 bytes
+   01_scope_prep_run_context.json                 d599a086c750c059ae7ccd2e1ad86a3d     5318 bytes
+   02_scope_site_and_web_intelligence.json        781a758092fc81a0c40bb264121d2175    44013 bytes
+   03_scope_list_deep_capture.json                919eae7b482ed4cf005dd6a586f02e68    68330 bytes
+   04_scope_registers_reports_csv.json            61098253f996220da75eb53c5aa97838    40587 bytes
+   05_scope_archive_package.json                  aeda7d62d95cd05f879106f7487b4745    56774 bytes
+   06_scope_review_register_upsert.json           400d9953cbf488fd2e9b5e6566e6c9d2    25635 bytes
+   07_scope_delivery.json                         de4a3c197ca544891954d3f6115f6701    10407 bytes
+   08_scope_run_outcome.json                      fc259a2aaccfe50e4d0a1ec463c94273     3530 bytes
+   FLOW_COMPLETE_CLIPBOARD.json                   072d7be10c177147aa945176915fc5eb   184582 bytes
+   FLOW_COMPLETE_DEFINITION.json                  b4f089a0e764923b98bbfc0fe713ca14   252239 bytes

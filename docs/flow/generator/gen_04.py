@@ -76,9 +76,19 @@ A["Filter_Findings_Medium"] = query("@variables('varQualityFindings')",
     "@equals(item()?['severity'], 'Medium')", after("Filter_Findings_High"))
 A["Filter_Findings_Low"] = query("@variables('varQualityFindings')",
     "@equals(item()?['severity'], 'Low')", after("Filter_Findings_Medium"))
-A["Compose_Findings_Ordered"] = compose(
-    "@concat(body('Filter_Findings_High'), body('Filter_Findings_Medium'), body('Filter_Findings_Low'))",
+# SELF-REVIEW FIX 1b - the three-way array concat carried the same contractual risk
+# as the accumulator writes; replaced with guaranteed sequential appends.
+A["Set_varFindingsOrdered_High"] = setvar("varFindingsOrdered",
+    "@concat(variables('varFindingsOrdered'), body('Filter_Findings_High'))",
     after("Filter_Findings_Low"))
+A["Set_varFindingsOrdered_Medium"] = setvar("varFindingsOrdered",
+    "@concat(variables('varFindingsOrdered'), body('Filter_Findings_Medium'))",
+    after("Set_varFindingsOrdered_High"))
+A["Set_varFindingsOrdered_Low"] = setvar("varFindingsOrdered",
+    "@concat(variables('varFindingsOrdered'), body('Filter_Findings_Low'))",
+    after("Set_varFindingsOrdered_Medium"))
+A["Compose_Findings_Ordered"] = compose("@variables('varFindingsOrdered')",
+    after("Set_varFindingsOrdered_Low"))
 A["Compose_Quality_Findings_Payload"] = compose(collections.OrderedDict([
     ("schemaVersion", "3.0"),
     ("outputType", "SharePointMetadataQualityFindings"),
