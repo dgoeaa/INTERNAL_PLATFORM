@@ -1319,3 +1319,42 @@ dgo-shell[data-route-pending] .dgo-route-loading{display:block}
   --dgo-color-danger-subtle-bg:  #FBE7EB;
   --dgo-color-danger-subtle-fg:  #780820;
 }
+
+/* ── Flow Studio (modules/flow-studio.js) ───────────────────────────────────────────
+   The screen reuses .workspace/.split/.panel/.list-item wholesale; what it adds is the
+   three things a plan tree needs and the platform had no shape for — nested indentation
+   that survives arbitrary depth, findings grouped by severity, and a JSON surface that
+   stays monospaced and scrollable without pushing the layout wider than the viewport.
+   Every colour is a token, so dark and high-contrast follow without a second rule. */
+.fs-split{align-items:start}
+.fs-left{display:flex;flex-direction:column;gap:8px;min-width:0}
+.fs-node{min-width:0}
+.fs-node .list-item{margin-bottom:6px}
+.fs-node__ctl{gap:4px;margin-top:6px}
+.fs-node__ctl .btn{padding:0 8px;min-height:26px;font-size:var(--dgo-type-floor)}
+/* Depth is drawn with a rule rather than raw padding so a deeply nested branch stays
+   readable at the 640px tier, where a per-level indent would run out of width fast. */
+.fs-branch{margin:0 0 6px 10px;padding-left:10px;border-left:2px solid var(--bd)}
+.fs-branch__label{font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin:2px 0 4px}
+.fs-branch__empty{margin:0 0 6px;font-style:italic}
+.fs-findings{margin-top:10px;padding:9px 11px;border:1px solid var(--bd);border-radius:var(--r);background:var(--sunken)}
+.fs-findings h3{margin:0 0 5px;font-size:12px}
+.fs-findings ul{margin:0;padding-left:18px}
+.fs-findings li{font-size:11px;line-height:1.5;color:var(--fg);margin-bottom:3px}
+.fs-findings--error{border-left:3px solid var(--danger)}
+.fs-findings--warn{border-left:3px solid var(--warn)}
+.fs-findings--note{border-left:3px solid var(--info)}
+.fs-howto{margin:6px 0 10px;padding-left:18px}
+.fs-howto li{margin-bottom:2px}
+.fs-fragment{min-height:0}
+.fs-json{width:100%;font-family:var(--dgo-family-mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:11px;line-height:1.45;white-space:pre;overflow:auto;background:var(--sunken);color:var(--fg);border:1px solid var(--bd);border-radius:var(--r);margin-top:8px}
+.fs-json[hidden]{display:none}
+.fs-workspace textarea{font-family:var(--dgo-family-mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:11px;line-height:1.5}
+.fs-workspace .repeat{display:flex;flex-direction:column;gap:5px;margin-top:4px}
+.fs-workspace .repeat .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr)) auto;gap:5px;align-items:center;margin:0}
+.fs-workspace .repeat .form-row .btn{flex:0 0 auto}
+.fs-planhead{margin-bottom:6px}
+@media(max-width:640px){
+  .fs-branch{margin-left:5px;padding-left:6px}
+  .fs-workspace .repeat .form-row{grid-template-columns:1fr}
+}

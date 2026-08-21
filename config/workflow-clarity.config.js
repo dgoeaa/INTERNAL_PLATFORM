@@ -215,6 +215,15 @@ export const VisibleWorkspaces = Object.freeze([
     "handoffs": ["user-admin", "diagnostics"]
   },
   {
+    "id": "flow-studio",
+    "route": "flow-studio",
+    "label": "Flow Studio",
+    "group": "SYSTEM",
+    "purpose": "Generates Power Automate actions for the flows behind this platform's endpoints, ready to paste into the modern designer.",
+    "owns": ["action-generation", "endpoint-scaffold", "designer-paste-payload"],
+    "handoffs": ["diagnostics", "settings"]
+  },
+  {
     "id": "diagnostics",
     "route": "diagnostics",
     "label": "System Health",

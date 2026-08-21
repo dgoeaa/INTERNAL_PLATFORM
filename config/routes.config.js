@@ -175,6 +175,13 @@ export const Routes = [
     "kpi": false
   },
   {
+    "path": "flow-studio",
+    "label": "Flow Studio",
+    "group": "SYSTEM",
+    "kind": "workspace",
+    "kpi": false
+  },
+  {
     "path": "diagnostics",
     "label": "System Health",
     "group": "SYSTEM",

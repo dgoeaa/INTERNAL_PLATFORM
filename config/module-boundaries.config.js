@@ -30,6 +30,7 @@ export const ModuleBoundaries = Object.freeze({
   'operator-hud': { role:'runtime-monitoring', owns:['sync-status','pending-queue','runtime-load','operator-alerts'], views:['diagnostics-summary'], mustNotOwn:['configuration-edit','release-certification'] },
   'correspondence-email': { role:'official-correspondence-email-dispatch', owns:['create-correspondence-email-draft','send-correspondence-email','duplicate-correspondence-email','archive-correspondence-email'], views:['correspondence','registryFiles','dispatches','correspondenceEmails'], mustNotOwn:['task-notification','acknowledgement-receipt','personal-mailbox'] },
   settings: { role:'configuration', owns:['profile','theme','density','endpoint-restore','state-import-export'], views:['endpoint-config'], mustNotOwn:['runtime-certification','live-monitoring'] },
+  'flow-studio': { role:'integration-authoring', owns:['action-generation','endpoint-scaffold','designer-paste-payload','definition-export'], views:['endpoint-contracts','action-catalog'], mustNotOwn:['endpoint-configuration','business-action','flow-deployment'] },
   diagnostics: { role:'certification-health', owns:['run-checks','contract-health','route-health','governance-health','release-blockers'], views:['runtime','endpoint','ui-certification'], mustNotOwn:['configuration-edit','business-action'] },
   'user-admin': { role:'user-access-admin', owns:['create-user','edit-user','disable-user','assign-role'], views:['role-matrix'], mustNotOwn:['business-workflow-action'] }
 });
