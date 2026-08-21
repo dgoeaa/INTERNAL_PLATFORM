@@ -16,6 +16,8 @@ import * as PA from '../core/power-automate/index.js';
 import { endpointScaffold, acknowledgementEmail, guardedWrite } from '../core/power-automate/blueprints.js';
 import { coerce, escapeLiteral, isWholeExpression, interpolationErrors, buildCondition } from '../core/power-automate/expressions.js';
 import { actionById, Actions, defaultValues } from '../core/power-automate/catalog.js';
+import { inferSchema, schemaFromSample } from '../core/power-automate/schema.js';
+import { Triggers, triggerById, defaultTriggerValues } from '../core/power-automate/triggers.js';
 
 const plan = steps => ({ name: 'Test plan', steps });
 const step = (actionId, values = {}, extra = {}) => ({ id: Math.random().toString(36).slice(2), actionId, values, branches: {}, ...extra });
@@ -285,5 +287,140 @@ describe('importing from the designer', () => {
 
   test('a single copied action is refused with the reason and the way round it', () => {
     assert.throws(() => PA.importDefinition('{"mslaNode":true,"nodeData":{}}'), /Peek code|Scope/);
+  });
+});
+
+
+describe('schema inference', () => {
+  test('scalars, arrays and nesting are described', () => {
+    assert.deepEqual(inferSchema({ a: 'x', b: 1, c: 1.5, d: true, e: ['x'] }), {
+      type: 'object',
+      properties: {
+        a: { type: 'string' }, b: { type: 'integer' }, c: { type: 'number' },
+        d: { type: 'boolean' }, e: { type: 'array', items: { type: 'string' } }
+      }
+    });
+  });
+
+  test('array items are merged, so a field missing from the first item still appears', () => {
+    // Taking the first element would hide `b` from the token picker for every later item.
+    assert.deepEqual(inferSchema([{ a: 1 }, { a: 1, b: 'x' }]).items.properties,
+      { a: { type: 'integer' }, b: { type: 'string' } });
+  });
+
+  test('integer and number seen for one field widen to number', () => {
+    assert.deepEqual(inferSchema([{ n: 1 }, { n: 1.5 }]).items.properties.n, { type: 'number' });
+  });
+
+  test('no required[] is emitted', () => {
+    // A sample is one observation. Asserting it would fail a later payload that omits an
+    // optional field, at run time, with an error caused by the schema rather than the data.
+    assert.equal(JSON.stringify(inferSchema({ a: 1, b: null })).includes('required'), false);
+  });
+
+  test('null becomes an unconstrained field rather than a wrong type', () => {
+    assert.deepEqual(inferSchema({ a: null }).properties.a, {});
+  });
+
+  test('a bad sample reports why', () => {
+    assert.throws(() => schemaFromSample('{nope'), /not valid JSON/);
+  });
+});
+
+describe('triggers', () => {
+  test('every trigger builds a named definition', () => {
+    for (const t of Triggers) {
+      const built = t.build({ ...defaultTriggerValues(t), dataset: 'https://x', table: 'L' });
+      assert.ok(built.name, `${t.id} produced no name`);
+      assert.equal(typeof built.definition.type, 'string');
+    }
+  });
+
+  test('polling connector triggers carry a recurrence, which the service requires', () => {
+    for (const id of ['sp.itemCreated', 'sp.itemCreatedOrModified', 'o365.newEmail']) {
+      const t = triggerById(id);
+      const built = t.build({ ...defaultTriggerValues(t), dataset: 'https://x', table: 'L' });
+      assert.equal(built.definition.type, 'OpenApiConnection');
+      assert.ok(built.definition.recurrence?.frequency, `${id} has no recurrence`);
+    }
+  });
+
+  test('a trigger reaches a flow only through the definition, never through a paste', () => {
+    const t = triggerById('recurrence');
+    const trigger = t.build(defaultTriggerValues(t));
+    const plan = { name: 'p', steps: [step('compose', { inputs: '1' })], trigger };
+    // It is in the definition export …
+    const { definition } = PA.buildWorkflowDefinition(plan, trigger);
+    assert.equal(definition.triggers.Recurrence.type, 'Recurrence');
+    // … and nowhere in the payload the designer pastes.
+    const payload = PA.toPayload(PA.buildFragments(plan).fragments[0]);
+    assert.equal(JSON.stringify(payload).includes('Recurrence'), false);
+  });
+});
+
+describe('the enhanced catalog', () => {
+  test('the new connectors are declared with a PowerApps api id', () => {
+    for (const id of ['approvals.startAndWait', 'teams.postMessage', 'o365.reply', 'sp.addAttachment']) {
+      const a = actionById(id);
+      const built = a.build(defaultValues(a), {});
+      assert.equal(built.type, 'OpenApiConnection', id);
+      assert.match(built.inputs.host.apiId, /^\/providers\/Microsoft\.PowerApps\/apis\/shared_/, id);
+      assert.equal(built.inputs.authentication, "@parameters('$authentication')", id);
+    }
+  });
+
+  test('approval inputs are flattened the way the connector expects', () => {
+    const a = actionById('approvals.startAndWait');
+    const built = a.build({ approvalType: 'Basic', title: 'Approve DGO/1', assignedTo: 'a@b.gov.ng' }, {});
+    assert.equal(built.inputs.parameters.approvalType, 'Basic');
+    assert.equal(built.inputs.parameters['ApprovalCreationInput/title'], 'Approve DGO/1');
+  });
+});
+
+describe('name resolution', () => {
+  test('duplicates are numbered, and the plan is not mutated to find out', () => {
+    const plan = { steps: [step('compose', { inputs: '1' }), step('compose', { inputs: '2' })] };
+    plan.steps[0].id = 'a'; plan.steps[1].id = 'b';
+    const names = PA.resolveNames(plan);
+    assert.deepEqual([names.get('a'), names.get('b')], ['Compose', 'Compose_2']);
+    assert.equal('__name' in plan.steps[0], false);
+  });
+
+  test('resolution matches what generation actually emits', () => {
+    const plan = { steps: [step('compose', { inputs: '1' }), step('compose', { inputs: '2' })] };
+    plan.steps[0].id = 'a'; plan.steps[1].id = 'b';
+    const names = PA.resolveNames(plan);
+    const { actions } = PA.buildActionsMap(plan);
+    assert.deepEqual(Object.keys(actions), [names.get('a'), names.get('b')]);
+  });
+});
+
+describe('the new validation rules', () => {
+  const warns = p => PA.warningsOf(PA.validatePlan(p)).map(i => i.message);
+  const errs = p => PA.errorsOf(PA.validatePlan(p)).map(i => i.message);
+
+  test('an interpolated array source is flagged — @{} stringifies the value', () => {
+    const bad = { steps: [step('foreach', { from: "@{body('X')?['value']}" }, { branches: { actions: [step('compose', { inputs: '1' })] } })] };
+    assert.ok(warns(bad).some(m => /drop the braces/.test(m)));
+  });
+
+  test('a correct whole-value source is not flagged', () => {
+    const good = { steps: [step('foreach', { from: "@body('X')?['value']" }, { branches: { actions: [step('compose', { inputs: '1' })] } })] };
+    assert.equal(warns(good).some(m => /drop the braces/.test(m)), false);
+  });
+
+  test('a Response inside a loop is flagged — a run answers its caller once', () => {
+    const p = { steps: [step('foreach', { from: "@body('X')" }, { branches: { actions: [step('response', { statusCode: 200 })] } })] };
+    assert.ok(warns(p).some(m => /answer its caller only once/.test(m)));
+  });
+
+  test('a Response outside a loop is not flagged', () => {
+    const p = { steps: [step('response', { statusCode: 200 })] };
+    assert.equal(warns(p).some(m => /answer its caller only once/.test(m)), false);
+  });
+
+  test('initialising the same variable twice blocks generation', () => {
+    const p = { steps: [step('initVariable', { name: 'ref', type: 'string' }), step('initVariable', { name: 'ref', type: 'string' })] };
+    assert.ok(errs(p).some(m => /initialised twice/.test(m)));
   });
 });

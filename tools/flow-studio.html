@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flow Studio — Power Automate action generator</title>
+<!--
+  Flow Studio, standalone.
+
+  Same screen as the DGO route at #/flow-studio, same generator, no platform. Open this file
+  over HTTP (ES modules do not load from file://) in a tab next to the Power Automate
+  designer:
+
+      npx http-server .        then browse to /tools/flow-studio.html
+
+  It reaches into ../core/power-automate/ for everything that matters, so the two surfaces
+  cannot drift. What this file supplies is only what the shell would otherwise: the chrome
+  helpers, a toast, a confirm dialog, view state and storage.
+-->
+<style>
+  /* The class contract core/power-automate/studio.js renders against. The platform styles
+     these in styles/app.css; here they are defined from scratch so the page owes nothing to
+     the design system. Both palettes are declared as tokens, so dark mode is a token swap
+     rather than a second set of rules. */
+  :root{
+    --bg:#f4f7f5; --s:#ffffff; --sunken:#eef2ef; --fg:#25302b; --strong:#0d1f18; --mut:#66736c;
+    --bd:#dde7e1; --p:#05583B; --a:#17B255; --danger:#a5122c; --warn:#8a6100; --info:#054871;
+    --r:8px; --focus:0 0 0 3px #17b25545;
+    --sans:'Segoe UI',system-ui,-apple-system,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0e1512; --s:#151d19; --sunken:#111813; --fg:#dfe8e3; --strong:#f2f7f4; --mut:#93a49b;
+      --bd:#26332c; --p:#17B255; --a:#3ddb7c; --danger:#ff8095; --warn:#e0b45c; --info:#7fc4ef;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:13px/1.5 var(--sans)}
+  button,input,select,textarea{font:inherit;color:inherit}
+  input,select,textarea{width:100%;padding:7px 9px;background:var(--s);color:var(--fg);border:1px solid var(--bd);border-radius:6px}
+  textarea{font-family:var(--mono);font-size:11px;line-height:1.5;resize:vertical}
+  :focus-visible{outline:none;box-shadow:var(--focus)}
+  code{font-family:var(--mono);font-size:.92em}
+
+  main{max-width:1500px;margin:0 auto;padding:18px}
+  .workspace{min-width:0}
+  .pagehead{margin-bottom:12px}
+  .eyebrow{font:700 10px var(--sans);letter-spacing:.11em;text-transform:uppercase;color:var(--a)}
+  h1{font-size:24px;margin:4px 0 2px;color:var(--strong)}
+  h2{font-size:16px;margin:0 0 6px;color:var(--strong)}
+  h3{font-size:13px;margin:10px 0 6px;color:var(--strong)}
+  h4{font-size:12.5px;margin:2px 0;color:var(--strong)}
+  .subtitle{font-size:12px;color:var(--mut);margin:0;max-width:80ch}
+  .meta{font-size:11px;color:var(--mut);line-height:1.45}
+  .meta code{color:var(--fg)}
+
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
+  .kpi{background:var(--s);border:1px solid var(--bd);border-left:3px solid var(--a);border-radius:var(--r);padding:10px 12px}
+  .kpi small{display:block;font:700 10px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+  .kpi b{font-size:22px;color:var(--strong)}
+
+  .cc-tabs{display:flex;gap:4px;background:var(--sunken);border:1px solid var(--bd);border-radius:var(--r);padding:4px;margin-bottom:10px;flex-wrap:wrap}
+  .cc-tab{background:transparent;border:1px solid transparent;border-radius:6px;padding:6px 14px;cursor:pointer;font-weight:600;color:var(--mut)}
+  .cc-tab.active{background:var(--s);border-color:var(--bd);color:var(--strong)}
+
+  .split{display:grid;grid-template-columns:minmax(280px,1fr) minmax(0,1.6fr);gap:10px;align-items:start}
+  @media(max-width:960px){.split{grid-template-columns:1fr}}
+  .panel-stack{display:flex;flex-direction:column;gap:10px;min-width:0}
+  .panel{background:var(--s);border:1px solid var(--bd);border-radius:var(--r);padding:14px;min-width:0}
+  .panel-eyebrow{margin-bottom:2px}
+
+  .btn{border:1px solid var(--p);background:var(--p);color:#fff;border-radius:6px;padding:7px 12px;cursor:pointer;font:700 11px var(--sans);white-space:nowrap}
+  .btn.ghost{background:var(--s);color:var(--p);border-color:var(--bd)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  @media (prefers-color-scheme:dark){.btn{color:#08130d}.btn.ghost{color:var(--a)}}
+
+  .form-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px}
+  .grid label{display:grid;gap:4px;font:700 11px var(--sans);min-width:0}
+  .wide{grid-column:1/-1}
+  .check-inline{display:flex!important;align-items:center;gap:6px;font-weight:600}
+  .check-inline input{width:auto}
+  .dgo-field__label{font:700 11px var(--sans);margin-bottom:4px}
+
+  .list-item{background:var(--s);border:1px solid var(--bd);border-radius:var(--r);padding:9px 11px;cursor:pointer;margin-bottom:6px}
+  .list-item:hover{border-color:var(--a)}
+  .list-item.active{border-color:var(--a);background:var(--sunken)}
+  .action-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd)}
+  .action-row small{display:block;color:var(--mut);font-size:11px}
+  .chip{display:inline-block;background:var(--sunken);border:1px solid var(--bd);border-radius:99px;padding:3px 9px;font-size:11px;cursor:pointer;color:var(--fg);width:auto}
+  .empty{background:var(--sunken);border:1px dashed var(--bd);border-radius:var(--r);padding:18px;text-align:center;color:var(--mut)}
+  .empty h2{color:var(--fg)}
+  .alert{background:var(--sunken);border:1px solid var(--danger);border-left:3px solid var(--danger);border-radius:var(--r);padding:10px 12px;margin-bottom:10px;font-size:12px}
+
+  /* Flow Studio's own shapes — kept in step with the block at the end of styles/app.css. */
+  .fs-left{display:flex;flex-direction:column;gap:10px;min-width:0}
+  .fs-node__ctl{gap:4px;margin-top:6px}
+  .fs-node__ctl .btn{padding:3px 8px;font-size:10px}
+  .fs-branch{margin:0 0 6px 10px;padding-left:10px;border-left:2px solid var(--bd)}
+  .fs-branch__label{font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin:2px 0 4px}
+  .fs-branch__empty{margin:0 0 6px;font-style:italic}
+  .fs-findings{margin-top:10px;padding:9px 11px;border:1px solid var(--bd);border-radius:var(--r);background:var(--sunken)}
+  .fs-findings h3{margin:0 0 5px}
+  .fs-findings ul{margin:0;padding-left:18px}
+  .fs-findings li{font-size:11px;line-height:1.5;margin-bottom:3px}
+  .fs-findings--error{border-left:3px solid var(--danger)}
+  .fs-findings--warn{border-left:3px solid var(--warn)}
+  .fs-findings--note{border-left:3px solid var(--info)}
+  .fs-howto{margin:6px 0 10px;padding-left:18px}
+  .fs-json{white-space:pre;overflow:auto;background:var(--sunken)}
+  .fs-json[hidden]{display:none}
+  .fs-catalog{max-height:420px;overflow:auto;margin-top:6px}
+  .fs-tokens{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:8px 0}
+  .fs-resolved{background:var(--sunken);border:1px solid var(--bd);border-radius:4px;padding:0 4px}
+  .fs-resolved--changed{border-color:var(--warn);color:var(--warn)}
+  .fs-sampler{margin-top:6px;border:1px solid var(--bd);border-radius:6px;padding:8px;background:var(--sunken)}
+  .fs-sampler summary{cursor:pointer;font-weight:700;font-size:11px}
+  .fs-sampler textarea{margin:6px 0}
+  .repeat{display:flex;flex-direction:column;gap:5px;margin-top:4px}
+  .repeat .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr)) auto;gap:5px;margin:0}
+  @media(max-width:640px){.repeat .form-row{grid-template-columns:1fr}.fs-branch{margin-left:5px;padding-left:6px}}
+
+  /* Feedback surfaces the shell would normally own. */
+  #toasts{position:fixed;right:14px;bottom:14px;z-index:90;display:flex;flex-direction:column;gap:6px}
+  .toast{background:var(--strong);color:var(--bg);padding:9px 13px;border-radius:6px;font-size:11px;max-width:44ch;box-shadow:0 8px 24px #0004}
+  .toast.success{background:var(--p);color:#fff}
+  .toast.error{background:var(--danger);color:#fff}
+  dialog{border:1px solid var(--bd);border-radius:10px;background:var(--s);color:var(--fg);padding:16px;max-width:520px;width:calc(100% - 32px)}
+  dialog::backdrop{background:#0009}
+  dialog h2{margin-top:0}
+  dialog .form-row{justify-content:flex-end}
+</style>
+</head>
+<body>
+<main><div id="app"></div></main>
+<div id="toasts" aria-live="polite"></div>
+
+<script type="module">
+  import { createStudio } from '../core/power-automate/studio.js';
+
+  const esc = v => String(v ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+
+  // Chrome helpers. Deliberately the same markup shapes the platform emits, so one screen
+  // implementation styles correctly under either stylesheet.
+  const head = (title, subtitle = '', eyebrow = '') =>
+    `<div class="pagehead"><div>${eyebrow ? `<div class="eyebrow">${esc(eyebrow)}</div>` : ''}` +
+    `<h1>${esc(title)}</h1>${subtitle ? `<p class="subtitle">${esc(subtitle)}</p>` : ''}</div></div>`;
+
+  const kpis = xs => `<div class="kpis">${xs.map(([label, value]) =>
+    `<div class="kpi"><small>${esc(label)}</small><b>${esc(value)}</b></div>`).join('')}</div>`;
+
+  const emptyState = (title, body) =>
+    `<div class="empty"><h2>${esc(title)}</h2><p>${esc(body)}</p></div>`;
+
+  function toast(message, tone = '') {
+    const el = document.createElement('div');
+    el.className = `toast ${tone}`;
+    el.textContent = message;
+    document.getElementById('toasts').appendChild(el);
+    setTimeout(() => el.remove(), 6000);
+  }
+
+  // A promise-returning confirm, matching the platform's confirmAction() contract. `body` is
+  // trusted HTML from the studio itself, never from a plan.
+  function confirmDialog(options) {
+    const o = typeof options === 'string' ? { title: 'Confirm', body: options } : (options || {});
+    return new Promise(resolve => {
+      const dlg = document.createElement('dialog');
+      dlg.innerHTML = `<h2>${esc(o.title || 'Confirm')}</h2><div>${o.body || ''}</div>
+        <div class="form-row">
+          <button type="button" class="btn ghost" data-no>${esc(o.cancelText || 'Cancel')}</button>
+          <button type="button" class="btn" data-yes>${esc(o.confirmText || 'Continue')}</button>
+        </div>`;
+      const done = value => { dlg.close(); dlg.remove(); resolve(value); };
+      dlg.querySelector('[data-yes]').onclick = () => done(true);
+      dlg.querySelector('[data-no]').onclick = () => done(false);
+      dlg.addEventListener('cancel', e => { e.preventDefault(); done(false); });
+      document.body.appendChild(dlg);
+      dlg.showModal();
+    });
+  }
+
+  // View state: which tab, which action is selected. In memory, exactly as UIState is.
+  let view = {};
+  const getState = (defaults = {}) => ({ ...defaults, ...view });
+  const setState = patch => { view = { ...view, ...patch }; };
+
+  const studio = createStudio({
+    esc, head, kpis, emptyState,
+    toast,
+    confirm: confirmDialog,
+    getState, setState,
+    storage: {
+      // A different key from the platform's, so the two surfaces keep separate drafts on the
+      // same origin rather than silently overwriting each other's work.
+      get: key => localStorage.getItem(`standalone:${key}`),
+      set: (key, value) => localStorage.setItem(`standalone:${key}`, value)
+    }
+  });
+
+  studio.mount(document.getElementById('app'));
+</script>
+</body>
+</html>

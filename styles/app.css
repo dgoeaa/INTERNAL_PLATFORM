@@ -1353,8 +1353,24 @@ dgo-shell[data-route-pending] .dgo-route-loading{display:block}
 .fs-workspace .repeat{display:flex;flex-direction:column;gap:5px;margin-top:4px}
 .fs-workspace .repeat .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr)) auto;gap:5px;align-items:center;margin:0}
 .fs-workspace .repeat .form-row .btn{flex:0 0 auto}
-.fs-planhead{margin-bottom:6px}
+.fs-planctl{margin:8px 0}
+.fs-planctl .btn{padding:0 10px;min-height:28px}
+/* The catalog is a searchable list rather than a pair of dependent selects, so it needs a
+   ceiling — 45 actions unrolled would push the plan tree off the bottom of every screen. */
+.fs-catalog{max-height:400px;overflow-y:auto;margin-top:6px;scrollbar-width:thin}
+.fs-catalog .action-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--bd)}
+.fs-catalog .action-row small{display:block;color:var(--mut);font-size:var(--dgo-type-floor)}
+.fs-tokens{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:8px 0}
+.fs-tokens .chip{cursor:pointer}
+/* The name an action will actually carry once duplicates are resolved. Highlighted only when
+   it differs from what was typed, since that is the case an operator cannot otherwise see. */
+.fs-resolved{font-family:var(--dgo-family-mono,ui-monospace,monospace);background:var(--sunken);border:1px solid var(--bd);border-radius:4px;padding:0 4px}
+.fs-resolved--changed{border-color:var(--warn);color:var(--warn)}
+.fs-sampler{margin-top:6px;padding:8px;border:1px solid var(--bd);border-radius:var(--r);background:var(--sunken)}
+.fs-sampler summary{cursor:pointer;font-weight:700;font-size:var(--dgo-type-floor)}
+.fs-sampler textarea{margin:6px 0}
 @media(max-width:640px){
   .fs-branch{margin-left:5px;padding-left:6px}
   .fs-workspace .repeat .form-row{grid-template-columns:1fr}
+  .fs-catalog{max-height:none}
 }

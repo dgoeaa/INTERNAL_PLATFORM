@@ -6,11 +6,13 @@
 // the same code rather than three near-copies of it.
 
 export { Actions, ActionGroups, actionById, actionsInGroup, isContainer, defaultValues } from './catalog.js';
-export { buildFragments, buildActionsMap, planMode, walk, RunAfterStatuses } from './assemble.js';
+export { buildFragments, buildActionsMap, planMode, walk, resolveNames, RunAfterStatuses } from './assemble.js';
 export { validatePlan, errorsOf, warningsOf, notesOf, canGenerate } from './validate.js';
 export { toPayload, payloadText, writeClipboard, browserSupport, importDefinition, describeDefinition } from './clipboard.js';
 export { Blueprints, blueprintById, endpointOptions, requestTrigger, requestSchema, successEnvelope, failureEnvelope } from './blueprints.js';
 export { coerce, buildCondition, ConditionOperators, conditionOperator, interpolationErrors } from './expressions.js';
+export { inferSchema, schemaFromSample, schemaTextFromSample } from './schema.js';
+export { Triggers, triggerById, defaultTriggerValues } from './triggers.js';
 
 import { buildActionsMap } from './assemble.js';
 

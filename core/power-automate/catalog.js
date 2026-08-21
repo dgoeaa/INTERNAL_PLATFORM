@@ -70,6 +70,8 @@ export const ActionGroups = Object.freeze([
   { id: 'http', label: 'HTTP & Request' },
   { id: 'sharepoint', label: 'SharePoint' },
   { id: 'outlook', label: 'Office 365 Outlook' },
+  { id: 'approvals', label: 'Approvals' },
+  { id: 'teams', label: 'Microsoft Teams' },
   { id: 'advanced', label: 'Advanced' }
 ]);
 
@@ -133,7 +135,7 @@ export const Actions = Object.freeze([
     summary: 'Repeats its actions once per item in an array.',
     branches: [{ key: 'actions', label: 'Do' }],
     fields: [
-      f('from', 'Select an output from previous steps', 'text', { required: true, placeholder: "@body('Get_items')?['value']" }),
+      f('from', 'Select an output from previous steps', 'text', { required: true, wholeValue: true, placeholder: "@body('Get_items')?['value']" }),
       f('concurrency', 'Concurrency (parallel repetitions)', 'number', {
         help: 'Leave blank for the default sequential behaviour. 1–50 when set.'
       })
@@ -214,8 +216,8 @@ export const Actions = Object.freeze([
     type: 'ParseJson',
     summary: 'Types a JSON payload so its fields become pickable tokens downstream.',
     fields: [
-      f('content', 'Content', 'text', { required: true, placeholder: '@triggerBody()' }),
-      f('schema', 'Schema', 'json', { required: true, rows: 10, help: 'A JSON Schema. The studio can infer one from a sample payload.' })
+      f('content', 'Content', 'text', { required: true, wholeValue: true, placeholder: '@triggerBody()' }),
+      f('schema', 'Schema', 'json', { required: true, rows: 10, inferFromSample: true, help: 'A JSON Schema. Paste a sample payload below and the studio infers it.' })
     ],
     build: v => ({ type: 'ParseJson', inputs: compact({ content: coerce(v.content, 'text'), schema: coerce(v.schema, 'json') }) })
   },
@@ -226,7 +228,7 @@ export const Actions = Object.freeze([
     type: 'Query',
     summary: 'Keeps only the array items that pass a test.',
     fields: [
-      f('from', 'From', 'text', { required: true, placeholder: "@body('Get_items')?['value']" }),
+      f('from', 'From', 'text', { required: true, wholeValue: true, placeholder: "@body('Get_items')?['value']" }),
       f('rows', 'Conditions', 'conditions', { required: true }),
       f('join', 'Match', 'select', { options: [['and', 'All conditions (AND)'], ['or', 'Any condition (OR)']], default: 'and' })
     ],
@@ -239,7 +241,7 @@ export const Actions = Object.freeze([
     type: 'Select',
     summary: 'Reshapes every item of an array into a new shape.',
     fields: [
-      f('from', 'From', 'text', { required: true, placeholder: "@body('Get_items')?['value']" }),
+      f('from', 'From', 'text', { required: true, wholeValue: true, placeholder: "@body('Get_items')?['value']" }),
       f('map', 'Map', 'keyvalue', { required: true, help: "Property name on the left, expression on the right — e.g. Reference / @item()?['Ref']" })
     ],
     build: v => ({ type: 'Select', inputs: { from: coerce(v.from, 'text'), select: pairs(v.map) } })
@@ -251,7 +253,7 @@ export const Actions = Object.freeze([
     type: 'Join',
     summary: 'Joins an array into a single delimited string.',
     fields: [
-      f('from', 'From', 'text', { required: true }),
+      f('from', 'From', 'text', { required: true, wholeValue: true }),
       f('joinWith', 'Join with', 'text', { required: true, default: ', ' })
     ],
     build: v => ({ type: 'Join', inputs: { from: coerce(v.from, 'text'), joinWith: coerce(v.joinWith, 'text') ?? ', ' } })
@@ -263,7 +265,7 @@ export const Actions = Object.freeze([
     type: 'Table',
     summary: 'Renders an array as a table — the usual body of a summary email.',
     fields: [
-      f('from', 'From', 'text', { required: true }),
+      f('from', 'From', 'text', { required: true, wholeValue: true }),
       f('format', 'Format', 'select', { required: true, default: 'HTML', options: [['HTML', 'HTML'], ['CSV', 'CSV']] })
     ],
     build: v => ({ type: 'Table', inputs: { from: coerce(v.from, 'text'), format: coerce(v.format, 'text') || 'HTML' } })
@@ -542,6 +544,267 @@ export const Actions = Object.freeze([
       'emailMessage/Attachments': coerce(v.attachments, 'json')
     })
   },
+  {
+    id: 'decrementVariable',
+    label: 'Decrement variable',
+    group: 'variables',
+    type: 'DecrementVariable',
+    summary: 'Subtracts from a numeric variable.',
+    fields: [f('name', 'Name', 'text', { required: true }), f('value', 'Decrement by', 'number', { default: 1 })],
+    build: v => ({ type: 'DecrementVariable', inputs: compact({ name: coerce(v.name, 'text'), value: coerce(v.value, 'number') }) })
+  },
+  {
+    id: 'delayUntil',
+    label: 'Delay until',
+    group: 'control',
+    type: 'Wait',
+    summary: 'Waits until a specific moment rather than for a duration.',
+    fields: [f('timestamp', 'Timestamp', 'text', { required: true, placeholder: '@{addDays(utcNow(), 1)}', help: 'An ISO 8601 UTC timestamp.' })],
+    build: v => ({ type: 'Wait', inputs: { until: { timestamp: coerce(v.timestamp, 'text') } } })
+  },
+
+  // ── SharePoint files ─────────────────────────────────────────────────────────────
+  {
+    id: 'sp.getFileContent',
+    label: 'Get file content',
+    group: 'sharepoint',
+    connector: 'sharepoint',
+    type: 'OpenApiConnection',
+    summary: 'Reads a file’s bytes by its identifier.',
+    fields: [
+      f('dataset', 'Site address', 'text', { required: true }),
+      f('id', 'File identifier', 'text', { required: true }),
+      f('inferContentType', 'Infer content type', 'boolean', { default: true })
+    ],
+    build: v => openApi('sharepoint', 'GetFileContent', {
+      dataset: coerce(v.dataset, 'text'), id: coerce(v.id, 'text'), inferContentType: coerce(v.inferContentType, 'boolean')
+    })
+  },
+  {
+    id: 'sp.getFileContentByPath',
+    label: 'Get file content using path',
+    group: 'sharepoint',
+    connector: 'sharepoint',
+    type: 'OpenApiConnection',
+    summary: 'Reads a file’s bytes by its server-relative path.',
+    fields: [
+      f('dataset', 'Site address', 'text', { required: true }),
+      f('path', 'File path', 'text', { required: true, placeholder: '/Shared Documents/Correspondence/letter.pdf' }),
+      f('inferContentType', 'Infer content type', 'boolean', { default: true })
+    ],
+    build: v => openApi('sharepoint', 'GetFileContentByPath', {
+      dataset: coerce(v.dataset, 'text'), path: coerce(v.path, 'text'), inferContentType: coerce(v.inferContentType, 'boolean')
+    })
+  },
+  {
+    id: 'sp.getFileMetadata',
+    label: 'Get file metadata',
+    group: 'sharepoint',
+    connector: 'sharepoint',
+    type: 'OpenApiConnection',
+    summary: 'Reads a file’s name, size, path and timestamps without its bytes.',
+    fields: [
+      f('dataset', 'Site address', 'text', { required: true }),
+      f('id', 'File identifier', 'text', { required: true })
+    ],
+    build: v => openApi('sharepoint', 'GetFileMetadata', { dataset: coerce(v.dataset, 'text'), id: coerce(v.id, 'text') })
+  },
+  {
+    id: 'sp.updateFile',
+    label: 'Update file',
+    group: 'sharepoint',
+    connector: 'sharepoint',
+    type: 'OpenApiConnection',
+    summary: 'Replaces the contents of an existing file.',
+    fields: [
+      f('dataset', 'Site address', 'text', { required: true }),
+      f('id', 'File identifier', 'text', { required: true }),
+      f('body', 'File content', 'text', { required: true })
+    ],
+    build: v => openApi('sharepoint', 'UpdateFile', { dataset: coerce(v.dataset, 'text'), id: coerce(v.id, 'text'), body: coerce(v.body, 'text') })
+  },
+  {
+    id: 'sp.addAttachment',
+    label: 'Add attachment',
+    group: 'sharepoint',
+    connector: 'sharepoint',
+    type: 'OpenApiConnection',
+    summary: 'Attaches a file to a list item — how scanned evidence lands on a correspondence record.',
+    fields: [
+      f('dataset', 'Site address', 'text', { required: true }),
+      f('table', 'List name or GUID', 'text', { required: true }),
+      f('id', 'Item id', 'text', { required: true }),
+      f('name', 'File name', 'text', { required: true }),
+      f('content', 'File content', 'text', { required: true })
+    ],
+    build: v => openApi('sharepoint', 'AddAttachment', {
+      dataset: coerce(v.dataset, 'text'), table: coerce(v.table, 'text'), id: coerce(v.id, 'text'),
+      'body/Name': coerce(v.name, 'text'), 'body/ContentBytes': coerce(v.content, 'text')
+    })
+  },
+
+  // ── Outlook, beyond sending ──────────────────────────────────────────────────────
+  {
+    id: 'o365.reply',
+    label: 'Reply to email (V3)',
+    group: 'outlook',
+    connector: 'office365',
+    type: 'OpenApiConnection',
+    summary: 'Replies in-thread, which is what keeps a correspondence exchange together in the recipient’s mailbox.',
+    fields: [
+      f('messageId', 'Message id', 'text', { required: true, placeholder: "@{triggerOutputs()?['body/id']}" }),
+      f('body', 'Body', 'textarea', { required: true, rows: 6 }),
+      f('replyAll', 'Reply all', 'boolean', { default: false }),
+      f('to', 'To (override)', 'text'),
+      f('subject', 'Subject (override)', 'text')
+    ],
+    build: v => openApi('office365', 'ReplyToV3', {
+      messageId: coerce(v.messageId, 'text'),
+      'body/Body': coerce(v.body, 'text'),
+      'body/ReplyAll': coerce(v.replyAll, 'boolean'),
+      'body/To': coerce(v.to, 'text'),
+      'body/Subject': coerce(v.subject, 'text')
+    })
+  },
+  {
+    id: 'o365.markAsRead',
+    label: 'Mark as read or unread (V3)',
+    group: 'outlook',
+    connector: 'office365',
+    type: 'OpenApiConnection',
+    summary: 'Stops an intake flow reprocessing the same message.',
+    fields: [
+      f('messageId', 'Message id', 'text', { required: true }),
+      f('isRead', 'Mark as read', 'boolean', { default: true })
+    ],
+    build: v => openApi('office365', 'MarkAsReadV3', { messageId: coerce(v.messageId, 'text'), isRead: coerce(v.isRead, 'boolean') })
+  },
+  {
+    id: 'o365.moveEmail',
+    label: 'Move email (V2)',
+    group: 'outlook',
+    connector: 'office365',
+    type: 'OpenApiConnection',
+    summary: 'Files a processed message out of the inbox.',
+    fields: [
+      f('messageId', 'Message id', 'text', { required: true }),
+      f('folderPath', 'Destination folder', 'text', { required: true, placeholder: 'Processed' })
+    ],
+    build: v => openApi('office365', 'MoveEmailV2', { messageId: coerce(v.messageId, 'text'), folderPath: coerce(v.folderPath, 'text') })
+  },
+  {
+    id: 'o365.sendApproval',
+    label: 'Send approval email',
+    group: 'outlook',
+    connector: 'office365',
+    type: 'OpenApiConnection',
+    summary: 'An email carrying response buttons. Lighter than the Approvals connector — no approval record is kept.',
+    fields: [
+      f('to', 'To', 'text', { required: true }),
+      f('subject', 'Subject', 'text', { required: true }),
+      f('options', 'Options', 'text', { required: true, default: 'Approve, Reject', help: 'Comma-separated. Each becomes a button.' }),
+      f('body', 'Body', 'textarea', { rows: 6 }),
+      f('headerText', 'Header text', 'text'),
+      f('importance', 'Importance', 'select', { default: 'Normal', options: [['Low', 'Low'], ['Normal', 'Normal'], ['High', 'High']] })
+    ],
+    build: v => openApi('office365', 'SendApprovalMail', {
+      'emailMessage/To': coerce(v.to, 'text'),
+      'emailMessage/Subject': coerce(v.subject, 'text'),
+      'emailMessage/Options': coerce(v.options, 'text'),
+      'emailMessage/Body': coerce(v.body, 'text'),
+      'emailMessage/HeaderText': coerce(v.headerText, 'text'),
+      'emailMessage/Importance': coerce(v.importance, 'text')
+    })
+  },
+
+  // ── Approvals ────────────────────────────────────────────────────────────────────
+  {
+    id: 'approvals.startAndWait',
+    label: 'Start and wait for an approval',
+    group: 'approvals',
+    connector: 'approvals',
+    type: 'OpenApiConnection',
+    summary: 'Creates a tracked approval and pauses the run until it is answered. The flow half of Review & Approval.',
+    fields: [
+      f('approvalType', 'Approval type', 'select', {
+        required: true, default: 'Basic',
+        options: [['Basic', 'Approve/Reject — first to respond'], ['BasicAwaitAll', 'Approve/Reject — everyone must approve'],
+                  ['CustomResponses', 'Custom responses — wait for one'], ['CustomResponsesAwaitAll', 'Custom responses — wait for all']]
+      }),
+      f('title', 'Title', 'text', { required: true }),
+      f('assignedTo', 'Assigned to', 'text', { required: true, help: 'Semicolon-separated addresses.' }),
+      f('details', 'Details', 'textarea', { rows: 5 }),
+      f('itemLink', 'Item link', 'text'),
+      f('itemLinkDescription', 'Item link description', 'text'),
+      f('requestor', 'Requestor', 'text'),
+      f('enableNotifications', 'Send notifications', 'boolean', { default: true }),
+      f('enableReassignment', 'Allow reassignment', 'boolean', { default: true })
+    ],
+    build: v => openApi('approvals', 'StartAndWaitForAnApproval', {
+      approvalType: coerce(v.approvalType, 'text'),
+      'ApprovalCreationInput/title': coerce(v.title, 'text'),
+      'ApprovalCreationInput/assignedTo': coerce(v.assignedTo, 'text'),
+      'ApprovalCreationInput/details': coerce(v.details, 'text'),
+      'ApprovalCreationInput/itemLink': coerce(v.itemLink, 'text'),
+      'ApprovalCreationInput/itemLinkDescription': coerce(v.itemLinkDescription, 'text'),
+      'ApprovalCreationInput/requestor': coerce(v.requestor, 'text'),
+      'ApprovalCreationInput/enableNotifications': coerce(v.enableNotifications, 'boolean'),
+      'ApprovalCreationInput/enableReassignment': coerce(v.enableReassignment, 'boolean')
+    })
+  },
+  {
+    id: 'approvals.start',
+    label: 'Create an approval (do not wait)',
+    group: 'approvals',
+    connector: 'approvals',
+    type: 'OpenApiConnection',
+    summary: 'Creates the approval and carries on — for when the response is handled by a separate flow.',
+    fields: [
+      f('approvalType', 'Approval type', 'select', {
+        required: true, default: 'Basic',
+        options: [['Basic', 'Approve/Reject — first to respond'], ['BasicAwaitAll', 'Approve/Reject — everyone must approve'],
+                  ['CustomResponses', 'Custom responses — wait for one'], ['CustomResponsesAwaitAll', 'Custom responses — wait for all']]
+      }),
+      f('title', 'Title', 'text', { required: true }),
+      f('assignedTo', 'Assigned to', 'text', { required: true }),
+      f('details', 'Details', 'textarea', { rows: 5 }),
+      f('itemLink', 'Item link', 'text'),
+      f('requestor', 'Requestor', 'text')
+    ],
+    build: v => openApi('approvals', 'StartAnApproval', {
+      approvalType: coerce(v.approvalType, 'text'),
+      'ApprovalCreationInput/title': coerce(v.title, 'text'),
+      'ApprovalCreationInput/assignedTo': coerce(v.assignedTo, 'text'),
+      'ApprovalCreationInput/details': coerce(v.details, 'text'),
+      'ApprovalCreationInput/itemLink': coerce(v.itemLink, 'text'),
+      'ApprovalCreationInput/requestor': coerce(v.requestor, 'text')
+    })
+  },
+
+  // ── Teams ────────────────────────────────────────────────────────────────────────
+  {
+    id: 'teams.postMessage',
+    label: 'Post message in a chat or channel',
+    group: 'teams',
+    connector: 'teams',
+    type: 'OpenApiConnection',
+    summary: 'Notifies a directorate channel without an email.',
+    fields: [
+      f('poster', 'Post as', 'select', { required: true, default: 'Flow bot', options: [['Flow bot', 'Flow bot'], ['User', 'User']] }),
+      f('location', 'Post in', 'select', { required: true, default: 'Channel', options: [['Channel', 'Channel'], ['Group chat', 'Group chat'], ['Chat with Flow bot', 'Chat with Flow bot']] }),
+      f('groupId', 'Team', 'text', { required: true, help: 'Team id. For a group chat, the conversation id.' }),
+      f('channelId', 'Channel', 'text', { help: 'Channel id. Leave blank for a group chat.' }),
+      f('message', 'Message', 'textarea', { required: true, rows: 5, help: 'HTML is accepted.' })
+    ],
+    build: v => openApi('teams', 'PostMessageToConversation', {
+      poster: coerce(v.poster, 'text'),
+      location: coerce(v.location, 'text'),
+      'body/recipient/groupId': coerce(v.groupId, 'text'),
+      'body/recipient/channelId': coerce(v.channelId, 'text'),
+      'body/messageBody': coerce(v.message, 'text')
+    })
+  },
+
   // ── Advanced ─────────────────────────────────────────────────────────────────────
   {
     id: 'raw',

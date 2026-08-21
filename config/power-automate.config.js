@@ -125,6 +125,18 @@ export const Connectors = Object.freeze({
     label: 'Office 365 Outlook',
     connectionName: 'shared_office365',
     apiId: '/providers/Microsoft.PowerApps/apis/shared_office365'
+  }),
+  approvals: Object.freeze({
+    id: 'approvals',
+    label: 'Approvals',
+    connectionName: 'shared_approvals',
+    apiId: '/providers/Microsoft.PowerApps/apis/shared_approvals'
+  }),
+  teams: Object.freeze({
+    id: 'teams',
+    label: 'Microsoft Teams',
+    connectionName: 'shared_teams',
+    apiId: '/providers/Microsoft.PowerApps/apis/shared_teams'
   })
 });
 

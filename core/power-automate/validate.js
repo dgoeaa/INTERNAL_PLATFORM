@@ -13,7 +13,7 @@
 
 import { actionById, isContainer } from './catalog.js';
 import { walk, planMode } from './assemble.js';
-import { interpolationErrors } from './expressions.js';
+import { interpolationErrors, hasInterpolation, isWholeExpression } from './expressions.js';
 import { ActionNamePolicy, DesignerBrowserSupport } from '../../config/power-automate.config.js';
 
 const issue = (severity, message, where = '') => ({ severity, message, where });
@@ -56,7 +56,7 @@ export function validatePlan(plan) {
   const connectorsUsed = new Set();
   let hasTopLevelOnlyNested = false;
 
-  walk(steps, (step, action, depth) => {
+  walk(steps, (step, action, depth, ancestors) => {
     const label = step.name || action?.label || step.actionId;
     if (!action) { issues.push(issue('error', `Unknown action type "${step.actionId}".`, label)); return; }
 
@@ -94,6 +94,14 @@ export function validatePlan(plan) {
         try { JSON.parse(v); }
         catch (e) { issues.push(issue('error', `"${fd.label}" is not valid JSON — ${e.message}`, label)); }
       }
+      // A field that consumes an array or an object needs the value ITSELF, which means a
+      // whole-value expression. `@{body('X')}` interpolates, and interpolation coerces to
+      // string — so the action receives "[object Object]" or a JSON blob and fails at run
+      // time with a type error that names neither this field nor the missing @.
+      if (fd.wholeValue && typeof v === 'string' && hasInterpolation(v) && !isWholeExpression(v)) {
+        issues.push(issue('warning',
+          `"${fd.label}" uses @{…}, which turns the value into text. This field needs the value itself — drop the braces: @body('X') rather than @{body('X')}.`, label));
+      }
     }
 
     // ── expression health ──────────────────────────────────────────────────────────
@@ -104,7 +112,17 @@ export function validatePlan(plan) {
     }
 
     // ── per-action rules ───────────────────────────────────────────────────────────
-    if (action.id === 'initVariable' && step.values?.name) declaredVariables.add(step.values.name);
+    if (action.id === 'initVariable' && step.values?.name) {
+      if (declaredVariables.has(step.values.name)) {
+        issues.push(issue('error', `Variable "${step.values.name}" is initialised twice. A workflow may declare each variable once.`, label));
+      }
+      declaredVariables.add(step.values.name);
+    }
+    // A run answers its caller once. A Response inside a loop sends on the first iteration
+    // and fails on the second — and the failure is attributed to the loop, not to this action.
+    if (action.id === 'response' && ancestors.some(a => a?.id === 'foreach' || a?.id === 'until')) {
+      issues.push(issue('warning', 'A Response inside a loop runs more than once, but a flow can answer its caller only once — the second iteration fails. Move it after the loop.', label));
+    }
     if (action.dynamicCases) {
       const cases = step.values?.cases || [];
       const seen = new Set();

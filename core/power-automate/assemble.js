@@ -113,13 +113,18 @@ function assembleSiblings(steps, taken, errors, depth) {
 /** The statuses a runAfter edge can wait on, in the order the designer lists them. */
 export const RunAfterStatuses = Object.freeze(['Succeeded', 'Failed', 'Skipped', 'TimedOut']);
 
-/** Walk a plan's steps depth-first, yielding {step, action, depth}. */
-export function walk(steps, visit, depth = 0) {
+/**
+ * Walk a plan's steps depth-first, yielding (step, action, depth, ancestors).
+ *
+ * `ancestors` is the chain of containing actions, outermost first. Depth alone cannot answer
+ * "is this inside a loop?", and that question decides whether a Response is safe.
+ */
+export function walk(steps, visit, depth = 0, ancestors = []) {
   for (const step of steps || []) {
-    visit(step, actionById(step.actionId), depth);
     const action = actionById(step.actionId);
+    visit(step, action, depth, ancestors);
     if (isContainer(action) || action?.dynamicCases) {
-      for (const list of Object.values(step.branches || {})) walk(list, visit, depth + 1);
+      for (const list of Object.values(step.branches || {})) walk(list, visit, depth + 1, [...ancestors, action]);
     }
   }
 }
@@ -183,6 +188,20 @@ export function buildFragments(plan) {
     errors,
     names: [...taken]
   };
+}
+
+/**
+ * The name each step will carry, without building anything or touching the steps.
+ *
+ * The studio shows this in the plan tree. Two actions typed as "Compose" become Compose and
+ * Compose_2, and an operator who cannot see that has no way to know which one their
+ * `outputs('Compose')` refers to.
+ */
+export function resolveNames(plan) {
+  const taken = new Set();
+  const map = new Map();
+  walk(plan?.steps || [], step => map.set(step.id, nameFor(step, taken)));
+  return map;
 }
 
 /**
