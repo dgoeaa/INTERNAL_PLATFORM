@@ -34,15 +34,26 @@ export const payloadText = fragment => JSON.stringify(toPayload(fragment), null,
 /**
  * Put text on the system clipboard.
  *
- * navigator.clipboard.writeText needs a secure context (https, or localhost). The platform
- * is served over plain http on some internal deployments, so the execCommand path is not
- * legacy hygiene here — it is the path that actually runs. Returns how it succeeded, or
- * throws, so the caller can tell the operator something true.
+ * Two paths, and both of them get used in practice:
+ *
+ *   navigator.clipboard.writeText needs a secure context — https, localhost, or a file://
+ *   page. The platform is served over plain http on some internal deployments, so on those
+ *   this is unavailable from the start.
+ *
+ *   Even in a secure context the call can still be REFUSED: the permission may be denied by
+ *   enterprise policy, or the document may not hold focus at the moment of the call. So the
+ *   fallback is attached to the failure, not only to the missing capability — an earlier
+ *   version keyed it solely on isSecureContext and would have thrown, with nothing else
+ *   tried, exactly when a copy was refused rather than unsupported.
+ *
+ * Returns how it succeeded, or throws, so the caller can tell the operator something true.
  */
 export async function writeClipboard(text) {
   if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText && window.isSecureContext) {
-    await navigator.clipboard.writeText(text);
-    return 'clipboard-api';
+    try {
+      await navigator.clipboard.writeText(text);
+      return 'clipboard-api';
+    } catch { /* refused rather than unsupported — fall through and try the older path */ }
   }
   const ta = document.createElement('textarea');
   ta.value = text;
