@@ -6,14 +6,12 @@
 // screen, and a second copy diverges.
 
 import { hydrateGovernance } from '../core/governed-actions.js';
-import { head, kpis, esc, toast, confirmAction, emptyState } from '../core/ui.js';
+import { esc, toast, confirmAction, emptyState } from '../core/ui.js';
 import { UIState } from '../core/ui-state.js';
 import { createStudio } from '../core/power-automate/studio.js';
 
 const studio = createStudio({
   esc,
-  head,
-  kpis,
   emptyState,
   toast,
   confirm: confirmAction,

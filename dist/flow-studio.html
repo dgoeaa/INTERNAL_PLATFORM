@@ -7,7 +7,7 @@
 
       node tools/build-standalone.mjs
 
-  Built from 13 source files, sha256 d9b3a782d35a.
+  Built from 14 source files, sha256 30344712a55f.
   Rebuild and compare that digest to confirm this file matches the repository.
 
   HOW TO USE
@@ -32,133 +32,70 @@
 <!--
   Flow Studio, standalone.
 
-  Same screen as the DGO route at #/flow-studio, same generator, no platform. Open this file
-  over HTTP (ES modules do not load from file://) in a tab next to the Power Automate
-  designer:
+  Same screen and same generator as the DGO route at #/flow-studio, with no platform behind
+  it. Open over HTTP (ES modules do not load from file://):
 
       npx http-server .        then browse to /tools/flow-studio.html
 
-  It reaches into ../core/power-automate/ for everything that matters, so the two surfaces
-  cannot drift. What this file supplies is only what the shell would otherwise: the chrome
-  helpers, a toast, a confirm dialog, view state and storage.
+  For a file you can just double-click, build the single-file package instead:
+
+      node tools/build-standalone.mjs   ->  dist/flow-studio.html
+
+  The screen and its stylesheet both live in core/power-automate/, so the two surfaces
+  cannot drift. What this file supplies is only what the DGO shell would otherwise: the
+  colour tokens, a toast, a confirm dialog, view state and storage.
 -->
 <style>
-  /* The class contract core/power-automate/studio.js renders against. The platform styles
-     these in styles/app.css; here they are defined from scratch so the page owes nothing to
-     the design system. Both palettes are declared as tokens, so dark mode is a token swap
-     rather than a second set of rules. */
+  /* The tokens core/power-automate/studio.css.js reads. The platform defines these same
+     names in its design system, which is why one stylesheet serves both surfaces and
+     follows each one's themes. */
   :root{
-    --bg:#f4f7f5; --s:#ffffff; --sunken:#eef2ef; --fg:#25302b; --strong:#0d1f18; --mut:#66736c;
-    --bd:#dde7e1; --p:#05583B; --a:#17B255; --danger:#a5122c; --warn:#8a6100; --info:#054871;
-    --r:8px; --focus:0 0 0 3px #17b25545;
+    --bg:#f4f7f5; --s:#ffffff; --sunken:#eef2ef;
+    --fg:#25302b; --strong:#0d1f18; --mut:#66736c; --bd:#dde7e1;
+    --p:#05583B; --a:#17B255;
+    --danger:#a5122c; --warn:#8a6100; --info:#054871;
     --sans:'Segoe UI',system-ui,-apple-system,sans-serif;
-    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   }
   @media (prefers-color-scheme:dark){
     :root{
-      --bg:#0e1512; --s:#151d19; --sunken:#111813; --fg:#dfe8e3; --strong:#f2f7f4; --mut:#93a49b;
-      --bd:#26332c; --p:#17B255; --a:#3ddb7c; --danger:#ff8095; --warn:#e0b45c; --info:#7fc4ef;
+      --bg:#0e1512; --s:#151d19; --sunken:#111813;
+      --fg:#dfe8e3; --strong:#f2f7f4; --mut:#93a49b; --bd:#26332c;
+      --p:#0c7f4f; --a:#3ddb7c;
+      --danger:#ff8095; --warn:#e0b45c; --info:#7fc4ef;
     }
   }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--fg);font:13px/1.5 var(--sans)}
-  button,input,select,textarea{font:inherit;color:inherit}
-  input,select,textarea{width:100%;padding:7px 9px;background:var(--s);color:var(--fg);border:1px solid var(--bd);border-radius:6px}
-  textarea{font-family:var(--mono);font-size:11px;line-height:1.5;resize:vertical}
-  :focus-visible{outline:none;box-shadow:var(--focus)}
-  code{font-family:var(--mono);font-size:.92em}
 
-  main{max-width:1500px;margin:0 auto;padding:18px}
-  .workspace{min-width:0}
-  .pagehead{margin-bottom:12px}
-  .eyebrow{font:700 10px var(--sans);letter-spacing:.11em;text-transform:uppercase;color:var(--a)}
-  h1{font-size:24px;margin:4px 0 2px;color:var(--strong)}
-  h2{font-size:16px;margin:0 0 6px;color:var(--strong)}
-  h3{font-size:13px;margin:10px 0 6px;color:var(--strong)}
-  h4{font-size:12.5px;margin:2px 0;color:var(--strong)}
-  .subtitle{font-size:12px;color:var(--mut);margin:0;max-width:80ch}
-  .meta{font-size:11px;color:var(--mut);line-height:1.45}
-  .meta code{color:var(--fg)}
-
-  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
-  .kpi{background:var(--s);border:1px solid var(--bd);border-left:3px solid var(--a);border-radius:var(--r);padding:10px 12px}
-  .kpi small{display:block;font:700 10px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
-  .kpi b{font-size:22px;color:var(--strong)}
-
-  .cc-tabs{display:flex;gap:4px;background:var(--sunken);border:1px solid var(--bd);border-radius:var(--r);padding:4px;margin-bottom:10px;flex-wrap:wrap}
-  .cc-tab{background:transparent;border:1px solid transparent;border-radius:6px;padding:6px 14px;cursor:pointer;font-weight:600;color:var(--mut)}
-  .cc-tab.active{background:var(--s);border-color:var(--bd);color:var(--strong)}
-
-  .split{display:grid;grid-template-columns:minmax(280px,1fr) minmax(0,1.6fr);gap:10px;align-items:start}
-  @media(max-width:960px){.split{grid-template-columns:1fr}}
-  .panel-stack{display:flex;flex-direction:column;gap:10px;min-width:0}
-  .panel{background:var(--s);border:1px solid var(--bd);border-radius:var(--r);padding:14px;min-width:0}
-  .panel-eyebrow{margin-bottom:2px}
-
-  .btn{border:1px solid var(--p);background:var(--p);color:#fff;border-radius:6px;padding:7px 12px;cursor:pointer;font:700 11px var(--sans);white-space:nowrap}
-  .btn.ghost{background:var(--s);color:var(--p);border-color:var(--bd)}
-  .btn:disabled{opacity:.45;cursor:not-allowed}
-  @media (prefers-color-scheme:dark){.btn{color:#08130d}.btn.ghost{color:var(--a)}}
-
-  .form-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px}
-  .grid label{display:grid;gap:4px;font:700 11px var(--sans);min-width:0}
-  .wide{grid-column:1/-1}
-  .check-inline{display:flex!important;align-items:center;gap:6px;font-weight:600}
-  .check-inline input{width:auto}
-  .dgo-field__label{font:700 11px var(--sans);margin-bottom:4px}
-
-  .list-item{background:var(--s);border:1px solid var(--bd);border-radius:var(--r);padding:9px 11px;cursor:pointer;margin-bottom:6px}
-  .list-item:hover{border-color:var(--a)}
-  .list-item.active{border-color:var(--a);background:var(--sunken)}
-  .action-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd)}
-  .action-row small{display:block;color:var(--mut);font-size:11px}
-  .chip{display:inline-block;background:var(--sunken);border:1px solid var(--bd);border-radius:99px;padding:3px 9px;font-size:11px;cursor:pointer;color:var(--fg);width:auto}
-  .empty{background:var(--sunken);border:1px dashed var(--bd);border-radius:var(--r);padding:18px;text-align:center;color:var(--mut)}
-  .empty h2{color:var(--fg)}
-  .alert{background:var(--sunken);border:1px solid var(--danger);border-left:3px solid var(--danger);border-radius:var(--r);padding:10px 12px;margin-bottom:10px;font-size:12px}
-
-  /* Flow Studio's own shapes — kept in step with the block at the end of styles/app.css. */
-  .fs-left{display:flex;flex-direction:column;gap:10px;min-width:0}
-  .fs-node__ctl{gap:4px;margin-top:6px}
-  .fs-node__ctl .btn{padding:3px 8px;font-size:10px}
-  .fs-branch{margin:0 0 6px 10px;padding-left:10px;border-left:2px solid var(--bd)}
-  .fs-branch__label{font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin:2px 0 4px}
-  .fs-branch__empty{margin:0 0 6px;font-style:italic}
-  .fs-findings{margin-top:10px;padding:9px 11px;border:1px solid var(--bd);border-radius:var(--r);background:var(--sunken)}
-  .fs-findings h3{margin:0 0 5px}
-  .fs-findings ul{margin:0;padding-left:18px}
-  .fs-findings li{font-size:11px;line-height:1.5;margin-bottom:3px}
-  .fs-findings--error{border-left:3px solid var(--danger)}
-  .fs-findings--warn{border-left:3px solid var(--warn)}
-  .fs-findings--note{border-left:3px solid var(--info)}
-  .fs-howto{margin:6px 0 10px;padding-left:18px}
-  .fs-json{white-space:pre;overflow:auto;background:var(--sunken)}
-  .fs-json[hidden]{display:none}
-  .fs-catalog{max-height:420px;overflow:auto;margin-top:6px}
-  .fs-tokens{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:8px 0}
-  .fs-resolved{background:var(--sunken);border:1px solid var(--bd);border-radius:4px;padding:0 4px}
-  .fs-resolved--changed{border-color:var(--warn);color:var(--warn)}
-  .fs-sampler{margin-top:6px;border:1px solid var(--bd);border-radius:6px;padding:8px;background:var(--sunken)}
-  .fs-sampler summary{cursor:pointer;font-weight:700;font-size:11px}
-  .fs-sampler textarea{margin:6px 0}
-  .repeat{display:flex;flex-direction:column;gap:5px;margin-top:4px}
-  .repeat .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr)) auto;gap:5px;margin:0}
-  @media(max-width:640px){.repeat .form-row{grid-template-columns:1fr}.fs-branch{margin-left:5px;padding-left:6px}}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans)}
+  #app{height:100%}
 
   /* Feedback surfaces the shell would normally own. */
-  #toasts{position:fixed;right:14px;bottom:14px;z-index:90;display:flex;flex-direction:column;gap:6px}
-  .toast{background:var(--strong);color:var(--bg);padding:9px 13px;border-radius:6px;font-size:11px;max-width:44ch;box-shadow:0 8px 24px #0004}
+  #toasts{position:fixed;right:14px;bottom:14px;z-index:200;display:flex;flex-direction:column;gap:6px}
+  .toast{
+    background:var(--strong);color:var(--bg);padding:9px 13px;border-radius:6px;
+    font-size:11.5px;max-width:44ch;box-shadow:0 8px 24px #0004;
+  }
   .toast.success{background:var(--p);color:#fff}
   .toast.error{background:var(--danger);color:#fff}
-  dialog{border:1px solid var(--bd);border-radius:10px;background:var(--s);color:var(--fg);padding:16px;max-width:520px;width:calc(100% - 32px)}
-  dialog::backdrop{background:#0009}
-  dialog h2{margin-top:0}
-  dialog .form-row{justify-content:flex-end}
+  @media (prefers-color-scheme:dark){.toast.success,.toast.error{color:#08130d}}
+
+  dialog{
+    border:1px solid var(--bd);border-radius:10px;background:var(--s);color:var(--fg);
+    padding:16px;max-width:34rem;width:calc(100% - 32px);font:13px/1.5 var(--sans);
+  }
+  dialog::backdrop{background:#0b1a1499}
+  dialog h2{margin:0 0 8px;font-size:16px;color:var(--strong)}
+  dialog p{margin:0 0 8px}
+  .dlg-row{display:flex;justify-content:flex-end;gap:6px;margin-top:12px}
+  .dlg-btn{
+    border:1px solid var(--bd);background:var(--s);color:var(--fg);
+    border-radius:5px;padding:6px 12px;font:700 11.5px var(--sans);cursor:pointer;
+  }
+  .dlg-btn--go{background:var(--p);border-color:var(--p);color:#fff}
 </style>
 </head>
 <body>
-<main><div id="app"></div></main>
+<div id="app"></div>
 <div id="toasts" aria-live="polite"></div>
 
 <script>
@@ -1437,7 +1374,7 @@ var FlowStudioRuntime = (() => {
   }
   var errorsOf = (issues) => issues.filter((i) => i.severity === "error");
   var warningsOf = (issues) => issues.filter((i) => i.severity === "warning");
-  var canGenerate = (issues) => errorsOf(issues).length === 0;
+  var notesOf = (issues) => issues.filter((i) => i.severity === "note");
 
   // core/power-automate/clipboard.js
   function toPayload(fragment) {
@@ -1976,31 +1913,292 @@ var FlowStudioRuntime = (() => {
   }
   var definitionText = (plan, trigger = null) => JSON.stringify(buildWorkflowDefinition(plan, trigger).definition, null, 2);
 
+  // core/power-automate/studio.css.js
+  var STUDIO_CSS = `
+.fs-app{
+  --fs-bg:var(--bg,#f4f7f5);
+  --fs-surface:var(--s,#fff);
+  --fs-sunken:var(--sunken,#eef2ef);
+  --fs-fg:var(--fg,#25302b);
+  --fs-strong:var(--strong,#0d1f18);
+  --fs-mut:var(--mut,#66736c);
+  --fs-bd:var(--bd,#dde7e1);
+  --fs-accent:var(--a,#17B255);
+  --fs-primary:var(--p,#05583B);
+  --fs-danger:var(--danger,#a5122c);
+  --fs-warn:var(--warn,#8a6100);
+  --fs-info:var(--info,#054871);
+  --fs-mono:var(--dgo-family-mono,ui-monospace,SFMono-Regular,Menlo,Consolas,monospace);
+
+  display:flex;flex-direction:column;height:100%;min-height:32rem;min-width:0;
+  background:var(--fs-bg);color:var(--fs-fg);
+  font-size:13px;line-height:1.5;
+}
+.fs-app *{box-sizing:border-box}
+.fs-app button{font:inherit;color:inherit;cursor:pointer}
+.fs-app input,.fs-app select,.fs-app textarea{
+  width:100%;font:inherit;color:var(--fs-fg);background:var(--fs-surface);
+  border:1px solid var(--fs-bd);border-radius:5px;padding:6px 8px;min-width:0;
+}
+.fs-app textarea{font-family:var(--fs-mono);font-size:11.5px;line-height:1.55;resize:vertical}
+.fs-app :focus-visible{outline:2px solid var(--fs-accent);outline-offset:1px}
+.fs-app code{font-family:var(--fs-mono);font-size:.92em}
+
+/* \u2500\u2500 header \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.fs-top{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  padding:10px 14px;border-bottom:1px solid var(--fs-bd);background:var(--fs-surface);flex:0 0 auto;
+}
+.fs-top__eyebrow{font:700 9px/1 var(--sans,inherit);letter-spacing:.14em;text-transform:uppercase;color:var(--fs-accent)}
+.fs-top h1{margin:2px 0 0;font-size:17px;line-height:1.1;color:var(--fs-strong)}
+.fs-status{display:flex;align-items:center;gap:14px;font-size:11px;color:var(--fs-mut)}
+.fs-status b{color:var(--fs-strong);font-size:13px;font-variant-numeric:tabular-nums}
+.fs-status .is-bad b{color:var(--fs-danger)}
+.fs-status .is-ok b{color:var(--fs-accent)}
+.fs-saved{color:var(--fs-accent);font-weight:700}
+.fs-saved[hidden]{display:none}
+
+/* \u2500\u2500 body: plan column + working column \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.fs-body{display:grid;grid-template-columns:20rem minmax(0,1fr);flex:1 1 auto;min-height:0}
+@media(max-width:900px){.fs-body{grid-template-columns:1fr;overflow:auto}}
+
+.fs-plan{
+  display:flex;flex-direction:column;min-height:0;min-width:0;
+  border-right:1px solid var(--fs-bd);background:var(--fs-surface);
+}
+.fs-plan__bar{display:flex;gap:6px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--fs-bd)}
+.fs-planname{font-weight:700}
+.fs-plan__tools{display:flex;gap:2px;flex:0 0 auto}
+/* Stacked, not side by side: two selects sharing a 20rem column truncated both labels,
+   and an endpoint key is exactly the kind of string you must be able to read in full. */
+.fs-plan__blueprint{display:grid;gap:5px;padding:8px 10px;border-bottom:1px solid var(--fs-bd)}
+.fs-plan__blueprint select{text-overflow:ellipsis}
+.fs-tree{flex:1 1 auto;overflow-y:auto;padding:6px 8px 14px;min-height:0}
+.fs-plan__foot{
+  display:flex;flex-wrap:wrap;gap:5px;padding:8px 10px;border-top:1px solid var(--fs-bd);flex:0 0 auto;
+}
+
+/* \u2500\u2500 tree rows \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.fs-item{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:6px;
+  border:1px solid transparent;border-radius:6px;padding:5px 6px;cursor:pointer;
+  background:transparent;
+}
+.fs-item:hover{background:var(--fs-sunken)}
+.fs-item.is-selected{background:var(--fs-sunken);border-color:var(--fs-accent);box-shadow:inset 3px 0 0 var(--fs-accent)}
+.fs-item.is-dragging{opacity:.4}
+.fs-item.is-dropbefore{box-shadow:0 -2px 0 var(--fs-accent)}
+.fs-item.is-dropafter{box-shadow:0 2px 0 var(--fs-accent)}
+.fs-item--trigger{border-style:dashed;border-color:var(--fs-bd);margin-bottom:4px}
+.fs-item__main{display:flex;align-items:flex-start;gap:4px;min-width:0;flex:1 1 auto}
+.fs-item__text{display:flex;flex-direction:column;min-width:0}
+.fs-item__name{font-weight:700;color:var(--fs-strong);overflow-wrap:anywhere}
+.fs-item__meta{font-size:10.5px;color:var(--fs-mut);overflow-wrap:anywhere}
+.fs-item__tools{display:flex;gap:1px;opacity:0;flex:0 0 auto;transition:opacity .12s}
+.fs-item:hover .fs-item__tools,.fs-item:focus-within .fs-item__tools,.fs-item.is-selected .fs-item__tools{opacity:1}
+@media(hover:none){.fs-item__tools{opacity:1}}
+
+.fs-twist{
+  background:none;border:0;padding:0;width:14px;height:18px;line-height:18px;
+  color:var(--fs-mut);transition:transform .12s;flex:0 0 auto;text-align:center;
+}
+.fs-twist.is-open{transform:rotate(90deg)}
+.fs-twist--none{visibility:hidden}
+
+.fs-x{
+  background:none;border:1px solid transparent;border-radius:4px;
+  width:22px;height:22px;line-height:1;padding:0;color:var(--fs-mut);font-size:12px;
+}
+.fs-x:hover{background:var(--fs-surface);border-color:var(--fs-bd);color:var(--fs-strong)}
+.fs-x:disabled{opacity:.3;cursor:not-allowed}
+.fs-x--danger:hover{color:var(--fs-danger);border-color:var(--fs-danger)}
+
+/* The insertion point. Every one of these knows exactly which list and index it targets,
+   which is what removes the old "set a target in a dropdown, then press Add" mode error. */
+.fs-insert{
+  display:block;width:100%;height:14px;padding:0;margin:1px 0;
+  background:none;border:0;border-radius:3px;color:transparent;line-height:1;
+  position:relative;
+}
+.fs-insert::before{
+  content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--fs-bd);opacity:0;transition:opacity .12s;
+}
+.fs-insert span{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:16px;height:16px;border-radius:50%;line-height:15px;font-size:12px;
+  background:var(--fs-accent);color:var(--fs-surface);opacity:0;transition:opacity .12s;
+}
+.fs-insert:hover::before,.fs-insert:focus-visible::before,
+.fs-insert:hover span,.fs-insert:focus-visible span{opacity:1}
+@media(hover:none){.fs-insert::before,.fs-insert span{opacity:.55}}
+
+.fs-branch{margin:2px 0 2px 12px;padding-left:8px;border-left:2px solid var(--fs-bd)}
+.fs-branch__label{
+  font:700 9.5px/1.6 var(--sans,inherit);letter-spacing:.09em;text-transform:uppercase;color:var(--fs-mut);
+}
+.fs-branch__empty{font-size:10.5px;color:var(--fs-mut);font-style:italic;padding:1px 0}
+.fs-blank{text-align:center;padding:18px 8px;color:var(--fs-mut)}
+.fs-blank p{margin:0 0 6px}
+
+/* \u2500\u2500 working column \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.fs-work{display:grid;grid-template-rows:minmax(0,1fr) auto;min-height:0;min-width:0}
+.fs-work__scroll{overflow-y:auto;min-height:0;padding:14px}
+.fs-work__out{border-top:1px solid var(--fs-bd);background:var(--fs-surface);flex:0 0 auto}
+
+.fs-pane{max-width:52rem}
+.fs-pane__head{margin-bottom:12px}
+.fs-pane__kicker{font:700 9.5px/1 var(--sans,inherit);letter-spacing:.12em;text-transform:uppercase;color:var(--fs-accent)}
+.fs-pane h2{margin:4px 0 3px;font-size:17px;color:var(--fs-strong);overflow-wrap:anywhere}
+.fs-help{display:block;font-size:11px;color:var(--fs-mut);line-height:1.45}
+
+.fs-form{display:flex;flex-direction:column;gap:11px}
+.fs-field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fs-label{display:flex;align-items:baseline;gap:6px;font-weight:700;font-size:11.5px;color:var(--fs-strong)}
+.fs-req{font:700 8.5px/1 var(--sans,inherit);letter-spacing:.08em;text-transform:uppercase;color:var(--fs-danger)}
+.fs-check{display:flex;align-items:center;gap:6px;font-weight:600;font-size:12px}
+.fs-check input{width:auto}
+.fs-statuses{display:flex;flex-wrap:wrap;gap:10px}
+
+.fs-repeat{display:flex;flex-direction:column;gap:4px}
+.fs-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,9rem),1fr)) auto;gap:4px;align-items:center}
+.fs-addrow{
+  align-self:flex-start;background:none;border:1px dashed var(--fs-bd);border-radius:5px;
+  padding:4px 9px;font-size:11px;color:var(--fs-mut);
+}
+.fs-addrow:hover{border-color:var(--fs-accent);color:var(--fs-accent)}
+
+.fs-ordering{border:1px solid var(--fs-bd);border-radius:6px;padding:7px 9px;background:var(--fs-sunken)}
+.fs-ordering summary{cursor:pointer;font-size:11.5px;color:var(--fs-mut)}
+.fs-ordering summary b{color:var(--fs-strong)}
+.fs-ordering>*+*{margin-top:9px}
+
+.fs-sampler{border:1px solid var(--fs-bd);border-radius:5px;padding:7px 9px;background:var(--fs-sunken)}
+.fs-sampler summary{cursor:pointer;font-weight:700;font-size:11px}
+.fs-sampler textarea{margin:6px 0}
+
+/* Token chips travel to whichever field has focus rather than sitting in one fixed place. */
+.fs-tokens{display:flex;flex-wrap:wrap;gap:4px;margin:2px 0 4px}
+.fs-tokens[hidden]{display:none}
+.fs-token{
+  background:var(--fs-sunken);border:1px solid var(--fs-bd);border-radius:99px;
+  padding:2px 9px;font-size:10.5px;color:var(--fs-fg);
+}
+.fs-token:hover{border-color:var(--fs-accent);color:var(--fs-accent)}
+
+/* \u2500\u2500 buttons \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.fs-btn{
+  border:1px solid var(--fs-bd);background:var(--fs-surface);color:var(--fs-fg);
+  border-radius:5px;padding:6px 12px;font-weight:700;font-size:11.5px;white-space:nowrap;
+}
+.fs-btn:hover{border-color:var(--fs-accent)}
+.fs-btn--primary{background:var(--fs-primary);border-color:var(--fs-primary);color:#fff}
+.fs-btn--primary:hover{filter:brightness(1.12)}
+.fs-btn--primary.is-done{background:var(--fs-accent);border-color:var(--fs-accent)}
+.fs-btn--ghost{background:transparent}
+.fs-btn.is-on{border-color:var(--fs-accent);color:var(--fs-accent)}
+
+/* \u2500\u2500 output, pinned so Copy is never below the fold \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.fs-out{padding:10px 14px 12px;display:flex;flex-direction:column;gap:8px;max-height:46vh;overflow-y:auto}
+.fs-out__head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.fs-out__title{font:700 9.5px/1 var(--sans,inherit);letter-spacing:.12em;text-transform:uppercase;color:var(--fs-accent)}
+.fs-out__mode{font-size:11px;color:var(--fs-mut)}
+.fs-out__blocked{margin:0;font-size:12px;color:var(--fs-mut)}
+.fs-part{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.fs-part__name{font-family:var(--fs-mono);font-size:10.5px;color:var(--fs-mut);overflow-wrap:anywhere}
+.fs-out__second{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:2px}
+.fs-out__second .fs-help{max-width:34rem}
+.fs-json{width:100%;white-space:pre;overflow:auto;background:var(--fs-sunken)}
+.fs-json[hidden]{display:none}
+
+.fs-alert{
+  border:1px solid var(--fs-danger);border-left-width:3px;border-radius:5px;
+  padding:7px 10px;font-size:11.5px;background:var(--fs-sunken);
+}
+
+.fs-find{border:1px solid var(--fs-bd);border-left-width:3px;border-radius:5px;padding:6px 10px;background:var(--fs-sunken)}
+.fs-find summary{cursor:pointer;font-weight:700;font-size:11.5px;color:var(--fs-strong)}
+.fs-find ul{margin:5px 0 0;padding-left:17px}
+.fs-find li{font-size:11.5px;line-height:1.5;margin-bottom:3px}
+.fs-find--error{border-left-color:var(--fs-danger)}
+.fs-find--warning,.fs-find--warn{border-left-color:var(--fs-warn)}
+.fs-find--note{border-left-color:var(--fs-info)}
+.fs-find--ok{border-left-color:var(--fs-accent)}
+.fs-count{
+  display:inline-block;min-width:1.15rem;text-align:center;border-radius:99px;
+  background:var(--fs-bd);color:var(--fs-strong);font-size:10px;padding:0 5px;font-variant-numeric:tabular-nums;
+}
+
+/* \u2500\u2500 the palette: the catalog, anchored to the + you pressed \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.fs-palette-wrap{
+  position:fixed;inset:0;z-index:120;background:#0b1a1455;
+  display:flex;align-items:flex-start;justify-content:center;padding:8vh 1rem 1rem;
+}
+.fs-palette{
+  width:min(34rem,100%);max-height:70vh;display:flex;flex-direction:column;
+  background:var(--fs-surface);border:1px solid var(--fs-bd);border-radius:9px;
+  box-shadow:0 24px 64px #0b1a1440;overflow:hidden;
+}
+.fs-palette__q{border:0;border-bottom:1px solid var(--fs-bd);border-radius:0;padding:11px 13px;font-size:14px}
+.fs-palette__q:focus-visible{outline-offset:-2px}
+.fs-palette__list{overflow-y:auto;padding:4px}
+.fs-palette__item{
+  display:grid;grid-template-columns:1fr auto;gap:1px 8px;width:100%;text-align:left;
+  background:none;border:0;border-radius:6px;padding:7px 9px;
+}
+.fs-palette__item.is-active{background:var(--fs-sunken);box-shadow:inset 2px 0 0 var(--fs-accent)}
+.fs-palette__name{font-weight:700;color:var(--fs-strong)}
+.fs-palette__group{font-size:10px;color:var(--fs-mut);justify-self:end;white-space:nowrap}
+.fs-palette__sum{grid-column:1/-1;font-size:11px;color:var(--fs-mut)}
+.fs-palette__none{padding:14px}
+.fs-palette__foot{
+  border-top:1px solid var(--fs-bd);padding:6px 12px;font-size:10.5px;color:var(--fs-mut);
+  display:flex;gap:5px;align-items:center;flex-wrap:wrap;
+}
+.fs-palette__foot kbd{
+  font-family:var(--fs-mono);font-size:9.5px;border:1px solid var(--fs-bd);border-radius:3px;
+  padding:0 4px;background:var(--fs-sunken);
+}
+
+@media (prefers-reduced-motion:reduce){.fs-app *{transition:none!important}}
+`;
+  function installStudioStyles(doc = document) {
+    if (doc.getElementById("fs-studio-styles")) return;
+    const style = doc.createElement("style");
+    style.id = "fs-studio-styles";
+    style.textContent = STUDIO_CSS;
+    doc.head.appendChild(style);
+  }
+
   // core/power-automate/studio.js
   var STORE_KEY = "dgo.flow-studio.plan";
   var HISTORY_LIMIT = 50;
   var blankPlan = () => ({ name: "Generated actions", steps: [], trigger: null, triggerSpec: null, notes: [] });
+  var TRIGGER = "__trigger__";
+  var IMPORT = "__import__";
+  var CHECK = "__check__";
   var TOKENS = [
     ["@{triggerBody()?['field']}", "trigger field"],
     ["@triggerBody()", "whole trigger body"],
     ["@{outputs('Action')}", "action output"],
     ["@body('Action')", "action body (whole)"],
     ["@{variables('name')}", "variable"],
-    ["@{item()}", "current loop item"],
+    ["@{item()}", "current item"],
     ["@{utcNow()}", "now"],
-    ["@{guid()}", "new guid"],
-    ["@{workflow()?['run']?['name']}", "run id"]
+    ["@{guid()}", "new guid"]
   ];
   function createStudio(host) {
-    const { esc, head, kpis, emptyState, toast, confirm, getState, setState, storage } = host;
+    const { esc, emptyState, toast, confirm, getState, setState, storage } = host;
     let plan = blankPlan();
     let root = null;
     let lastField = null;
+    let pendingInsert = null;
+    let paletteIndex = 0;
     const history = { past: [], future: [] };
     const snapshot = () => JSON.stringify(plan);
     const save = () => {
       try {
         storage.set(STORE_KEY, snapshot());
+        flashSaved();
       } catch {
       }
     };
@@ -2012,14 +2210,28 @@ var FlowStudioRuntime = (() => {
         return null;
       }
     }
-    function mutate(fn) {
-      history.past.push(snapshot());
+    function pushHistory(before) {
+      if (before === snapshot()) return;
+      history.past.push(before);
       if (history.past.length > HISTORY_LIMIT) history.past.shift();
       history.future.length = 0;
+    }
+    function mutate(fn) {
+      const before = snapshot();
       const result = fn();
+      pushHistory(before);
       save();
       return result;
     }
+    let editBaseline = null;
+    const beginFieldEdit = () => {
+      editBaseline = snapshot();
+    };
+    const commitFieldEdit = () => {
+      if (editBaseline === null) return;
+      pushHistory(editBaseline);
+      editBaseline = null;
+    };
     function undo() {
       if (!history.past.length) return false;
       history.future.push(snapshot());
@@ -2055,23 +2267,7 @@ var FlowStudioRuntime = (() => {
       }
       return out;
     }
-    function insertTargets() {
-      const targets = [{ key: "root", label: "Top level of the flow" }];
-      const visit = (steps, prefix) => {
-        for (const step2 of steps) {
-          const action = actionById(step2.actionId);
-          if (!action) continue;
-          const name = step2.name || action.label;
-          for (const b of branchesOf(step2, action)) {
-            targets.push({ key: `${step2.id}|${b.key}`, label: `${prefix}${name} \u2192 ${b.label}` });
-            visit(step2.branches?.[b.key] || [], `${prefix}${name} \u2192 ${b.label} \u2192 `);
-          }
-        }
-      };
-      visit(plan.steps, "");
-      return targets;
-    }
-    function listForTarget(key) {
+    function listFor(key) {
       if (key === "root") return plan.steps;
       const [stepId, branchKey] = String(key).split("|");
       const found = locate(stepId);
@@ -2080,11 +2276,28 @@ var FlowStudioRuntime = (() => {
       found.step.branches[branchKey] = found.step.branches[branchKey] || [];
       return found.step.branches[branchKey];
     }
-    const addStep = (actionId, targetKey) => mutate(() => {
+    function keyOfList(stepId) {
+      const found = locate(stepId);
+      if (!found) return "root";
+      return found.parent ? `${found.parent.id}|${found.branchKey}` : "root";
+    }
+    function contains(ancestorId, stepId) {
+      const found = locate(ancestorId);
+      if (!found) return false;
+      let hit = false;
+      const visit = (list) => list.forEach((s) => {
+        if (s.id === stepId) hit = true;
+        Object.values(s.branches || {}).forEach(visit);
+      });
+      Object.values(found.step.branches || {}).forEach(visit);
+      return hit;
+    }
+    const addStep = (actionId, listKey, index) => mutate(() => {
       const action = actionById(actionId);
       if (!action) return null;
       const step2 = { id: newId(), actionId, name: "", values: defaultValues(action), branches: {} };
-      listForTarget(targetKey).push(step2);
+      const list = listFor(listKey);
+      list.splice(index ?? list.length, 0, step2);
       return step2;
     });
     const removeStep = (id) => mutate(() => {
@@ -2098,6 +2311,16 @@ var FlowStudioRuntime = (() => {
       if (next < 0 || next >= found.list.length) return;
       const [item] = found.list.splice(found.index, 1);
       found.list.splice(next, 0, item);
+    });
+    const relocate = (id, listKey, index) => mutate(() => {
+      const found = locate(id);
+      if (!found) return;
+      const target = listFor(listKey);
+      const sameList = target === found.list;
+      found.list.splice(found.index, 1);
+      let at = index ?? target.length;
+      if (sameList && found.index < at) at -= 1;
+      target.splice(Math.max(0, Math.min(at, target.length)), 0, found.step);
     });
     function reid(step2) {
       const branches = {};
@@ -2115,83 +2338,151 @@ var FlowStudioRuntime = (() => {
     const rowsOf = (step2, name) => Array.isArray(step2.values?.[name]) ? step2.values[name] : [];
     function repeatRows(step2, fd, columns) {
       const rows = rowsOf(step2, fd.name);
-      const body = rows.map((row, i) => `<div class="form-row" data-row="${i}" data-field="${esc(fd.name)}">${columns.map(
+      const body = rows.map((row, i) => `<div class="fs-row" data-row="${i}" data-field="${esc(fd.name)}">${columns.map(
         (col) => col.kind === "select" ? `<select data-cell="${esc(col.key)}" aria-label="${esc(col.label)}">${col.options.map(([v, l]) => `<option value="${esc(v)}" ${String(row?.[col.key] ?? "") === v ? "selected" : ""}>${esc(l)}</option>`).join("")}</select>` : `<input data-cell="${esc(col.key)}" value="${esc(row?.[col.key] ?? "")}" placeholder="${esc(col.label)}" aria-label="${esc(col.label)}">`
-      ).join("")}<button type="button" class="btn ghost" data-row-remove aria-label="Remove row">Remove</button></div>`).join("");
-      return `<div class="repeat" data-repeat="${esc(fd.name)}">${body || '<p class="meta">No rows yet.</p>'}
-      <button type="button" class="btn ghost" data-row-add="${esc(fd.name)}">Add row</button></div>`;
+      ).join("")}<button type="button" class="fs-x" data-row-remove aria-label="Remove row">\xD7</button></div>`).join("");
+      return `<div class="fs-repeat" data-repeat="${esc(fd.name)}">${body}
+      <button type="button" class="fs-addrow" data-row-add="${esc(fd.name)}">+ Add row</button></div>`;
     }
     function renderField(step2, fd, values = step2.values) {
       const v = values?.[fd.name];
-      const help = fd.help ? `<small class="meta">${esc(fd.help)}</small>` : "";
-      const label = `${esc(fd.label)}${fd.required ? ' <span aria-hidden="true">*</span>' : ""}`;
+      const help = fd.help ? `<small class="fs-help">${esc(fd.help)}</small>` : "";
+      const req = fd.required ? '<span class="fs-req" aria-label="required">required</span>' : "";
+      const head = `<span class="fs-label">${esc(fd.label)}${req}</span>`;
       const attrs = `data-field="${esc(fd.name)}"${fd.placeholder ? ` placeholder="${esc(fd.placeholder)}"` : ""}`;
-      const sampler = fd.inferFromSample ? `<details class="fs-sampler"><summary>Infer this schema from a sample payload</summary>
-        <textarea data-sample="${esc(fd.name)}" rows="6" spellcheck="false" placeholder='{ "action": "track", "payload": { "reference": "DGO/2026/001" } }'></textarea>
-        <button type="button" class="btn ghost" data-infer="${esc(fd.name)}">Infer schema</button>
-        <small class="meta">No <code>required</code> list is generated: a sample is one observation, and asserting it would fail later payloads that omit an optional field.</small>
+      const sampler = fd.inferFromSample ? `<details class="fs-sampler"><summary>Infer from a sample payload</summary>
+        <textarea data-sample="${esc(fd.name)}" rows="5" spellcheck="false" placeholder='{ "action": "track", "payload": { "reference": "DGO/2026/001" } }'></textarea>
+        <button type="button" class="fs-btn" data-infer="${esc(fd.name)}">Infer schema</button>
+        <small class="fs-help">No <code>required</code> list is generated: a sample is one observation, and asserting it would fail later payloads that omit an optional field.</small>
       </details>` : "";
       switch (fd.kind) {
         case "textarea":
         case "json":
-          return `<label class="wide">${label}<textarea rows="${fd.rows || 4}" ${attrs} spellcheck="false">${esc(v ?? "")}</textarea>${help}${sampler}</label>`;
+          return `<div class="fs-field">${head}<textarea rows="${fd.rows || 4}" ${attrs} spellcheck="false">${esc(v ?? "")}</textarea>${help}${sampler}</div>`;
         case "select":
-          return `<label>${label}<select ${attrs}>${(fd.options || []).map(([val, lab]) => `<option value="${esc(val)}" ${String(v ?? "") === val ? "selected" : ""}>${esc(lab)}</option>`).join("")}</select>${help}</label>`;
+          return `<div class="fs-field">${head}<select ${attrs}>${(fd.options || []).map(([val, lab]) => `<option value="${esc(val)}" ${String(v ?? "") === val ? "selected" : ""}>${esc(lab)}</option>`).join("")}</select>${help}</div>`;
         case "boolean":
-          return `<label class="check-inline"><input type="checkbox" ${attrs} ${v === true || v === "true" ? "checked" : ""}> ${label}${help}</label>`;
+          return `<div class="fs-field fs-field--check"><label class="fs-check"><input type="checkbox" ${attrs} ${v === true || v === "true" ? "checked" : ""}> ${esc(fd.label)}</label>${help}</div>`;
         case "keyvalue":
-          return `<div class="wide"><div class="dgo-field__label">${label}</div>${help}
-          ${repeatRows(step2, fd, [{ key: "name", label: "Name" }, { key: "value", label: "Value" }])}</div>`;
+          return `<div class="fs-field">${head}${help}${repeatRows(step2, fd, [{ key: "name", label: "Name" }, { key: "value", label: "Value" }])}</div>`;
         case "fieldmap":
-          return `<div class="wide"><div class="dgo-field__label">${label}</div>${help}
-          ${repeatRows(step2, fd, [{ key: "name", label: "Column internal name" }, { key: "value", label: "Value" }])}</div>`;
+          return `<div class="fs-field">${head}${help}${repeatRows(step2, fd, [{ key: "name", label: "Column internal name" }, { key: "value", label: "Value" }])}</div>`;
         case "cases":
-          return `<div class="wide"><div class="dgo-field__label">${label}</div>${help}
-          ${repeatRows(step2, fd, [{ key: "name", label: "Branch label" }, { key: "value", label: "Matches value" }])}</div>`;
+          return `<div class="fs-field">${head}${help}${repeatRows(step2, fd, [{ key: "name", label: "Branch label" }, { key: "value", label: "Matches value" }])}</div>`;
         case "conditions":
-          return `<div class="wide"><div class="dgo-field__label">${label}</div>${help}
-          ${repeatRows(step2, fd, [
+          return `<div class="fs-field">${head}${help}${repeatRows(step2, fd, [
             { key: "left", label: "Value" },
             { key: "operator", label: "Operator", kind: "select", options: ConditionOperators.map((o) => [o.id, o.label]) },
             { key: "right", label: "Compare with" }
           ])}</div>`;
         default:
-          return `<label>${label}<input ${attrs} value="${esc(v ?? "")}" spellcheck="false">${help}</label>`;
+          return `<div class="fs-field">${head}<input ${attrs} value="${esc(v ?? "")}" spellcheck="false">${help}</div>`;
       }
     }
-    function renderTree(steps, names, depth = 0, selected = "") {
-      return steps.map((step2) => {
+    const insertPoint = (listKey, index, label) => `<button type="button" class="fs-insert" data-insert="${esc(listKey)}" data-at="${index}"
+      aria-label="Add an action ${esc(label)}"><span>+</span></button>`;
+    function renderTree(steps, listKey, names, selected, collapsed) {
+      const rows = [];
+      steps.forEach((step2, i) => {
         const action = actionById(step2.actionId);
-        if (!action) return "";
-        const resolved = names.get(step2.id) || "";
+        if (!action) return;
         const typed = step2.name || action.label;
+        const resolved = names.get(step2.id) || "";
         const renamed = resolved && ActionNamePolicy.toKey(typed) !== resolved;
-        const children = branchesOf(step2, action).map((b) => {
-          const list = step2.branches?.[b.key] || [];
-          return `<div class="fs-branch"><div class="fs-branch__label meta">${esc(b.label)}</div>${list.length ? renderTree(list, names, depth + 1, selected) : '<p class="meta fs-branch__empty">Empty</p>'}</div>`;
-        }).join("");
-        return `<div class="fs-node" style="--fs-depth:${depth}">
-        <div class="list-item ${step2.id === selected ? "active" : ""}" data-step="${esc(step2.id)}" tabindex="0" role="button">
-          <h4>${esc(typed)}</h4>
-          <div class="meta">${esc(action.label)}${action.connector ? " \xB7 connector" : ""}
-            ${resolved ? `\xB7 <code class="fs-resolved${renamed ? " fs-resolved--changed" : ""}">${esc(resolved)}</code>` : ""}</div>
-          <div class="form-row fs-node__ctl">
-            <button type="button" class="btn ghost" data-move="${esc(step2.id)}" data-delta="-1" aria-label="Move ${esc(typed)} up">\u2191</button>
-            <button type="button" class="btn ghost" data-move="${esc(step2.id)}" data-delta="1" aria-label="Move ${esc(typed)} down">\u2193</button>
-            <button type="button" class="btn ghost" data-duplicate="${esc(step2.id)}" aria-label="Duplicate ${esc(typed)}">Duplicate</button>
-            <button type="button" class="btn ghost" data-remove="${esc(step2.id)}" aria-label="Remove ${esc(typed)}">Remove</button>
-          </div>
-        </div>${children}</div>`;
-      }).join("");
+        const branches = branchesOf(step2, action);
+        const isOpen = branches.length && !collapsed.includes(step2.id);
+        rows.push(`<div class="fs-item ${step2.id === selected ? "is-selected" : ""}" data-step="${esc(step2.id)}"
+          draggable="true" tabindex="0" role="button" aria-selected="${step2.id === selected}">
+        <div class="fs-item__main">
+          ${branches.length ? `<button type="button" class="fs-twist ${isOpen ? "is-open" : ""}" data-collapse="${esc(step2.id)}"
+              aria-expanded="${isOpen}" aria-label="${isOpen ? "Collapse" : "Expand"} ${esc(typed)}">\u25B8</button>` : '<span class="fs-twist fs-twist--none" aria-hidden="true"></span>'}
+          <span class="fs-item__text">
+            <span class="fs-item__name">${esc(typed)}</span>
+            <span class="fs-item__meta">${esc(action.label)}${action.connector ? " \xB7 connector" : ""}${renamed ? ` \xB7 pastes as <code>${esc(resolved)}</code>` : ""}</span>
+          </span>
+        </div>
+        <div class="fs-item__tools">
+          <button type="button" class="fs-x" data-move="${esc(step2.id)}" data-delta="-1" aria-label="Move up" title="Move up">\u2191</button>
+          <button type="button" class="fs-x" data-move="${esc(step2.id)}" data-delta="1" aria-label="Move down" title="Move down">\u2193</button>
+          <button type="button" class="fs-x" data-duplicate="${esc(step2.id)}" aria-label="Duplicate" title="Duplicate">\u29C9</button>
+          <button type="button" class="fs-x fs-x--danger" data-remove="${esc(step2.id)}" aria-label="Remove" title="Remove">\xD7</button>
+        </div>
+      </div>`);
+        if (isOpen) {
+          rows.push(branches.map((b) => {
+            const list = step2.branches?.[b.key] || [];
+            const key = `${step2.id}|${b.key}`;
+            return `<div class="fs-branch">
+            <div class="fs-branch__label">${esc(b.label)}</div>
+            ${list.length ? renderTree(list, key, names, selected, collapsed) : `<div class="fs-branch__empty">nothing here yet</div>${insertPoint(key, 0, `to ${b.label}`)}`}
+          </div>`;
+          }).join(""));
+        }
+        rows.push(insertPoint(listKey, i + 1, `after ${typed}`));
+      });
+      return rows.join("");
     }
-    const tokenBar = () => `<div class="fs-tokens"><span class="meta">Insert:</span>${TOKENS.map(([t, label]) => `<button type="button" class="chip" data-token="${esc(t)}" title="${esc(t)}">${esc(label)}</button>`).join("")}</div>`;
+    function renderPlanColumn(names, selected) {
+      const u = getState({ collapsed: [] });
+      const collapsed = u.collapsed || [];
+      const triggerLabel = plan.trigger ? plan.trigger.name : "No trigger";
+      return `<aside class="fs-plan">
+      <div class="fs-plan__bar">
+        <input class="fs-planname" data-plan-name value="${esc(plan.name || "")}" aria-label="Plan name" placeholder="Plan name">
+        <div class="fs-plan__tools">
+          <button type="button" class="fs-x" data-undo ${history.past.length ? "" : "disabled"} title="Undo (Ctrl+Z)" aria-label="Undo">\u21B6</button>
+          <button type="button" class="fs-x" data-redo ${history.future.length ? "" : "disabled"} title="Redo (Ctrl+Y)" aria-label="Redo">\u21B7</button>
+          <button type="button" class="fs-x" data-export-plan title="Save plan to a file" aria-label="Save plan">\u2913</button>
+          <button type="button" class="fs-x" data-import-plan title="Open a saved plan" aria-label="Open plan">\u2912</button>
+        </div>
+      </div>
+
+      <div class="fs-plan__blueprint">
+        <select data-blueprint aria-label="Start from a blueprint">
+          <option value="">Start from a blueprint\u2026</option>
+          ${Blueprints.map((b) => `<option value="${esc(b.id)}">${esc(b.label)}</option>`).join("")}
+        </select>
+        <select data-endpoint aria-label="Endpoint for the blueprint">
+          ${endpointOptions().map((e) => `<option value="${esc(e.key)}">${esc(e.key)}</option>`).join("")}
+        </select>
+      </div>
+
+      <div class="fs-tree" data-tree>
+        <div class="fs-item fs-item--trigger ${selected === TRIGGER ? "is-selected" : ""}" data-panel="${TRIGGER}" tabindex="0" role="button">
+          <div class="fs-item__main">
+            <span class="fs-twist fs-twist--none" aria-hidden="true"></span>
+            <span class="fs-item__text">
+              <span class="fs-item__name">${esc(triggerLabel)}</span>
+              <span class="fs-item__meta">Trigger \xB7 definition export only</span>
+            </span>
+          </div>
+        </div>
+        ${plan.steps.length ? insertPoint("root", 0, "at the start") : ""}
+        ${plan.steps.length ? renderTree(plan.steps, "root", names, selected, collapsed) : `<div class="fs-blank">
+              <p>No actions yet.</p>
+              ${insertPoint("root", 0, "as the first action")}
+              <p class="fs-help">Or pick a blueprint above.</p>
+            </div>`}
+      </div>
+
+      <div class="fs-plan__foot">
+        <button type="button" class="fs-btn fs-btn--ghost" data-panel-open="${IMPORT}">Import from designer</button>
+        <button type="button" class="fs-btn fs-btn--ghost" data-panel-open="${CHECK}">Check payload</button>
+        ${plan.steps.length ? '<button type="button" class="fs-btn fs-btn--ghost" data-clear>Clear</button>' : ""}
+      </div>
+    </aside>`;
+    }
+    const tokenBar = () => `<div class="fs-tokens" data-tokens hidden>${TOKENS.map(([t, label]) => `<button type="button" class="fs-token" data-token="${esc(t)}" title="${esc(t)}">${esc(label)}</button>`).join("")}</div>`;
     function renderEditor(selected, names) {
+      if (selected === TRIGGER) return renderTriggerPanel();
+      if (selected === IMPORT) return renderImportPanel();
+      if (selected === CHECK) return renderCheckPanel();
       const found = selected ? locate(selected) : null;
       if (!found) {
-        return `<section class="panel">${emptyState(
-          "No action selected",
-          "Choose an action on the left to edit it, or add one from the catalog above."
-        )}</section>`;
+        return `<div class="fs-pane">${emptyState(
+          "Nothing selected",
+          "Pick an action on the left to edit it, or press a + to add one."
+        )}</div>`;
       }
       const step2 = found.step;
       const action = actionById(step2.actionId);
@@ -2200,219 +2491,233 @@ var FlowStudioRuntime = (() => {
       const statuses = step2.runAfterStatuses?.length ? step2.runAfterStatuses : ["Succeeded"];
       const previous = found.index > 0 ? found.list[found.index - 1] : null;
       const ordering = !previous ? "" : `
-        <label>Run after
+      <details class="fs-ordering">
+        <summary>Runs after <b>${esc(step2.runAfterRef ? earlier.find((s) => s.id === step2.runAfterRef)?.name || "an earlier action" : previous.name || actionById(previous.actionId)?.label)}</b> \xB7 ${esc(statuses.join(", "))}</summary>
+        <div class="fs-field">
+          <span class="fs-label">Run after</span>
           <select data-order="ref">
-            <option value="">${esc(previous.name || actionById(previous.actionId)?.label || "the action before this one")} (the action before this one)</option>
+            <option value="">${esc(previous.name || actionById(previous.actionId)?.label || "the previous action")} (the one before this)</option>
             ${earlier.slice(0, -1).map((s) => `<option value="${esc(s.id)}" ${step2.runAfterRef === s.id ? "selected" : ""}>${esc(s.name || actionById(s.actionId)?.label || "Action")}</option>`).join("")}
           </select>
-          <small class="meta">Pick an earlier action to fork off it instead of continuing the chain. That is how a failure branch is made \u2014 two actions running after the same one, on opposite statuses.</small>
-        </label>
-        <div class="wide"><div class="dgo-field__label">Only when it finished as</div>
-          <div class="form-row">${RunAfterStatuses.map((st) => `<label class="check-inline"><input type="checkbox" data-order="status" value="${esc(st)}" ${statuses.includes(st) ? "checked" : ""}> ${esc(st)}</label>`).join("")}</div>
-          <small class="meta">Succeeded is the default. A failure branch waits on Failed and TimedOut.</small>
-        </div>`;
-      return `<section class="panel">
-      <div class="eyebrow panel-eyebrow">${esc(action.label)}</div>
-      <h2>${esc(step2.name || action.label)}</h2>
-      <p class="meta">${esc(action.summary || "")}</p>
-      ${tokenBar()}
-      <form class="grid" data-editor="${esc(step2.id)}">
-        <label class="wide">Action name
+          <small class="fs-help">Pick an earlier action to fork off it instead of continuing the chain. Two actions after the same one, on opposite statuses, is how a failure branch is made.</small>
+        </div>
+        <div class="fs-field">
+          <span class="fs-label">Only when it finished as</span>
+          <div class="fs-statuses">${RunAfterStatuses.map((st) => `<label class="fs-check"><input type="checkbox" data-order="status" value="${esc(st)}" ${statuses.includes(st) ? "checked" : ""}> ${esc(st)}</label>`).join("")}</div>
+        </div>
+      </details>`;
+      return `<div class="fs-pane">
+      <header class="fs-pane__head">
+        <div class="fs-pane__kicker">${esc(action.label)}${action.connector ? " \xB7 needs a connection" : ""}</div>
+        <h2>${esc(step2.name || action.label)}</h2>
+        <p class="fs-help">${esc(action.summary || "")}</p>
+      </header>
+      <form class="fs-form" data-editor="${esc(step2.id)}">
+        <div class="fs-field">
+          <span class="fs-label">Action name</span>
           <input data-field="__name" value="${esc(step2.name || "")}" placeholder="${esc(action.label)}" spellcheck="false">
-          <small class="meta">Pastes as <code>${esc(resolved)}</code>. Underscores show as spaces; ${esc(ActionNamePolicy.forbidden.join(" "))} are rejected.</small>
-        </label>
+          <small class="fs-help">Pastes as <code>${esc(resolved)}</code>. Underscores show as spaces; ${esc(ActionNamePolicy.forbidden.join(" "))} are rejected.</small>
+        </div>
         ${ordering}
         ${(action.fields || []).map((fd) => renderField(step2, fd)).join("")}
       </form>
-    </section>`;
+      ${tokenBar()}
+    </div>`;
     }
-    function renderFindings(issues) {
-      const group = (sev, title, tone) => {
-        const xs = issues.filter((i) => i.severity === sev);
-        if (!xs.length) return "";
-        return `<div class="fs-findings fs-findings--${tone}"><h3>${esc(title)} (${xs.length})</h3><ul>${xs.map((i) => `<li>${i.where ? `<b>${esc(i.where)}</b> \u2014 ` : ""}${esc(i.message)}</li>`).join("")}</ul></div>`;
-      };
-      return `${group("error", "Must be fixed before generating", "error")}
-      ${group("warning", "Worth checking", "warn")}
-      ${group("note", "Before you paste", "note")}`;
+    function renderTriggerPanel() {
+      const spec = plan.triggerSpec || { id: "", values: {} };
+      const trigger = triggerById(spec.id);
+      return `<div class="fs-pane">
+      <header class="fs-pane__head">
+        <div class="fs-pane__kicker">Trigger</div>
+        <h2>${esc(trigger ? trigger.label : "No trigger")}</h2>
+        <p class="fs-help">A trigger cannot be pasted \u2014 the designer's paste path creates actions only. Choosing one here puts it in the workflow definition export instead.</p>
+      </header>
+      <form class="fs-form" data-trigger-form>
+        <div class="fs-field">
+          <span class="fs-label">Trigger</span>
+          <select data-trigger>
+            <option value="">None \u2014 actions only</option>
+            ${Triggers.map((t) => `<option value="${esc(t.id)}" ${spec.id === t.id ? "selected" : ""}>${esc(t.label)}</option>`).join("")}
+          </select>
+        </div>
+        ${trigger ? (trigger.fields || []).map((fd) => renderField({ values: spec.values }, fd, spec.values)).join("") : ""}
+      </form>
+    </div>`;
+    }
+    function renderImportPanel() {
+      return `<div class="fs-pane">
+      <header class="fs-pane__head">
+        <div class="fs-pane__kicker">Import</div>
+        <h2>Bring an action in from your own tenant</h2>
+        <p class="fs-help">Select an action in the Power Automate designer, open <b>Code view</b>, and paste what it shows. Connector operation names change over time; importing the real thing is how you get the exact shape rather than the catalog's best guess.</p>
+      </header>
+      <div class="fs-form">
+        <div class="fs-field">
+          <span class="fs-label">Pasted JSON</span>
+          <textarea data-import rows="12" spellcheck="false" placeholder='{ "Get_items": { "type": "OpenApiConnection", "inputs": { \u2026 } } }'></textarea>
+        </div>
+        <button type="button" class="fs-btn" data-import-add>Add it to the plan</button>
+        <small class="fs-help">A copied Scope works too. A single copied action does not \u2014 it carries the designer's internal model rather than the definition.</small>
+      </div>
+    </div>`;
+    }
+    function renderCheckPanel() {
+      return `<div class="fs-pane">
+      <header class="fs-pane__head">
+        <div class="fs-pane__kicker">Diagnostic</div>
+        <h2>Check the payload against your designer</h2>
+        <p class="fs-help">In Power Automate, put an action inside a <b>Scope</b>, right-click the Scope and choose <b>Copy</b>. Paste it below. This compares what your designer produced with what this tool generates, and names any difference.</p>
+      </header>
+      <div class="fs-form">
+        <div class="fs-field">
+          <span class="fs-label">Paste a real copy from your designer</span>
+          <textarea data-check rows="10" spellcheck="false" placeholder="Paste the clipboard contents here"></textarea>
+        </div>
+        <button type="button" class="fs-btn" data-check-run>Compare</button>
+        <div data-check-out></div>
+      </div>
+    </div>`;
     }
     function renderOutput() {
       const issues = validatePlan(plan);
-      const blocked = !canGenerate(issues);
+      const errors = errorsOf(issues);
+      const blocked = errors.length > 0;
       const support = browserSupport();
       const built = blocked ? { mode: planMode(plan), fragments: [] } : buildFragments(plan);
-      const banner = support.ok ? "" : `<div class="alert" role="alert"><b>${esc(support.name)} cannot paste into the designer.</b> ${esc(support.reason)}</div>`;
       const modeLine = {
         empty: "Add an action to generate something.",
-        single: "One action \u2014 pastes as itself, with no wrapper.",
-        scope: "Several actions \u2014 they paste as one Scope, because a single paste carries one root action.",
-        sequence: "Several actions, one of which cannot be nested \u2014 paste each part below in order."
+        single: "One action \u2014 pastes as itself, no wrapper.",
+        scope: "Pastes as one Scope: a single paste carries one root action.",
+        sequence: "Pastes in parts \u2014 Initialize variable cannot be nested, so the set cannot be wrapped."
       }[built.mode] || "";
-      const fragments = built.fragments.map((frag, i) => {
-        const text = payloadText(frag);
-        return `<article class="panel fs-fragment">
-        <div class="eyebrow panel-eyebrow">${built.fragments.length > 1 ? `Paste ${i + 1} of ${built.fragments.length}` : "Paste this"}</div>
-        <h3>${esc(frag.name)}</h3>
-        <p class="meta">${esc(frag.root === "scope" ? "A Scope wrapping every action in the plan." : "A single root action.")} \xB7 ${text.length.toLocaleString()} characters</p>
-        <div class="form-row">
-          <button type="button" class="btn" data-copy="${i}">Copy for the designer</button>
-          <button type="button" class="btn ghost" data-toggle-json="${i}">Show JSON</button>
-        </div>
-        <textarea class="fs-json" data-json="${i}" rows="12" readonly spellcheck="false" hidden>${esc(text)}</textarea>
-      </article>`;
-      }).join("");
-      return `${banner}
-      <section class="panel">
-        <div class="eyebrow panel-eyebrow">Output</div>
-        <h2>Paste into the designer</h2>
-        <p class="meta">${esc(modeLine)}</p>
-        <ol class="fs-howto meta">
-          <li>Copy below.</li>
-          <li>In the Power Automate designer, click the <b>+</b> where the actions should go.</li>
-          <li>Choose <b>Paste an action</b>.</li>
-        </ol>
-        <div class="form-row">
-          <button type="button" class="btn ghost" data-copy-definition>Copy workflow definition (code view)</button>
-          ${plan.trigger ? `<span class="chip">trigger: ${esc(plan.trigger.name)}</span>` : '<span class="chip">no trigger</span>'}
-        </div>
-        ${renderFindings(issues)}
-      </section>
-      ${blocked ? `<section class="panel">${emptyState("Not generating yet", "Fix the blocking issues above and the payload appears here.")}</section>` : fragments}`;
-    }
-    function renderBlueprints() {
-      const endpoints = endpointOptions();
-      const u = getState({});
-      return `<section class="panel">
-      <h2>Start from a DGO blueprint</h2>
-      <p class="meta">Scaffolds built from this platform's own endpoint contracts \u2014 the request shape core/data-client.js sends and the response envelope core/contracts.js accepts.</p>
-      <label class="wide">Endpoint
-        <select data-endpoint>${endpoints.map((e) => `<option value="${esc(e.key)}" ${u.endpointKey === e.key ? "selected" : ""}>${esc(e.key)} \u2014 ${esc(e.action)}${e.write ? " (write)" : ""} \xB7 ${e.routeKeys.length} action${e.routeKeys.length === 1 ? "" : "s"}</option>`).join("")}</select>
-      </label>
-      <label class="wide">Request shape
-        <select data-shape>
-          <option value="nested" ${u.shape !== "flat" ? "selected" : ""}>Nested \u2014 { action, payload, requestId, timestamp }</option>
-          <option value="flat" ${u.shape === "flat" ? "selected" : ""}>Flat \u2014 { action, \u2026payload, correlationId }</option>
-        </select>
-      </label>
-      ${Blueprints.map((b) => `<div class="action-row">
-        <span><b>${esc(b.label)}</b><small>${esc(b.summary)}</small></span>
-        <button type="button" class="btn" data-blueprint="${esc(b.id)}">Load</button>
-      </div>`).join("")}
-      <p class="meta">Loading a blueprint replaces the current plan. Undo brings it back.</p>
-    </section>`;
-    }
-    function renderTriggerTab() {
-      const spec = plan.triggerSpec || { id: "", values: {} };
-      const trigger = triggerById(spec.id);
-      return `<section class="panel">
-      <h2>Trigger</h2>
-      <p class="meta">A trigger cannot be pasted \u2014 the designer's paste path creates actions only. Choose one here and it goes into the workflow definition export instead, for code view or import.</p>
-      <label class="wide">Trigger
-        <select data-trigger>
-          <option value="">None \u2014 actions only</option>
-          ${Triggers.map((t) => `<option value="${esc(t.id)}" ${spec.id === t.id ? "selected" : ""}>${esc(t.label)}</option>`).join("")}
-        </select>
-      </label>
-      ${trigger ? `<p class="meta">${esc(trigger.summary || "")}</p>
-        <form class="grid" data-trigger-form>
-          ${(trigger.fields || []).map((fd) => renderField({ values: spec.values }, fd, spec.values)).join("")}
-        </form>
-        ${plan.trigger ? `<p class="meta">Exports as <code>${esc(plan.trigger.name)}</code>.</p>` : ""}` : ""}
-    </section>`;
-    }
-    function renderImport() {
-      return `<section class="panel">
-      <h2>Import from the designer</h2>
-      <p class="meta">Use <b>Peek code</b> on any action in Power Automate and paste what it shows. Connector operation names change over time; importing a real action from your own tenant is how you get the exact shape rather than the catalog's best guess.</p>
-      <label class="wide">Pasted JSON
-        <textarea data-import rows="12" spellcheck="false" placeholder='{ "Get_items": { "type": "OpenApiConnection", "inputs": { \u2026 } } }'></textarea>
-      </label>
-      <div class="form-row"><button type="button" class="btn" data-import-add>Add as an action</button></div>
-      <p class="meta">A copied Scope works too. A single copied action does not \u2014 it carries the designer's internal model rather than the definition.</p>
-    </section>`;
-    }
-    function renderBuilder(selected, names) {
-      const u = getState({ group: "", search: "" });
-      const q = String(u.search || "").toLowerCase();
-      const matches = Actions.filter((a) => (!u.group || a.group === u.group) && (!q || a.label.toLowerCase().includes(q) || a.id.toLowerCase().includes(q) || (a.summary || "").toLowerCase().includes(q)));
-      const targets = insertTargets();
-      return `<section class="panel">
-      <h2>Add an action</h2>
-      <div class="form-row">
-        <input data-search value="${esc(u.search || "")}" placeholder="Search ${Actions.length} actions" aria-label="Search actions">
-        <select data-group aria-label="Group">
-          <option value="">All groups</option>
-          ${ActionGroups.map((g) => `<option value="${esc(g.id)}" ${u.group === g.id ? "selected" : ""}>${esc(g.label)}</option>`).join("")}
-        </select>
+      const groups = [["error", errors, "Fix before generating"], ["warning", warningsOf(issues), "Worth checking"], ["note", notesOf(issues), "Before you paste"]].filter(([, xs]) => xs.length).map(([sev, xs, title]) => `<details class="fs-find fs-find--${sev}" ${sev === "error" ? "open" : ""}>
+        <summary>${esc(title)} <span class="fs-count">${xs.length}</span></summary>
+        <ul>${xs.map((i) => `<li>${i.where ? `<b>${esc(i.where)}</b> \u2014 ` : ""}${esc(i.message)}</li>`).join("")}</ul>
+      </details>`).join("");
+      const parts = built.fragments.map((frag, i) => `<div class="fs-part">
+        <button type="button" class="fs-btn fs-btn--primary" data-copy="${i}">
+          ${built.fragments.length > 1 ? `Copy part ${i + 1} of ${built.fragments.length}` : "Copy for the designer"}
+        </button>
+        <button type="button" class="fs-btn fs-btn--ghost" data-toggle-json="${i}">JSON</button>
+        <span class="fs-part__name">${esc(frag.name)}</span>
+        <textarea class="fs-json" data-json="${i}" rows="10" readonly spellcheck="false" hidden>${esc(payloadText(frag))}</textarea>
+      </div>`).join("");
+      return `<div class="fs-out">
+      ${support.ok ? "" : `<div class="fs-alert" role="alert"><b>${esc(support.name)} cannot paste into the designer.</b> ${esc(support.reason)}</div>`}
+      <div class="fs-out__head">
+        <span class="fs-out__title">Paste</span>
+        <span class="fs-out__mode">${esc(modeLine)}</span>
       </div>
-      <label class="wide">Add to
-        <select data-target>${targets.map((t) => `<option value="${esc(t.key)}">${esc(t.label)}</option>`).join("")}</select>
-      </label>
-      <div class="fs-catalog">${matches.length ? matches.map((a) => `<div class="action-row">
-        <span><b>${esc(a.label)}</b><small>${esc(a.summary || "")}</small></span>
-        <button type="button" class="btn ghost" data-add="${esc(a.id)}">Add</button>
-      </div>`).join("") : '<p class="meta">Nothing matches that search.</p>'}</div>
-    </section>
-    <section class="panel">
-      <label class="wide">Plan name<input data-plan-name value="${esc(plan.name || "")}" spellcheck="false">
-        <small class="meta">Used as the Scope's name when several actions paste together.</small></label>
-      <div class="form-row fs-planctl">
-        <button type="button" class="btn ghost" data-undo ${history.past.length ? "" : "disabled"}>Undo</button>
-        <button type="button" class="btn ghost" data-redo ${history.future.length ? "" : "disabled"}>Redo</button>
-        <button type="button" class="btn ghost" data-export-plan>Save plan</button>
-        <button type="button" class="btn ghost" data-import-plan>Open plan</button>
-        ${plan.steps.length ? '<button type="button" class="btn ghost" data-clear>Clear</button>' : ""}
+      ${blocked ? `<p class="fs-out__blocked">${errors.length} thing${errors.length === 1 ? "" : "s"} to fix before this can generate.</p>` : parts || '<p class="fs-out__blocked">Nothing to paste yet.</p>'}
+      <div class="fs-out__second">
+        <button type="button" class="fs-btn fs-btn--ghost" data-copy-definition>Copy workflow definition</button>
+        <span class="fs-help">for Logic Apps code view or a solution package \u2014 not the Power Automate designer, which has no editable code view</span>
       </div>
-      <h3>Actions</h3>
-      ${plan.steps.length ? renderTree(plan.steps, names, 0, selected) : emptyState("No actions yet", "Add one above, or load a blueprint.")}
-    </section>`;
+      ${groups}
+    </div>`;
+    }
+    function paletteMatches() {
+      const q = String(getState({ q: "" }).q || "").trim().toLowerCase();
+      if (!q) return Actions;
+      return Actions.filter((a) => a.label.toLowerCase().includes(q) || a.id.toLowerCase().includes(q) || (a.summary || "").toLowerCase().includes(q) || (ActionGroups.find((g) => g.id === a.group)?.label || "").toLowerCase().includes(q));
+    }
+    function renderPalette() {
+      if (!pendingInsert) return "";
+      const matches = paletteMatches();
+      if (paletteIndex >= matches.length) paletteIndex = Math.max(0, matches.length - 1);
+      const groupLabel = (id) => ActionGroups.find((g) => g.id === id)?.label || "";
+      return `<div class="fs-palette-wrap" data-palette-wrap>
+      <div class="fs-palette" role="dialog" aria-label="Add an action">
+        <input class="fs-palette__q" data-palette-q placeholder="Search ${Actions.length} actions\u2026" aria-label="Search actions" autocomplete="off">
+        <div class="fs-palette__list" data-palette-list role="listbox">
+          ${matches.length ? matches.map((a, i) => `<button type="button" role="option" aria-selected="${i === paletteIndex}"
+              class="fs-palette__item ${i === paletteIndex ? "is-active" : ""}" data-pick="${esc(a.id)}" data-i="${i}">
+              <span class="fs-palette__name">${esc(a.label)}</span>
+              <span class="fs-palette__group">${esc(groupLabel(a.group))}</span>
+              <span class="fs-palette__sum">${esc(a.summary || "")}</span>
+            </button>`).join("") : '<p class="fs-help fs-palette__none">Nothing matches that.</p>'}
+        </div>
+        <div class="fs-palette__foot"><kbd>\u2191</kbd><kbd>\u2193</kbd> move \xB7 <kbd>Enter</kbd> add \xB7 <kbd>Esc</kbd> close</div>
+      </div>
+    </div>`;
     }
     function render(el) {
       root = el;
-      const u = getState({ tab: "blueprints", selected: "", group: "", search: "" });
-      const issues = validatePlan(plan);
+      const u = getState({ selected: "", collapsed: [], q: "" });
       const names = resolveNames(plan);
+      const issues = validatePlan(plan);
+      const errors = errorsOf(issues).length;
       let count = 0;
       walk(plan.steps, () => {
         count += 1;
       });
       const mode = planMode(plan);
       const pastes = mode === "empty" ? 0 : mode === "sequence" ? plan.steps.length : 1;
-      const left = u.tab === "blueprints" ? renderBlueprints() : u.tab === "import" ? renderImport() : u.tab === "trigger" ? renderTriggerTab() : renderBuilder(u.selected, names);
-      el.innerHTML = `<div class="workspace fs-workspace">
-      ${head("Flow Studio", "Build a set of Power Automate actions here, copy them, and paste them straight into the modern designer.", "Power Automate")}
-      ${kpis([
-        ["Actions", count],
-        ["Pastes", pastes],
-        ["Blocking issues", errorsOf(issues).length],
-        ["Worth checking", warningsOf(issues).length]
-      ])}
-      <div class="cc-tabs" role="tablist">
-        ${[["blueprints", "Blueprints"], ["builder", "Builder"], ["trigger", "Trigger"], ["import", "Import"]].map(([id, label]) => `<button type="button" class="cc-tab ${u.tab === id ? "active" : ""}" role="tab" aria-selected="${u.tab === id}" data-tab="${id}">${label}</button>`).join("")}
-      </div>
-      <div class="split fs-split">
-        <div class="fs-left panel-stack">${left}</div>
-        <div class="detail-col panel-stack">
-          ${u.tab === "builder" ? renderEditor(u.selected, names) : ""}
-          <div data-output>${renderOutput()}</div>
+      el.innerHTML = `<div class="fs-app">
+      <header class="fs-top">
+        <div class="fs-top__id">
+          <span class="fs-top__eyebrow">Power Automate</span>
+          <h1>Flow Studio</h1>
         </div>
+        <div class="fs-status" role="status">
+          <span><b>${count}</b> action${count === 1 ? "" : "s"}</span>
+          <span><b>${pastes}</b> paste${pastes === 1 ? "" : "s"}</span>
+          <span class="${errors ? "is-bad" : "is-ok"}"><b>${errors}</b> to fix</span>
+          <span class="fs-saved" data-saved hidden>saved</span>
+        </div>
+      </header>
+      <div class="fs-body">
+        ${renderPlanColumn(names, u.selected)}
+        <main class="fs-work">
+          <div class="fs-work__scroll" data-editor-slot>${renderEditor(u.selected, names)}</div>
+          <div class="fs-work__out" data-output>${renderOutput()}</div>
+        </main>
       </div>
+      ${renderPalette()}
     </div>`;
       bind(el);
+      if (pendingInsert) el.querySelector("[data-palette-q]")?.focus();
     }
     function refreshOutput() {
       const slot = root?.querySelector("[data-output]");
       if (!slot) return;
       slot.innerHTML = renderOutput();
       bindOutput(slot);
+      const status = root.querySelector(".fs-status");
+      if (status) {
+        const errs = errorsOf(validatePlan(plan)).length;
+        const cell = status.querySelector("span:nth-child(3)");
+        if (cell) {
+          cell.innerHTML = `<b>${errs}</b> to fix`;
+          cell.className = errs ? "is-bad" : "is-ok";
+        }
+      }
     }
+    function flashSaved() {
+      const el = root?.querySelector("[data-saved]");
+      if (!el) return;
+      el.hidden = false;
+      clearTimeout(el._t);
+      el._t = setTimeout(() => {
+        el.hidden = true;
+      }, 1400);
+    }
+    const rerender = () => render(root);
     function bindOutput(scope) {
       scope.querySelectorAll("[data-copy]").forEach((b) => b.addEventListener("click", async () => {
         const frag = buildFragments(plan).fragments[Number(b.dataset.copy)];
         if (!frag) return;
         try {
           await writeClipboard(payloadText(frag));
-          toast('Copied \u2014 in the designer choose + then "Paste an action"', "success");
+          const original = b.textContent;
+          b.textContent = "Copied \u2713";
+          b.classList.add("is-done");
+          setTimeout(() => {
+            b.textContent = original;
+            b.classList.remove("is-done");
+          }, 1800);
+          toast('Copied \u2014 in the designer press + then "Paste an action"', "success");
         } catch (e) {
           toast(e.message, "error");
         }
@@ -2421,12 +2726,12 @@ var FlowStudioRuntime = (() => {
         const ta = scope.querySelector(`[data-json="${b.dataset.toggleJson}"]`);
         if (!ta) return;
         ta.hidden = !ta.hidden;
-        b.textContent = ta.hidden ? "Show JSON" : "Hide JSON";
+        b.classList.toggle("is-on", !ta.hidden);
       }));
-      scope.querySelector("[data-copy-definition]")?.addEventListener("click", async () => {
+      scope.querySelector("[data-copy-definition]")?.addEventListener("click", async (b) => {
         try {
           await writeClipboard(definitionText(plan, plan.trigger));
-          toast(plan.trigger ? `Workflow definition copied, trigger "${plan.trigger.name}" included \u2014 paste it into code view` : "Workflow definition copied \u2014 paste it into code view", "success");
+          toast(plan.trigger ? `Definition copied, trigger "${plan.trigger.name}" included` : "Definition copied", "success");
         } catch (e) {
           toast(e.message, "error");
         }
@@ -2452,9 +2757,6 @@ var FlowStudioRuntime = (() => {
       });
       input.click();
     }
-    function rerender() {
-      render(root);
-    }
     function bindSamplers(form, write) {
       form.querySelectorAll("[data-infer]").forEach((b) => b.addEventListener("click", () => {
         const field = b.dataset.infer;
@@ -2464,130 +2766,86 @@ var FlowStudioRuntime = (() => {
           write(field, schemaText);
           const target = form.querySelector(`textarea[data-field="${field}"]`);
           if (target) target.value = schemaText;
-          toast("Schema inferred from the sample", "success");
+          toast("Schema inferred", "success");
         } catch (e) {
           toast(e.message, "error");
         }
       }));
     }
+    function openPalette(listKey, index) {
+      pendingInsert = { listKey, index };
+      paletteIndex = 0;
+      setState({ q: "" });
+      rerender();
+    }
+    function closePalette() {
+      if (!pendingInsert) return;
+      pendingInsert = null;
+      rerender();
+    }
     function bind(el) {
-      const u = getState({ tab: "blueprints", selected: "", group: "", search: "" });
-      el.querySelectorAll("[data-tab]").forEach((b) => b.addEventListener("click", () => {
-        setState({ tab: b.dataset.tab });
-        rerender();
-      }));
-      el.querySelector("[data-endpoint]")?.addEventListener("change", (e) => setState({ endpointKey: e.target.value }));
-      el.querySelector("[data-shape]")?.addEventListener("change", (e) => setState({ shape: e.target.value }));
-      el.querySelectorAll("[data-blueprint]").forEach((b) => b.addEventListener("click", async () => {
-        if (plan.steps.length && !await confirm({
-          title: "Replace the current plan",
-          body: `<p>Loading this blueprint discards the ${plan.steps.length} action(s) already in the plan. Undo brings them back.</p>`,
-          confirmText: "Replace",
-          cancelText: "Keep what I have"
-        })) return;
-        const state = getState({});
-        const bp = blueprintById(b.dataset.blueprint);
-        try {
-          const built = bp.build({
-            endpointKey: state.endpointKey || endpointOptions()[0]?.key,
-            shape: state.shape || "nested",
-            routeKey: state.endpointKey ? endpointOptions().find((x) => x.key === state.endpointKey)?.routeKeys?.[0] : void 0
-          });
-          mutate(() => {
-            plan = { ...blankPlan(), name: built.name, steps: built.steps, trigger: built.trigger || null, notes: built.notes || [] };
-          });
-          setState({ tab: "builder", selected: plan.steps[0]?.id || "" });
-          toast(`${bp.label} loaded`, "success");
+      const u = getState({ selected: "", collapsed: [], q: "" });
+      if (pendingInsert) {
+        const q = el.querySelector("[data-palette-q]");
+        const list = el.querySelector("[data-palette-list]");
+        q.value = u.q || "";
+        const pick = (id) => {
+          const step2 = addStep(id, pendingInsert.listKey, pendingInsert.index);
+          pendingInsert = null;
+          if (step2) setState({ selected: step2.id });
           rerender();
-        } catch (e) {
-          toast(e.message, "error");
-        }
-      }));
-      const rebuildTrigger = () => {
-        const spec = plan.triggerSpec;
-        const trigger = spec && triggerById(spec.id);
-        plan.trigger = trigger ? trigger.build(spec.values || {}) : null;
-      };
-      el.querySelector("[data-trigger]")?.addEventListener("change", (e) => {
-        const trigger = triggerById(e.target.value);
-        mutate(() => {
-          plan.triggerSpec = trigger ? { id: trigger.id, values: defaultTriggerValues(trigger) } : null;
-          rebuildTrigger();
-        });
-        rerender();
-      });
-      const triggerForm = el.querySelector("[data-trigger-form]");
-      if (triggerForm) {
-        const writeTrigger = (name, value) => {
-          if (!plan.triggerSpec) return;
-          plan.triggerSpec.values[name] = value;
-          rebuildTrigger();
-          save();
-          refreshOutput();
         };
-        triggerForm.querySelectorAll("[data-field]").forEach((input) => {
-          const evt = input.type === "checkbox" || input.tagName === "SELECT" ? "change" : "input";
-          input.addEventListener(evt, (e) => writeTrigger(input.dataset.field, input.type === "checkbox" ? e.target.checked : e.target.value));
+        q.addEventListener("input", (e) => {
+          setState({ q: e.target.value });
+          paletteIndex = 0;
+          const matches = paletteMatches();
+          const groupLabel = (gid) => ActionGroups.find((g) => g.id === gid)?.label || "";
+          list.innerHTML = matches.length ? matches.map((a, i) => `<button type="button" role="option" aria-selected="${i === 0}"
+            class="fs-palette__item ${i === 0 ? "is-active" : ""}" data-pick="${esc(a.id)}" data-i="${i}">
+            <span class="fs-palette__name">${esc(a.label)}</span>
+            <span class="fs-palette__group">${esc(groupLabel(a.group))}</span>
+            <span class="fs-palette__sum">${esc(a.summary || "")}</span>
+          </button>`).join("") : '<p class="fs-help fs-palette__none">Nothing matches that.</p>';
+          list.querySelectorAll("[data-pick]").forEach((b) => b.addEventListener("click", () => pick(b.dataset.pick)));
         });
-        bindSamplers(triggerForm, writeTrigger);
-      }
-      el.querySelector("[data-import-add]")?.addEventListener("click", () => {
-        const text = el.querySelector("[data-import]")?.value || "";
-        try {
-          const { name, definition, from } = importDefinition(text);
-          const step2 = addStep("raw", "root");
-          mutate(() => {
-            step2.name = name;
-            step2.values.definition = JSON.stringify(definition, null, 2);
-          });
-          setState({ tab: "builder", selected: step2.id });
-          toast(`Imported from ${from}: ${describeDefinition(definition)}`, "success");
-          rerender();
-        } catch (e) {
-          toast(e.message, "error");
-        }
-      });
-      const search = el.querySelector("[data-search]");
-      if (search) {
-        search.addEventListener("input", (e) => {
-          setState({ search: e.target.value });
-          const slot = el.querySelector(".fs-catalog");
-          if (!slot) return;
-          const q = String(e.target.value || "").toLowerCase();
-          const group = getState({}).group;
-          const matches = Actions.filter((a) => (!group || a.group === group) && (!q || a.label.toLowerCase().includes(q) || a.id.toLowerCase().includes(q) || (a.summary || "").toLowerCase().includes(q)));
-          slot.innerHTML = matches.length ? matches.map((a) => `<div class="action-row">
-          <span><b>${esc(a.label)}</b><small>${esc(a.summary || "")}</small></span>
-          <button type="button" class="btn ghost" data-add="${esc(a.id)}">Add</button>
-        </div>`).join("") : '<p class="meta">Nothing matches that search.</p>';
-          bindAdd(slot);
+        q.addEventListener("keydown", (e) => {
+          const items = [...list.querySelectorAll("[data-pick]")];
+          if (e.key === "Escape") {
+            e.preventDefault();
+            closePalette();
+          } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+            e.preventDefault();
+            if (!items.length) return;
+            paletteIndex = (paletteIndex + (e.key === "ArrowDown" ? 1 : -1) + items.length) % items.length;
+            items.forEach((b, i) => {
+              b.classList.toggle("is-active", i === paletteIndex);
+              b.setAttribute("aria-selected", i === paletteIndex);
+            });
+            items[paletteIndex].scrollIntoView({ block: "nearest" });
+          } else if (e.key === "Enter") {
+            e.preventDefault();
+            if (items[paletteIndex]) pick(items[paletteIndex].dataset.pick);
+          }
+        });
+        list.querySelectorAll("[data-pick]").forEach((b) => b.addEventListener("click", () => pick(b.dataset.pick)));
+        el.querySelector("[data-palette-wrap]")?.addEventListener("mousedown", (e) => {
+          if (e.target === e.currentTarget) closePalette();
         });
       }
-      el.querySelector("[data-group]")?.addEventListener("change", (e) => {
-        setState({ group: e.target.value });
-        rerender();
-      });
-      const bindAdd = (scope) => scope.querySelectorAll("[data-add]").forEach((b) => b.addEventListener("click", () => {
-        const target = el.querySelector("[data-target]")?.value || "root";
-        const step2 = addStep(b.dataset.add, target);
-        if (step2) {
-          setState({ selected: step2.id });
-          rerender();
-        }
-      }));
-      bindAdd(el);
-      el.querySelector("[data-plan-name]")?.addEventListener("input", (e) => {
+      el.querySelectorAll("[data-insert]").forEach((b) => b.addEventListener("click", () => openPalette(b.dataset.insert, Number(b.dataset.at))));
+      const planName = el.querySelector("[data-plan-name]");
+      planName?.addEventListener("focus", beginFieldEdit);
+      planName?.addEventListener("change", commitFieldEdit);
+      planName?.addEventListener("input", (e) => {
         plan.name = e.target.value;
         save();
         refreshOutput();
       });
       el.querySelector("[data-undo]")?.addEventListener("click", () => {
         if (undo()) rerender();
-        else toast("Nothing to undo", "");
       });
       el.querySelector("[data-redo]")?.addEventListener("click", () => {
         if (redo()) rerender();
-        else toast("Nothing to redo", "");
       });
       el.querySelector("[data-export-plan]")?.addEventListener("click", () => {
         download(`${(plan.name || "flow-plan").replace(/[^\w.-]+/g, "-").toLowerCase()}.plan.json`, JSON.stringify(plan, null, 2));
@@ -2608,16 +2866,61 @@ var FlowStudioRuntime = (() => {
         }
       }));
       el.querySelector("[data-clear]")?.addEventListener("click", async () => {
-        if (!await confirm({ title: "Clear the plan", body: "<p>Every action in the plan is removed. Undo brings them back.</p>", confirmText: "Clear", cancelText: "Cancel" })) return;
+        if (!await confirm({ title: "Clear the plan", body: "<p>Every action is removed. Undo brings them back.</p>", confirmText: "Clear", cancelText: "Cancel" })) return;
         mutate(() => {
           plan = blankPlan();
         });
         setState({ selected: "" });
         rerender();
       });
-      el.querySelectorAll("[data-step]").forEach((node) => {
+      const bp = el.querySelector("[data-blueprint]");
+      bp?.addEventListener("change", async (e) => {
+        const id = e.target.value;
+        if (!id) return;
+        e.target.value = "";
+        if (plan.steps.length && !await confirm({
+          title: "Replace the current plan",
+          body: `<p>Loading this blueprint discards the ${plan.steps.length} action(s) already here. Undo brings them back.</p>`,
+          confirmText: "Replace",
+          cancelText: "Keep what I have"
+        })) return;
+        const endpointKey = el.querySelector("[data-endpoint]")?.value || endpointOptions()[0]?.key;
+        try {
+          const built = blueprintById(id).build({
+            endpointKey,
+            routeKey: endpointOptions().find((x) => x.key === endpointKey)?.routeKeys?.[0]
+          });
+          mutate(() => {
+            plan = { ...blankPlan(), name: built.name, steps: built.steps, trigger: built.trigger || null, notes: built.notes || [] };
+          });
+          setState({ selected: plan.steps[0]?.id || "" });
+          toast(`${blueprintById(id).label} loaded`, "success");
+          rerender();
+        } catch (err) {
+          toast(err.message, "error");
+        }
+      });
+      el.querySelectorAll("[data-panel]").forEach((node) => {
         const open = () => {
-          setState({ selected: node.dataset.step });
+          setState({ selected: node.dataset.panel });
+          rerender();
+        };
+        node.addEventListener("click", open);
+        node.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            open();
+          }
+        });
+      });
+      el.querySelectorAll("[data-panel-open]").forEach((b) => b.addEventListener("click", () => {
+        setState({ selected: b.dataset.panelOpen });
+        rerender();
+      }));
+      el.querySelectorAll("[data-step]").forEach((node) => {
+        const id = node.dataset.step;
+        const open = () => {
+          setState({ selected: id });
           rerender();
         };
         node.addEventListener("click", (e) => {
@@ -2629,7 +2932,43 @@ var FlowStudioRuntime = (() => {
             open();
           }
         });
+        node.addEventListener("dragstart", (e) => {
+          e.dataTransfer.setData("text/plain", id);
+          e.dataTransfer.effectAllowed = "move";
+          node.classList.add("is-dragging");
+        });
+        node.addEventListener("dragend", () => {
+          node.classList.remove("is-dragging");
+          el.querySelectorAll(".is-dropbefore,.is-dropafter").forEach((n) => n.classList.remove("is-dropbefore", "is-dropafter"));
+        });
+        node.addEventListener("dragover", (e) => {
+          const dragged = el.querySelector(".is-dragging")?.dataset.step;
+          if (!dragged || dragged === id || contains(dragged, id)) return;
+          e.preventDefault();
+          const before = e.offsetY < node.offsetHeight / 2;
+          node.classList.toggle("is-dropbefore", before);
+          node.classList.toggle("is-dropafter", !before);
+        });
+        node.addEventListener("dragleave", () => node.classList.remove("is-dropbefore", "is-dropafter"));
+        node.addEventListener("drop", (e) => {
+          e.preventDefault();
+          const dragged = e.dataTransfer.getData("text/plain");
+          const before = node.classList.contains("is-dropbefore");
+          node.classList.remove("is-dropbefore", "is-dropafter");
+          if (!dragged || dragged === id || contains(dragged, id)) return;
+          const target = locate(id);
+          if (!target) return;
+          relocate(dragged, keyOfList(id), target.index + (before ? 0 : 1));
+          setState({ selected: dragged });
+          rerender();
+        });
       });
+      el.querySelectorAll("[data-collapse]").forEach((b) => b.addEventListener("click", () => {
+        const id = b.dataset.collapse;
+        const collapsed = getState({ collapsed: [] }).collapsed || [];
+        setState({ collapsed: collapsed.includes(id) ? collapsed.filter((x) => x !== id) : [...collapsed, id] });
+        rerender();
+      }));
       el.querySelectorAll("[data-move]").forEach((b) => b.addEventListener("click", () => {
         moveStep(b.dataset.move, Number(b.dataset.delta));
         rerender();
@@ -2644,6 +2983,55 @@ var FlowStudioRuntime = (() => {
         if (u.selected === b.dataset.remove) setState({ selected: "" });
         rerender();
       }));
+      const triggerForm = el.querySelector("[data-trigger-form]");
+      if (triggerForm) {
+        const rebuild = () => {
+          const spec = plan.triggerSpec;
+          const t = spec && triggerById(spec.id);
+          plan.trigger = t ? t.build(spec.values || {}) : null;
+        };
+        const writeTrigger = (name, value) => {
+          if (!plan.triggerSpec) return;
+          plan.triggerSpec.values[name] = value;
+          rebuild();
+          save();
+          refreshOutput();
+        };
+        el.querySelector("[data-trigger]")?.addEventListener("change", (e) => {
+          const t = triggerById(e.target.value);
+          mutate(() => {
+            plan.triggerSpec = t ? { id: t.id, values: defaultTriggerValues(t) } : null;
+            rebuild();
+          });
+          rerender();
+        });
+        triggerForm.querySelectorAll("[data-field]").forEach((input) => {
+          const evt = input.type === "checkbox" || input.tagName === "SELECT" ? "change" : "input";
+          input.addEventListener(evt, (e) => writeTrigger(input.dataset.field, input.type === "checkbox" ? e.target.checked : e.target.value));
+        });
+        bindSamplers(triggerForm, writeTrigger);
+      }
+      el.querySelector("[data-import-add]")?.addEventListener("click", () => {
+        const text = el.querySelector("[data-import]")?.value || "";
+        try {
+          const { name, definition, from } = importDefinition(text);
+          const step2 = addStep("raw", "root", plan.steps.length);
+          mutate(() => {
+            step2.name = name;
+            step2.values.definition = JSON.stringify(definition, null, 2);
+          });
+          setState({ selected: step2.id });
+          toast(`Imported from ${from}: ${describeDefinition(definition)}`, "success");
+          rerender();
+        } catch (e) {
+          toast(e.message, "error");
+        }
+      });
+      el.querySelector("[data-check-run]")?.addEventListener("click", () => {
+        const out = el.querySelector("[data-check-out]");
+        const text = el.querySelector("[data-check]")?.value || "";
+        out.innerHTML = renderCheckResult(compareWithRealCopy(text));
+      });
       const form = el.querySelector("[data-editor]");
       if (form) {
         const step2 = locate(form.dataset.editor)?.step;
@@ -2654,19 +3042,23 @@ var FlowStudioRuntime = (() => {
           save();
           refreshOutput();
         };
+        const tokens = el.querySelector("[data-tokens]");
         form.addEventListener("focusin", (e) => {
-          if (e.target.matches("input[data-field], textarea[data-field], input[data-cell]")) lastField = e.target;
+          if (!e.target.matches("input[data-field], textarea[data-field], input[data-cell]")) return;
+          beginFieldEdit();
+          lastField = e.target;
+          if (!tokens) return;
+          const holder = e.target.closest(".fs-field, .fs-row") || e.target.parentElement;
+          holder.after(tokens);
+          tokens.hidden = false;
         });
-        el.querySelectorAll("[data-token]").forEach((b) => b.addEventListener("click", () => {
-          if (!lastField || !form.contains(lastField)) {
-            toast("Put the cursor in a field first", "");
-            return;
-          }
+        el.querySelectorAll("[data-token]").forEach((b) => b.addEventListener("mousedown", (e) => {
+          e.preventDefault();
+          if (!lastField || !form.contains(lastField)) return;
           const token = b.dataset.token;
           const start = lastField.selectionStart ?? lastField.value.length;
           const end = lastField.selectionEnd ?? start;
           lastField.value = lastField.value.slice(0, start) + token + lastField.value.slice(end);
-          lastField.focus();
           lastField.setSelectionRange(start + token.length, start + token.length);
           lastField.dispatchEvent(new Event("input", { bubbles: true }));
         }));
@@ -2691,7 +3083,13 @@ var FlowStudioRuntime = (() => {
           const evt = input.type === "checkbox" || input.tagName === "SELECT" ? "change" : "input";
           input.addEventListener(evt, (e) => {
             write(input.dataset.field, input.type === "checkbox" ? e.target.checked : e.target.value);
+            if (input.dataset.field === "__name") refreshTreeLabel(step2);
             if (input.tagName === "SELECT" && input.dataset.field === "type") rerender();
+          });
+          if (evt === "input") input.addEventListener("change", commitFieldEdit);
+          else input.addEventListener("change", () => {
+            beginFieldEdit();
+            commitFieldEdit();
           });
         });
         bindSamplers(form, write);
@@ -2700,6 +3098,8 @@ var FlowStudioRuntime = (() => {
           rep.querySelectorAll("[data-row]").forEach((row) => {
             row.querySelectorAll("[data-cell]").forEach((cell) => {
               const evt = cell.tagName === "SELECT" ? "change" : "input";
+              cell.addEventListener("focus", beginFieldEdit);
+              cell.addEventListener("change", commitFieldEdit);
               cell.addEventListener(evt, () => {
                 const list = rowsOf(step2, fieldName);
                 list[Number(row.dataset.row)] = { ...list[Number(row.dataset.row)], [cell.dataset.cell]: cell.value };
@@ -2724,10 +3124,65 @@ var FlowStudioRuntime = (() => {
       }
       bindOutput(el.querySelector("[data-output]") || el);
     }
+    function refreshTreeLabel(step2) {
+      if (!step2) return;
+      const node = root?.querySelector(`[data-step="${step2.id}"] .fs-item__name`);
+      if (node) node.textContent = step2.name || actionById(step2.actionId)?.label || "Action";
+    }
+    function compareWithRealCopy(text) {
+      let real;
+      try {
+        real = JSON.parse(text);
+      } catch (e) {
+        return { fatal: `That is not valid JSON \u2014 ${e.message}` };
+      }
+      if (!real || typeof real !== "object") return { fatal: "Expected a JSON object from the clipboard." };
+      const ours = toPayload({ name: "Sample", definition: { type: "Scope", actions: {} } });
+      const findings = [];
+      const ok = [];
+      for (const key of Object.keys(ours)) {
+        if (!(key in real)) findings.push(`Your designer's copy has no "${key}". This tool sends one.`);
+        else ok.push(key);
+      }
+      for (const key of Object.keys(real)) {
+        if (!(key in ours)) findings.push(`Your designer's copy carries an extra "${key}" that this tool does not send.`);
+      }
+      if ("mslaNode" in real && real.mslaNode !== true) {
+        findings.push(`"mslaNode" is ${JSON.stringify(real.mslaNode)} in your copy, not true \u2014 that is the key the designer gates on.`);
+      }
+      if ("isScopeNode" in real && real.isScopeNode !== true) {
+        findings.push("Your copy has isScopeNode:false, which means a single action was copied rather than a Scope. Copy a Scope to compare like with like.");
+      }
+      if (real.serializedOperation && typeof real.serializedOperation.type !== "string") {
+        findings.push('serializedOperation has no "type" \u2014 that is the action definition this tool generates.');
+      }
+      return { fatal: null, matched: ok, findings, sameShape: findings.length === 0, gate: DesignerClipboard.mslaNodeFlag };
+    }
+    function renderCheckResult(r) {
+      if (r.fatal) return `<div class="fs-find fs-find--error"><ul><li>${esc(r.fatal)}</li></ul></div>`;
+      if (r.sameShape) {
+        return `<div class="fs-find fs-find--ok" open>
+        <ul><li><b>The envelope matches.</b> Your designer produced the same keys this tool generates
+        (${esc(r.matched.join(", "))}), and <code>mslaNode</code> is true. If a paste still fails,
+        the problem is in an action definition rather than the envelope \u2014 send me the action and I will look at it.</li></ul>
+      </div>`;
+      }
+      return `<div class="fs-find fs-find--warn" open>
+      <summary>Differences found <span class="fs-count">${r.findings.length}</span></summary>
+      <ul>${r.findings.map((f3) => `<li>${esc(f3)}</li>`).join("")}</ul>
+    </div>`;
+    }
     function onKeydown(e) {
       if (!root?.isConnected) return;
+      if (e.key === "Escape" && pendingInsert) {
+        e.preventDefault();
+        closePalette();
+        return;
+      }
       const mod = e.ctrlKey || e.metaKey;
       if (!mod) return;
+      const t = e.target;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable)) return;
       const key = e.key.toLowerCase();
       if (key === "z" && !e.shiftKey) {
         if (undo()) {
@@ -2743,14 +3198,17 @@ var FlowStudioRuntime = (() => {
     }
     return {
       mount(el) {
+        installStudioStyles(el.ownerDocument || document);
+        el.style.height = "100%";
+        el.style.minHeight = "0";
         plan = load() || blankPlan();
         history.past.length = 0;
         history.future.length = 0;
+        pendingInsert = null;
         document.removeEventListener("keydown", onKeydown);
         document.addEventListener("keydown", onKeydown);
         render(el);
       },
-      // Exposed for tests and for a surface that wants to seed a plan.
       getPlan: () => plan,
       setPlan: (next) => {
         mutate(() => {
@@ -2767,36 +3225,30 @@ var FlowStudioRuntime = (() => {
 
   const esc = v => String(v ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
 
-  // Chrome helpers. Deliberately the same markup shapes the platform emits, so one screen
-  // implementation styles correctly under either stylesheet.
-  const head = (title, subtitle = '', eyebrow = '') =>
-    `<div class="pagehead"><div>${eyebrow ? `<div class="eyebrow">${esc(eyebrow)}</div>` : ''}` +
-    `<h1>${esc(title)}</h1>${subtitle ? `<p class="subtitle">${esc(subtitle)}</p>` : ''}</div></div>`;
-
-  const kpis = xs => `<div class="kpis">${xs.map(([label, value]) =>
-    `<div class="kpi"><small>${esc(label)}</small><b>${esc(value)}</b></div>`).join('')}</div>`;
-
   const emptyState = (title, body) =>
-    `<div class="empty"><h2>${esc(title)}</h2><p>${esc(body)}</p></div>`;
+    `<div style="text-align:center;padding:28px 12px;color:var(--mut)">
+       <p style="margin:0 0 4px;font-weight:700;color:var(--fg)">${esc(title)}</p>
+       <p style="margin:0;font-size:11.5px">${esc(body)}</p>
+     </div>`;
 
   function toast(message, tone = '') {
     const el = document.createElement('div');
     el.className = `toast ${tone}`;
     el.textContent = message;
     document.getElementById('toasts').appendChild(el);
-    setTimeout(() => el.remove(), 6000);
+    setTimeout(() => el.remove(), 5200);
   }
 
-  // A promise-returning confirm, matching the platform's confirmAction() contract. `body` is
-  // trusted HTML from the studio itself, never from a plan.
+  // A promise-returning confirm matching the platform's confirmAction() contract. `body` is
+  // trusted markup from the studio itself, never from a plan.
   function confirmDialog(options) {
     const o = typeof options === 'string' ? { title: 'Confirm', body: options } : (options || {});
     return new Promise(resolve => {
       const dlg = document.createElement('dialog');
       dlg.innerHTML = `<h2>${esc(o.title || 'Confirm')}</h2><div>${o.body || ''}</div>
-        <div class="form-row">
-          <button type="button" class="btn ghost" data-no>${esc(o.cancelText || 'Cancel')}</button>
-          <button type="button" class="btn" data-yes>${esc(o.confirmText || 'Continue')}</button>
+        <div class="dlg-row">
+          <button type="button" class="dlg-btn" data-no>${esc(o.cancelText || 'Cancel')}</button>
+          <button type="button" class="dlg-btn dlg-btn--go" data-yes>${esc(o.confirmText || 'Continue')}</button>
         </div>`;
       const done = value => { dlg.close(); dlg.remove(); resolve(value); };
       dlg.querySelector('[data-yes]').onclick = () => done(true);
@@ -2807,13 +3259,13 @@ var FlowStudioRuntime = (() => {
     });
   }
 
-  // View state: which tab, which action is selected. In memory, exactly as UIState is.
+  // View state: selection, collapsed branches, palette query. In memory, as UIState is.
   let view = {};
   const getState = (defaults = {}) => ({ ...defaults, ...view });
   const setState = patch => { view = { ...view, ...patch }; };
 
-  const studio = createStudio({
-    esc, head, kpis, emptyState,
+  createStudio({
+    esc, emptyState,
     toast,
     confirm: confirmDialog,
     getState, setState,
@@ -2823,9 +3275,7 @@ var FlowStudioRuntime = (() => {
       get: key => localStorage.getItem(`standalone:${key}`),
       set: (key, value) => localStorage.setItem(`standalone:${key}`, value)
     }
-  });
-
-  studio.mount(document.getElementById('app'));
+  }).mount(document.getElementById('app'));
 </script>
 </body>
 </html>

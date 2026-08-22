@@ -49,7 +49,7 @@ async function sourceFingerprint() {
     'tools/flow-studio.html',
     'config/power-automate.config.js',
     'config/endpoints.config.js',
-    ...['index', 'studio', 'catalog', 'assemble', 'validate', 'clipboard', 'blueprints', 'expressions', 'schema', 'triggers']
+    ...['index', 'studio', 'studio.css', 'catalog', 'assemble', 'validate', 'clipboard', 'blueprints', 'expressions', 'schema', 'triggers']
       .map(n => `core/power-automate/${n}.js`)
   ].sort();
   const hash = createHash('sha256');
