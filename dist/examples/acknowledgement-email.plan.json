@@ -1,0 +1,60 @@
+{
+  "name": "Acknowledgement email",
+  "steps": [
+    {
+      "id": "bp-mt59alyt-b",
+      "actionId": "compose",
+      "name": "Acknowledgement_reference",
+      "values": {
+        "inputs": "\"@{coalesce(triggerBody()?['payload']?['reference'], triggerBody()?['reference'], '')}\""
+      }
+    },
+    {
+      "id": "bp-mt59alyt-e",
+      "actionId": "condition",
+      "name": "Reference_present",
+      "values": {
+        "rows": [
+          {
+            "left": "@{outputs('Acknowledgement_reference')}",
+            "operator": "isNotEmpty",
+            "right": ""
+          }
+        ],
+        "join": "and"
+      },
+      "branches": {
+        "actions": [
+          {
+            "id": "bp-mt59alyt-c",
+            "actionId": "o365.sendEmail",
+            "name": "Send_acknowledgement",
+            "values": {
+              "to": "@{triggerBody()?['payload']?['senderEmail']}",
+              "subject": "Acknowledgement — @{outputs('Acknowledgement_reference')}",
+              "body": "<p>Your correspondence has been received and registered.</p><p>Reference: <b>@{outputs('Acknowledgement_reference')}</b></p><p>You will be contacted when it has been assigned.</p>",
+              "importance": "Normal"
+            }
+          }
+        ],
+        "else": [
+          {
+            "id": "bp-mt59alyt-d",
+            "actionId": "terminate",
+            "name": "No_reference_supplied",
+            "values": {
+              "runStatus": "Failed",
+              "code": "NO_REFERENCE",
+              "message": "Acknowledgement requested without a reference."
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "trigger": null,
+  "triggerSpec": null,
+  "notes": [
+    "Pick the Office 365 Outlook connection on the email action after pasting."
+  ]
+}

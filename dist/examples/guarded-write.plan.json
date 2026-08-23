@@ -1,0 +1,64 @@
+{
+  "name": "Write with envelope",
+  "steps": [
+    {
+      "id": "bp-guarded-scope",
+      "actionId": "scope",
+      "name": "Do_the_work",
+      "values": {},
+      "branches": {
+        "actions": [
+          {
+            "id": "bp-mt59alys-7",
+            "actionId": "compose",
+            "name": "Work_placeholder",
+            "values": {
+              "inputs": "{\n  \"note\": \"Replace with the write — SharePoint, HTTP, whatever this endpoint does.\"\n}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "bp-mt59alys-9",
+      "actionId": "response",
+      "name": "Respond_success",
+      "values": {
+        "statusCode": 200,
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": "{\n  \"ok\": true,\n  \"status\": {\n    \"http\": 200,\n    \"message\": \"OK\"\n  },\n  \"request\": {\n    \"action\": \"@{triggerBody()?['action']}\",\n    \"requestId\": \"@{coalesce(triggerBody()?['requestId'], triggerBody()?['correlationId'], '')}\",\n    \"trackingId\": \"@{workflow()?['run']?['name']}\"\n  },\n  \"timing\": {\n    \"receivedAtUtc\": \"@{outputs('Received_at')}\",\n    \"completedAtUtc\": \"@{utcNow()}\"\n  },\n  \"meta\": {\n    \"runId\": \"@{workflow()?['run']?['name']}\",\n    \"flowName\": \"@{workflow()?['name']}\",\n    \"contractVersion\": \"1.0\"\n  },\n  \"data\": \"@outputs('Work_placeholder')\"\n}"
+      }
+    },
+    {
+      "id": "bp-mt59alys-a",
+      "actionId": "response",
+      "name": "Respond_failure",
+      "values": {
+        "statusCode": 500,
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": "{\n  \"ok\": false,\n  \"status\": {\n    \"http\": 500,\n    \"message\": \"@{result('Do_the_work')[0]?['error']?['message']}\"\n  },\n  \"request\": {\n    \"action\": \"@{triggerBody()?['action']}\",\n    \"requestId\": \"@{coalesce(triggerBody()?['requestId'], triggerBody()?['correlationId'], '')}\",\n    \"trackingId\": \"@{workflow()?['run']?['name']}\"\n  },\n  \"timing\": {\n    \"receivedAtUtc\": \"@{outputs('Received_at')}\",\n    \"completedAtUtc\": \"@{utcNow()}\"\n  },\n  \"meta\": {\n    \"runId\": \"@{workflow()?['run']?['name']}\",\n    \"flowName\": \"@{workflow()?['name']}\",\n    \"contractVersion\": \"1.0\"\n  },\n  \"errors\": [\n    {\n      \"code\": \"WRITE_FAILED\",\n      \"message\": \"@{result('Do_the_work')[0]?['error']?['message']}\"\n    }\n  ],\n  \"data\": {}\n}"
+      },
+      "runAfterRef": "bp-guarded-scope",
+      "runAfterStatuses": [
+        "Failed",
+        "TimedOut"
+      ]
+    }
+  ],
+  "trigger": null,
+  "triggerSpec": null,
+  "notes": [
+    "The Scope isolates the work so a failure inside it does not fail the run before the response is sent.",
+    "Both responses run after the Scope, on opposite statuses — a fork, not a chain. Chaining the failure response to the success one would never fire it: a failed Scope leaves the success response Skipped, and Skipped is not Failed."
+  ]
+}

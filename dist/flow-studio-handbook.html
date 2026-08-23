@@ -1,0 +1,386 @@
+<title>Flow Studio Handbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  /* Light palette is the complete set; the two dark blocks redefine only tokens. */
+  :root{
+    --ground:#F6F8F6;
+    --surface:#FFFFFF;
+    --sunk:#EEF2EF;
+    --ink:#10201A;
+    --body:#33443C;
+    --soft:#65786E;
+    --rule:#DCE5E0;
+    --rule-firm:#C3D2CA;
+    --green:#05583B;
+    --signal:#0F8F45;
+    --warn:#8A6100;
+    --warn-bg:#FBF3E2;
+    --stop:#A5122C;
+    --stop-bg:#FBE9EC;
+    --code-bg:#F0F4F1;
+
+    --serif:'Source Serif 4',Georgia,'Times New Roman',serif;
+    --sans:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#0C1411;
+      --surface:#131D18;
+      --sunk:#101a15;
+      --ink:#EAF2EC;
+      --body:#C2D2C8;
+      --soft:#8FA398;
+      --rule:#233029;
+      --rule-firm:#33453B;
+      --green:#4FCB8B;
+      --signal:#5FD996;
+      --warn:#E5B863;
+      --warn-bg:#2A2113;
+      --stop:#FF93A5;
+      --stop-bg:#2C1419;
+      --code-bg:#0F1814;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0C1411;
+    --surface:#131D18;
+    --sunk:#101a15;
+    --ink:#EAF2EC;
+    --body:#C2D2C8;
+    --soft:#8FA398;
+    --rule:#233029;
+    --rule-firm:#33453B;
+    --green:#4FCB8B;
+    --signal:#5FD996;
+    --warn:#E5B863;
+    --warn-bg:#2A2113;
+    --stop:#FF93A5;
+    --stop-bg:#2C1419;
+    --code-bg:#0F1814;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--ground);
+    color:var(--body);
+    font:400 16px/1.65 var(--sans);
+    -webkit-font-smoothing:antialiased;
+  }
+  .page{max-width:44rem;margin:0 auto;padding:4rem 1.5rem 6rem;display:flex;flex-direction:column;gap:3.25rem}
+  @media (max-width:640px){.page{padding:2.5rem 1.15rem 4rem;gap:2.5rem}}
+
+  /* ---- masthead ---- */
+  .mast{display:flex;flex-direction:column;gap:.7rem;padding-bottom:1.75rem;border-bottom:2px solid var(--rule-firm)}
+  .kicker{
+    font:500 11px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--signal);
+  }
+  h1{
+    margin:0;font:700 clamp(2.1rem,6vw,2.9rem)/1.06 var(--serif);color:var(--ink);
+    letter-spacing:-.015em;text-wrap:balance;
+  }
+  .standfirst{margin:0;font-size:1.075rem;color:var(--soft);max-width:38rem;text-wrap:pretty}
+
+  /* ---- sections ---- */
+  section{display:flex;flex-direction:column;gap:1rem}
+  h2{
+    margin:0;font:700 1.5rem/1.2 var(--serif);color:var(--ink);
+    letter-spacing:-.01em;text-wrap:balance;
+    padding-bottom:.55rem;border-bottom:1px solid var(--rule);
+  }
+  h3{margin:0;font:700 1.02rem/1.35 var(--sans);color:var(--ink);text-wrap:balance}
+  p{margin:0;text-wrap:pretty}
+  a{color:var(--green);text-underline-offset:2px}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-offset:2px;border-radius:2px}
+  strong{color:var(--ink);font-weight:700}
+  code{
+    font:400 .875em/1.5 var(--mono);background:var(--code-bg);color:var(--ink);
+    padding:.1em .35em;border-radius:3px;border:1px solid var(--rule);
+  }
+  pre{
+    margin:0;background:var(--code-bg);border:1px solid var(--rule);border-radius:6px;
+    padding:.85rem 1rem;overflow-x:auto;
+  }
+  pre code{background:none;border:0;padding:0;font-size:.83rem;line-height:1.6}
+
+  /* ---- the three ways to run it ---- */
+  .ways{display:flex;flex-direction:column;gap:.65rem}
+  .way{
+    display:grid;grid-template-columns:auto 1fr;gap:.35rem 1rem;align-items:baseline;
+    background:var(--surface);border:1px solid var(--rule);border-radius:7px;padding:1rem 1.1rem;
+  }
+  .way__tag{
+    grid-row:1/2;font:500 10px/1.6 var(--sans);letter-spacing:.13em;text-transform:uppercase;
+    color:var(--surface);background:var(--green);padding:.1rem .5rem;border-radius:3px;white-space:nowrap;
+  }
+  .way h3{grid-row:1/2}
+  .way__body{grid-column:1/-1;display:flex;flex-direction:column;gap:.55rem;font-size:.94rem}
+  .way__body p{color:var(--body)}
+  .way__note{font-size:.85rem;color:var(--soft)}
+
+  /* ---- the numbered sequence: the one place order carries meaning ---- */
+  ol.seq{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0}
+  ol.seq li{
+    display:grid;grid-template-columns:2.4rem 1fr;gap:0 .9rem;
+    padding:0 0 1.35rem;position:relative;
+  }
+  ol.seq li:not(:last-child)::before{
+    content:"";position:absolute;left:.72rem;top:1.85rem;bottom:.15rem;
+    width:1px;background:var(--rule-firm);
+  }
+  .seq__n{
+    grid-row:1/2;width:1.5rem;height:1.5rem;border-radius:50%;
+    display:grid;place-items:center;background:var(--green);color:var(--surface);
+    font:500 .78rem/1 var(--mono);font-variant-numeric:tabular-nums;
+  }
+  .seq__t{grid-row:1/2;font-weight:700;color:var(--ink);align-self:center}
+  .seq__d{grid-column:2/3;font-size:.94rem;margin-top:.3rem}
+
+  /* ---- tab reference ---- */
+  .tabs{display:flex;flex-direction:column;gap:.9rem}
+  .tab{display:flex;flex-direction:column;gap:.3rem;padding-left:.95rem;border-left:3px solid var(--rule-firm)}
+  .tab h3{display:flex;align-items:baseline;gap:.55rem;flex-wrap:wrap}
+  .tab h3 span{font:400 .8rem/1 var(--sans);color:var(--soft);letter-spacing:.02em}
+  .tab p{font-size:.94rem}
+
+  /* ---- callouts for the things that actually trip people ---- */
+  .trap{
+    background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--warn);
+    border-radius:0 6px 6px 0;padding:.95rem 1.1rem;display:flex;flex-direction:column;gap:.4rem;
+  }
+  .trap--stop{border-left-color:var(--stop)}
+  .trap__h{font:700 .95rem/1.35 var(--sans);color:var(--ink)}
+  .trap p{font-size:.92rem}
+  .traps{display:flex;flex-direction:column;gap:.7rem}
+
+  /* ---- troubleshooting ---- */
+  .tablewrap{overflow-x:auto;border:1px solid var(--rule);border-radius:7px;background:var(--surface)}
+  table{border-collapse:collapse;width:100%;min-width:32rem;font-size:.9rem}
+  th,td{text-align:left;padding:.7rem .9rem;border-bottom:1px solid var(--rule);vertical-align:top}
+  th{
+    font:500 10px/1.6 var(--sans);letter-spacing:.13em;text-transform:uppercase;
+    color:var(--soft);background:var(--sunk);white-space:nowrap;
+  }
+  tr:last-child td{border-bottom:0}
+  td:first-child{color:var(--ink);font-weight:500}
+
+  kbd{
+    font-family:var(--mono);font-size:.78em;border:1px solid var(--rule-firm);border-radius:3px;
+    padding:.05em .3em;background:var(--sunk);color:var(--ink);
+  }
+  .foot{
+    border-top:1px solid var(--rule);padding-top:1.25rem;
+    font-size:.86rem;color:var(--soft);display:flex;flex-direction:column;gap:.4rem;
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="page">
+
+  <header class="mast">
+    <div class="kicker">DGO Digital Operations</div>
+    <h1>Flow Studio Handbook</h1>
+    <p class="standfirst">Build a set of Power Automate actions, copy them, and paste them straight into the modern designer. No import, no retyping.</p>
+  </header>
+
+  <section>
+    <h2>Three ways to run it</h2>
+    <p>Same tool, same generator, three deliveries. Pick whichever is nearest to hand.</p>
+
+    <div class="ways">
+      <article class="way">
+        <span class="way__tag">Download</span>
+        <h3>The single file</h3>
+        <div class="way__body">
+          <p>Save <code>dist/flow-studio.html</code> anywhere and open it. No server, no install, no network — it works offline and on a machine that has never seen the repository.</p>
+          <p class="way__note">This is the one to hand to someone who just needs to build a flow.</p>
+        </div>
+      </article>
+
+      <article class="way">
+        <span class="way__tag">Repo</span>
+        <h3>Served from source</h3>
+        <div class="way__body">
+          <p>From the repository root:</p>
+          <pre><code>npx http-server . -p 8080</code></pre>
+          <p>Then open <code>/tools/flow-studio.html</code>. Use this when you are editing the generator, since it picks up changes on reload.</p>
+        </div>
+      </article>
+
+      <article class="way">
+        <span class="way__tag">Platform</span>
+        <h3>Inside DGO</h3>
+        <div class="way__body">
+          <p>Sidebar → <strong>SYSTEM</strong> → <strong>Flow Studio</strong>, or go straight to <code>#/flow-studio</code>.</p>
+          <p class="way__note">Administration-tier route: available to systemAdmin, userAdmin and the admin persona. Operators, directors and viewers do not see it.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <h2>The short path</h2>
+    <p>From a cold start to actions sitting in your flow. This is a real sequence — the steps only work in this order.</p>
+
+    <ol class="seq">
+      <li>
+        <span class="seq__n">1</span>
+        <span class="seq__t">Load a blueprint</span>
+        <p class="seq__d">Top of the plan column: pick <em>DGO endpoint request handler</em> from <strong>Start from a blueprint…</strong> and choose your endpoint below it. You get a timestamp, a typed request, a switch over every action that endpoint declares, and an enveloped response per branch.</p>
+      </li>
+      <li>
+        <span class="seq__n">2</span>
+        <span class="seq__t">Check the findings</span>
+        <p class="seq__d">The paste bar is pinned along the bottom. It lists anything blocking in red, anything worth checking in amber, and notes in blue. Nothing generates while a blocking issue stands.</p>
+      </li>
+      <li>
+        <span class="seq__n">3</span>
+        <span class="seq__t">Copy for the designer</span>
+        <p class="seq__d">Press <strong>Copy for the designer</strong>. Use <strong>Show JSON</strong> first if you want to read what you are about to paste.</p>
+      </li>
+      <li>
+        <span class="seq__n">4</span>
+        <span class="seq__t">Paste into the flow</span>
+        <p class="seq__d">In the Power Automate designer, click the <strong>+</strong> where the actions belong and choose <strong>Paste an action</strong>. The whole set arrives at once.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>The screen</h2>
+    <p>One screen, two columns. Nothing is hidden behind a tab.</p>
+    <div class="tabs">
+      <div class="tab">
+        <h3>The plan column <span>left, always visible</span></h3>
+        <p>Everything the flow contains, in order, with the trigger as its first row. Drag a row to reorder it — including into and out of a branch. Containers such as Condition and Switch collapse with the twisty. Each row carries move, duplicate and remove, and shows the name the action will actually paste as when de-duplication has changed it.</p>
+      </div>
+      <div class="tab">
+        <h3>The <strong>+</strong> between rows <span>how you add anything</span></h3>
+        <p>Hover between two rows, or inside an empty branch, and press the <strong>+</strong>. A palette opens with search already focused: type, use <kbd>↑</kbd> <kbd>↓</kbd>, press <kbd>Enter</kbd>. The action lands exactly where you pressed — there is no separate destination to set.</p>
+      </div>
+      <div class="tab">
+        <h3>The working column <span>right</span></h3>
+        <p>Whatever is selected: an action's fields, the trigger, the importer, or the payload check. Expression chips appear under whichever field you are typing in. Schema fields carry an <em>Infer from a sample payload</em> box.</p>
+      </div>
+      <div class="tab">
+        <h3>The paste bar <span>pinned to the bottom</span></h3>
+        <p><strong>Copy for the designer</strong> is always reachable and confirms on the button itself. Findings sit beside it. <strong>JSON</strong> shows exactly what will go on the clipboard.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What will trip you up</h2>
+    <p>Six things that are not obvious and cost real time when you meet them for the first time.</p>
+
+    <div class="traps">
+      <div class="trap trap--stop">
+        <div class="trap__h">Firefox cannot receive the paste</div>
+        <p>Firefox does not expose <code>navigator.clipboard.readText()</code> to web pages, so the designer falls back to reading its own origin's storage — which nothing outside <code>make.powerautomate.com</code> can write. Use Chrome or Edge. The page says so when opened in Firefox.</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap__h">Several actions arrive wrapped in a Scope</div>
+        <p>A single paste carries exactly one root action, so more than one gets wrapped. Delete the Scope afterwards if you do not want the grouping — the designer keeps its contents.</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap__h">Initialize variable forces several pastes</div>
+        <p>The workflow service rejects an <code>InitializeVariable</code> anywhere but the top level, so it cannot go inside the Scope wrapper. Mix one into a plan and the output splits into numbered parts — paste them in the order shown.</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap__h">Connector actions land unbound</div>
+        <p>The generator has no access to your tenant's connection ids, so SharePoint, Outlook, Approvals and Teams actions paste without a connection. Pick it on each one after pasting. This is expected, not a fault.</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap__h">Triggers cannot be pasted at all</div>
+        <p>The designer's paste path creates actions only — a trigger is not in that graph. Add it in the designer yourself. <strong>Copy workflow definition</strong> is not a way round this: Power Automate's code view is read-only, so that export is for Logic Apps or for a flow inside a solution package, not for pasting back into a cloud flow.</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap__h">Braces around an array break it</div>
+        <p><code>@{body('Get_items')}</code> interpolates, and interpolation turns the value into text. Fields that consume an array or object need the value itself: <code>@body('Get_items')</code>. The studio flags this, because at run time it fails as a type error naming neither the field nor the missing braces.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Building one from scratch</h2>
+    <p>When no blueprint fits, work in this order — it keeps the reference errors down.</p>
+    <ol class="seq">
+      <li>
+        <span class="seq__n">1</span>
+        <span class="seq__t">Add the actions</span>
+        <p class="seq__d">Press the <strong>+</strong> where the action belongs and pick it from the palette. Container actions — Condition, Switch, Apply to each, Scope — grow their own branches, each with its own <strong>+</strong> inside.</p>
+      </li>
+      <li>
+        <span class="seq__n">2</span>
+        <span class="seq__t">Name them before you reference them</span>
+        <p class="seq__d">Each row shows the name the action will actually carry, in monospace. Two actions named Compose become <code>Compose</code> and <code>Compose_2</code>, and the second is highlighted so you can see it was renamed. Reference that name, not what you typed.</p>
+      </li>
+      <li>
+        <span class="seq__n">3</span>
+        <span class="seq__t">Fill the fields</span>
+        <p class="seq__d">The expression chips under the field you are in insert at the caret. On Parse JSON, open <em>Infer from a sample payload</em>, paste a real payload and press <strong>Infer schema</strong> rather than writing one by hand.</p>
+      </li>
+      <li>
+        <span class="seq__n">4</span>
+        <span class="seq__t">Set the ordering where it matters</span>
+        <p class="seq__d">Actions chain by default. For a failure branch, pick an earlier action under <strong>Run after</strong> and tick <strong>Failed</strong> and <strong>TimedOut</strong> — two actions after the same one, on opposite statuses. Chaining a failure response to a success response never fires: a failed step leaves the success step <em>Skipped</em>, and Skipped is not Failed.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>When something goes wrong</h2>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th scope="col">What you see</th><th scope="col">What it means</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Paste an action is greyed out</td>
+            <td>The clipboard does not hold a payload the designer recognises. Press <strong>Copy for the designer</strong> again, in the same browser, and do not copy anything else in between.</td>
+          </tr>
+          <tr>
+            <td>Nothing renders at all</td>
+            <td>You opened <code>tools/flow-studio.html</code> from <code>file://</code>. That version needs a server. Use <code>dist/flow-studio.html</code> instead.</td>
+          </tr>
+          <tr>
+            <td>Not generating yet</td>
+            <td>A blocking issue stands. The red panel names the action and the field.</td>
+          </tr>
+          <tr>
+            <td>The flow saves, then fails at run time</td>
+            <td>Usually an unbound connector connection, or an expression referencing an action name that does not exist in the target flow. The amber findings list both before you paste.</td>
+          </tr>
+          <tr>
+            <td>A connector action is rejected on save</td>
+            <td>The operation or a parameter name has changed in your tenant. Open the real action's code view and bring it in through <strong>Import from designer</strong>.</td>
+          </tr>
+          <tr>
+            <td>You suspect the payload format itself</td>
+            <td>Press <strong>Check payload</strong>. Put an action in a Scope in your own designer, copy the Scope, paste it in, and the tool names every difference between what your designer produced and what it generates — or confirms they match, which points the search at the action definitions instead.</td>
+          </tr>
+          <tr>
+            <td>Your plan disappeared</td>
+            <td>Plans live in that browser's local storage, per surface. Use <strong>Save plan</strong> for anything you want to keep or hand to someone else.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p>Nothing in Flow Studio talks to a network. Plans stay in your browser and go nowhere else.</p>
+    <p>Source: <code>core/power-automate/</code> · screen <code>core/power-automate/studio.js</code> · rebuild the single file with <code>node tools/build-standalone.mjs</code>.</p>
+  </footer>
+
+</div>

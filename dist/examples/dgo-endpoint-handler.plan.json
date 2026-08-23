@@ -1,0 +1,120 @@
+{
+  "name": "DYNAMIC_ACTIONS request handler",
+  "steps": [
+    {
+      "id": "bp-mt59alyp-4",
+      "actionId": "compose",
+      "name": "Received_at",
+      "values": {
+        "inputs": "\"@{utcNow()}\""
+      }
+    },
+    {
+      "id": "bp-mt59alyp-5",
+      "actionId": "parseJson",
+      "name": "Parse_request",
+      "values": {
+        "content": "@triggerBody()",
+        "schema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"action\": {\n      \"type\": \"string\"\n    },\n    \"userEmail\": {\n      \"type\": \"string\"\n    },\n    \"payload\": {\n      \"type\": \"object\"\n    },\n    \"requestId\": {\n      \"type\": \"string\"\n    },\n    \"timestamp\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\n    \"action\"\n  ]\n}"
+      }
+    },
+    {
+      "id": "bp-mt59alyp-6",
+      "actionId": "switch",
+      "name": "Route_action",
+      "values": {
+        "on": "@{triggerBody()?['action']}",
+        "cases": [
+          {
+            "name": "dynamicGlobalAction",
+            "value": "dynamicGlobalAction"
+          }
+        ]
+      },
+      "branches": {
+        "default": [
+          {
+            "id": "bp-mt59alyo-1",
+            "actionId": "response",
+            "name": "Respond_unknown_action",
+            "values": {
+              "statusCode": 400,
+              "headers": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": false,\n  \"status\": {\n    \"http\": 400,\n    \"message\": \"No branch handles action '@{triggerBody()?['action']}'.\"\n  },\n  \"request\": {\n    \"action\": \"@{triggerBody()?['action']}\",\n    \"requestId\": \"@{coalesce(triggerBody()?['requestId'], triggerBody()?['correlationId'], '')}\",\n    \"trackingId\": \"@{workflow()?['run']?['name']}\"\n  },\n  \"timing\": {\n    \"receivedAtUtc\": \"@{outputs('Received_at')}\",\n    \"completedAtUtc\": \"@{utcNow()}\"\n  },\n  \"meta\": {\n    \"runId\": \"@{workflow()?['run']?['name']}\",\n    \"flowName\": \"@{workflow()?['name']}\",\n    \"contractVersion\": \"1.0\"\n  },\n  \"errors\": [\n    {\n      \"code\": \"UNKNOWN_ACTION\",\n      \"message\": \"No branch handles action '@{triggerBody()?['action']}'.\"\n    }\n  ],\n  \"data\": {}\n}"
+            }
+          }
+        ],
+        "case:dynamicGlobalAction": [
+          {
+            "id": "bp-mt59alyp-2",
+            "actionId": "compose",
+            "name": "Result_dynamicGlobalAction",
+            "values": {
+              "inputs": "{\n  \"note\": \"Replace this Compose with the work for \\\"dynamicGlobalAction\\\", then point the response below at its output.\",\n  \"receivedPayload\": \"@triggerBody()?['payload']\"\n}"
+            }
+          },
+          {
+            "id": "bp-mt59alyp-3",
+            "actionId": "response",
+            "name": "Respond_dynamicGlobalAction",
+            "values": {
+              "statusCode": 200,
+              "headers": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true,\n  \"status\": {\n    \"http\": 200,\n    \"message\": \"OK\"\n  },\n  \"request\": {\n    \"action\": \"@{triggerBody()?['action']}\",\n    \"requestId\": \"@{coalesce(triggerBody()?['requestId'], triggerBody()?['correlationId'], '')}\",\n    \"trackingId\": \"@{workflow()?['run']?['name']}\"\n  },\n  \"timing\": {\n    \"receivedAtUtc\": \"@{outputs('Received_at')}\",\n    \"completedAtUtc\": \"@{utcNow()}\"\n  },\n  \"meta\": {\n    \"runId\": \"@{workflow()?['run']?['name']}\",\n    \"flowName\": \"@{workflow()?['name']}\",\n    \"contractVersion\": \"1.0\"\n  },\n  \"data\": \"@outputs('Result_dynamicGlobalAction')\"\n}"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "trigger": {
+    "name": "manual",
+    "definition": {
+      "type": "Request",
+      "kind": "Http",
+      "inputs": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string"
+            },
+            "userEmail": {
+              "type": "string"
+            },
+            "payload": {
+              "type": "object"
+            },
+            "requestId": {
+              "type": "string"
+            },
+            "timestamp": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "action"
+          ]
+        },
+        "method": "POST"
+      }
+    }
+  },
+  "triggerSpec": null,
+  "notes": [
+    "Envelope matches core/contracts.js assertEnvelope(): ok, status.http, request, timing, meta, data.",
+    "Client sends { action, payload, userEmail?, requestId, timestamp }.",
+    "This endpoint is declared write:true — the client queues and retries it on failure, so the flow must be idempotent on requestId.",
+    "The trigger is listed separately: pasting creates actions only, so add \"When an HTTP request is received\" in the designer and paste these under it."
+  ]
+}
