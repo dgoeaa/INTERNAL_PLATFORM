@@ -20,6 +20,16 @@ function cfgLoadedCount(){return CFG?Object.keys(CFG).length:0}
 function effectiveUrl(k){if(STATE.estateOverride[k.workflowId])return STATE.estateOverride[k.workflowId]; if(CFG&&CFG[k.key]&&CFG[k.key].url)return CFG[k.key].url; return k.url;}
 function hasLiveUrl(k){return !effectiveUrl(k).includes('«redacted»')}
 function urlDisplay(k){let u=effectiveUrl(k); return STATE.showUrls?u:red(u)}
+function ensureCFG(){ if(!CFG)CFG={}; return CFG; }
+function clearCFG(){ CFG=null; render(); }
+
+// Three ways to feed the tool a live URL, all writing into the same in-memory
+// CFG map so they compose (load a file, then top up or override single keys):
+//  1. loadLocalRegistry  — a JSON file, many keys at once
+//  2. applyBulkPaste     — pasted "KEY=URL" lines, many keys at once
+//  3. setLiveUrl         — one key, one URL, typed straight into a Registry row
+// None of these ever write back into this HTML file or leave the browser tab.
+
 function loadLocalRegistry(file){
   if(!file)return;
   const reader=new FileReader();
@@ -28,13 +38,44 @@ function loadLocalRegistry(file){
       const data=JSON.parse(reader.result);
       const list=Array.isArray(data.keys)?data.keys:Array.isArray(data)?data:null;
       if(!list)throw new Error('expected {"keys":[...]} or an array of {key,url,signed}');
-      const map={};
-      list.forEach(k=>{ if(k&&k.key&&k.url) map[k.key]={url:k.url, signed:!!k.signed}; });
-      if(!Object.keys(map).length) throw new Error('no entries with both key and url were found');
-      CFG=map; render();
+      const c=ensureCFG();
+      let n=0;
+      list.forEach(k=>{ if(k&&k.key&&k.url){ c[k.key]={url:k.url, signed:!!k.signed}; n++; } });
+      if(!n) throw new Error('no entries with both key and url were found');
+      render();
     }catch(e){ alert('Could not read that file as a registry: '+e.message); }
   };
   reader.readAsText(file);
+}
+function applyBulkPaste(){
+  const el=document.getElementById('bulkPaste');
+  const text=el.value;
+  const c=ensureCFG();
+  const known=new Set(REG.keys.map(k=>k.key));
+  const unknown=[];
+  let n=0;
+  text.split('\n').forEach(line=>{
+    line=line.trim();
+    if(!line||line.startsWith('#'))return;
+    const eq=line.indexOf('='), comma=line.indexOf(',');
+    const sep=eq<0?comma:(comma<0?eq:Math.min(eq,comma));
+    if(sep<0)return;
+    const key=line.slice(0,sep).trim();
+    const url=line.slice(sep+1).trim();
+    if(!key||!url)return;
+    if(!known.has(key)){ unknown.push(key); return; }
+    c[key]={url, signed:true};
+    n++;
+  });
+  el.value='';
+  render();
+  alert(`${n} URL(s) applied.`+(unknown.length?` Skipped ${unknown.length} unrecognised key(s): ${unknown.slice(0,5).join(', ')}${unknown.length>5?'…':''}`:''));
+}
+function setLiveUrl(key, url){
+  url=(url||'').trim();
+  if(!url)return;
+  ensureCFG()[key]={url, signed:true};
+  render();
 }
 function setTab(t){STATE.tab=t; render();}
 function renderTabs(){document.getElementById('tabs').innerHTML=tabs.map(t=>`<button onclick="setTab('${t}')" aria-selected="${STATE.tab===t}">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}
@@ -108,9 +149,21 @@ function overview(){
   </div>
   <div class=card><h2>Runtime summary</h2><p>Merges the R13 contract-first registry (ECM2/ECM3), the R12 enterprise workbench's operational capability, and this build's own Check, Estate and audit additions into one browser runtime. This page embeds the <b>redacted</b> registry only — no live signature ships in this file's source.</p>
   <p><span class=pill>${esc(REG.release)}</span> <span class=pill>built ${esc(REG.builtAt)}</span> <span class="pill ${liveN?'live':'redacted'}">${liveN} / ${a.keyCount} keys have a live URL loaded this session</span></p></div>
-  <div class="card"><h2>Load a local registry to probe live</h2>
-  <p class=muted>Pick your own <code>unified-registry.full.json</code> (or any JSON shaped like <code>{"keys":[{"key","url","signed"}, ...]}</code>) from disk. It is read with FileReader only — never uploaded, never written back into this file, and cleared the moment you refresh.</p>
-  <div class="row"><input type=file accept="application/json" onchange="loadLocalRegistry(this.files[0])"><span class="pill ${cfgLoadedCount()?'live':'redacted'}">${cfgLoadedCount()?cfgLoadedCount()+' keys loaded locally':'no local registry loaded — probes will report ‘no live url’'}</span></div>
+  <div class="card"><h2>Feed the tool live URLs</h2>
+  <p class=muted>Three ways in, all local to this browser tab only — nothing here is uploaded or written back into this file, and it's cleared the moment you refresh.</p>
+  <div class="row" style="align-items:center">
+    <span class="pill ${cfgLoadedCount()?'live':'redacted'}">${cfgLoadedCount()?cfgLoadedCount()+' key(s) live this session':'no live URLs yet — probes will report ‘no live url’'}</span>
+    ${cfgLoadedCount()?'<button onclick="clearCFG()">Clear live credentials</button>':''}
+  </div>
+  <h3 style="margin:16px 0 6px;font-size:13px">1 — Upload a file (bulk)</h3>
+  <p class=muted style="margin:0 0 8px">A JSON file shaped <code>{"keys":[{"key","url","signed"}, ...]}</code> — e.g. your own <code>unified-registry.full.json</code>.</p>
+  <input type=file accept="application/json" onchange="loadLocalRegistry(this.files[0]); this.value=''">
+  <h3 style="margin:18px 0 6px;font-size:13px">2 — Paste many at once (bulk)</h3>
+  <p class=muted style="margin:0 0 8px">One <code>KEY=URL</code> (or <code>KEY,URL</code>) per line — the same format as <code>Export → .env</code>. Unrecognised keys are skipped and listed, not silently dropped.</p>
+  <textarea id=bulkPaste placeholder="FETCH_ALL=https://...&sig=...&#10;OTP_VERIFY=https://...&sig=..." style="min-height:90px"></textarea>
+  <div class=row style="margin-top:8px"><button class=primary onclick="applyBulkPaste()">Apply pasted URLs</button></div>
+  <h3 style="margin:18px 0 6px;font-size:13px">3 — Set one key at a time</h3>
+  <p class=muted style="margin:0">Paste a single URL directly into any row's URL field on the <a href="#" onclick="setTab('registry');return false">Registry</a> tab and click Set live — no file or bulk paste needed for a one-off.</p>
   </div>`;
 }
 
@@ -163,7 +216,12 @@ function check(){
 }
 
 function registry(){
-  let rows=activeKeys().map(k=>`<tr><td><b>${esc(k.key)}</b><br><span class=muted>${esc(k.note||'')}</span></td><td>${esc(k.group)}/${esc(k.role)}</td><td>${esc(k.flow)}</td><td><code>${esc(k.workflowId)}</code></td><td>${k.signed?'<span class=ok>signed</span>':'<span class=bad>unsigned</span>'} ${hasLiveUrl(k)?'<span class="pill live">live</span>':'<span class="pill redacted">redacted</span>'}</td><td><code>${esc(urlDisplay(k))}</code></td><td><button onclick="STATE.selected='${k.key}';setTab('console')">console</button> <button onclick="probe('${k.key}','registry')">probe</button></td></tr>`).join('');
+  let rows=activeKeys().map(k=>{
+    const urlCell=hasLiveUrl(k)
+      ? `<code>${esc(urlDisplay(k))}</code>`
+      : `<code>${esc(urlDisplay(k))}</code><div class=row style="margin-top:6px"><input placeholder="paste this key's live URL" id="seturl-${esc(k.key)}" style="min-width:200px;font-size:12px"><button onclick="setLiveUrl('${k.key}', document.getElementById('seturl-${esc(k.key)}').value)">Set live</button></div>`;
+    return `<tr><td><b>${esc(k.key)}</b><br><span class=muted>${esc(k.note||'')}</span></td><td>${esc(k.group)}/${esc(k.role)}</td><td>${esc(k.flow)}</td><td><code>${esc(k.workflowId)}</code></td><td>${k.signed?'<span class=ok>signed</span>':'<span class=bad>unsigned</span>'} ${hasLiveUrl(k)?'<span class="pill live">live</span>':'<span class="pill redacted">redacted</span>'}</td><td>${urlCell}</td><td><button onclick="STATE.selected='${k.key}';setTab('console')">console</button> <button onclick="probe('${k.key}','registry')">probe</button></td></tr>`;
+  }).join('');
   return `<div class=card><div class=row><input placeholder="search key, flow, workflow" value="${esc(STATE.q)}" oninput="STATE.q=this.value;render()"><label><input type=checkbox ${STATE.showUrls?'checked':''} onchange="STATE.showUrls=this.checked;render()"> show full URLs</label></div></div><div class=card><table><thead><tr><th>Key</th><th>Group/Role</th><th>Flow</th><th>Workflow</th><th>Signature</th><th>URL</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 function routes(){
