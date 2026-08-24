@@ -4,5 +4,4 @@
 *.full.json
 *.local.js
 *.local.json
-registry/unified-registry.full.json
 private/

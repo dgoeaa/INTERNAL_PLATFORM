@@ -3,9 +3,9 @@
 // CI job or terminal session can run the same sweep headlessly.
 //
 // Usage:
-//   node tools/run-contract-probes.js [registryPath] [scope] [--local overridePath] [--concurrency N] [--retries N] [--timeout ms] [--pace ms]
+//   node run-contract-probes.js [registryPath] [scope] [--local overridePath] [--concurrency N] [--retries N] [--timeout ms] [--pace ms]
 //
-// registryPath defaults to ../registry/unified-registry.redacted.json, which
+// registryPath defaults to ./unified-registry.redacted.json, which
 // ships with every signature replaced by the literal string "«redacted»" and
 // therefore cannot authenticate against Power Automate. Pass --local with a
 // path to your own git-ignored registry JSON (shaped like
@@ -28,7 +28,7 @@ function parseArgs(argv) {
     else if (a === '--pace') out.paceMs = Number(argv[++i]);
     else positional.push(a);
   }
-  out.registryPath = positional[0] || path.join(__dirname, '..', 'registry', 'unified-registry.redacted.json');
+  out.registryPath = positional[0] || path.join(__dirname, 'unified-registry.redacted.json');
   out.scope = positional[1] || out.scope;
   return out;
 }
