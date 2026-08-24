@@ -53,7 +53,7 @@
     "signedUrlsAreBearerCredentials": true,
     "redactedReportsDefault": true,
     "rotateTriggerUrlsBeforeExternalDistribution": true,
-    "fullSecretFilesLocation": "exports/private and registry/unified-registry.full.json"
+    "fullSecretFilesLocation": "operator-supplied locally via the Overview tab's file loader or run-contract-probes.js --local; never committed to this repository"
   },
   "flows": [
     {
@@ -61,7 +61,7 @@
       "name": "AI chat",
       "group": "ai",
       "note": "Conversational endpoint.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a13c8b577bd44f8787c50d095ea3faf9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a13c8b577bd44f8787c50d095ea3faf9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -70,7 +70,7 @@
       "name": "AI over email and task context",
       "group": "ai",
       "note": "AI_EMAIL_ANALYSIS.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/fe794e0139784ac694768e5a716e0be7/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/fe794e0139784ac694768e5a716e0be7/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -79,16 +79,16 @@
       "name": "AI_DOC_ANALYSIS (lineage snapshot)",
       "group": "ai",
       "note": "Second doc-analysis variant.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/20e3b003a57f47febae8a24ad5b9acd4/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/20e3b003a57f47febae8a24ad5b9acd4/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
     {
       "workflowId": "5b29edc84b5d4a8db3c885d8441aa977",
-      "name": "Events processing \u2014 AI over event documents",
+      "name": "Events processing — AI over event documents",
       "group": "ai",
       "note": "Primary AI_DOC_ANALYSIS.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/5b29edc84b5d4a8db3c885d8441aa977/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/5b29edc84b5d4a8db3c885d8441aa977/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -96,7 +96,7 @@
       "workflowId": "c2afaf028b50408995738b9e14c0662d",
       "name": "ARCHIVE",
       "group": "archive",
-      "note": "Archive flow. Supplied with no sp/sv/sig \u2014 needs Get callback URL in Power Automate.",
+      "note": "Archive flow. Supplied with no sp/sv/sig — needs Get callback URL in Power Automate.",
       "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c2afaf028b50408995738b9e14c0662d/triggers/manual/paths/invoke?api-version=1",
       "signed": false,
       "variants": []
@@ -105,7 +105,7 @@
       "workflowId": "80fab00617c84db5af989f985d0288a5",
       "name": "AUTH_LOGIN_START",
       "group": "auth",
-      "note": "Login start. Supplied with no sp/sv/sig \u2014 needs Get callback URL in Power Automate.",
+      "note": "Login start. Supplied with no sp/sv/sig — needs Get callback URL in Power Automate.",
       "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/80fab00617c84db5af989f985d0288a5/triggers/manual/paths/invoke?api-version=1",
       "signed": false,
       "variants": []
@@ -115,11 +115,11 @@
       "name": "OTP generate / send",
       "group": "auth",
       "note": "One-time passcode issue.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/314aaf27593147089b38322e5ca25936/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/314aaf27593147089b38322e5ca25936/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": [
         {
-          "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com/powerautomate/automations/direct/workflows/314aaf27593147089b38322e5ca25936/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+          "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com/powerautomate/automations/direct/workflows/314aaf27593147089b38322e5ca25936/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
           "why": "no-port host variant of the same trigger"
         }
       ]
@@ -129,11 +129,11 @@
       "name": "OTP verify",
       "group": "auth",
       "note": "One-time passcode check.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/43879c5165de439680055ab4258b3f27/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/43879c5165de439680055ab4258b3f27/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": [
         {
-          "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com/powerautomate/automations/direct/workflows/43879c5165de439680055ab4258b3f27/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+          "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com/powerautomate/automations/direct/workflows/43879c5165de439680055ab4258b3f27/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
           "why": "no-port host variant of the same trigger"
         }
       ]
@@ -142,8 +142,8 @@
       "workflowId": "bc83d98acf474a088832d78f50085388",
       "name": "DYNAMIC GLOBAL ENDPOINT INTERFACE",
       "group": "dispatcher",
-      "note": "Every governed write. Also documented as \u201cDynamic_Multi-Actions\u201d.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bc83d98acf474a088832d78f50085388/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "note": "Every governed write. Also documented as “Dynamic_Multi-Actions”.",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bc83d98acf474a088832d78f50085388/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -151,8 +151,8 @@
       "workflowId": "85c556f10b8244ba9d839a2ebe240b91",
       "name": "SUPPLEMENTARY / SUBSIDIARY ACTIONS (multi-route)",
       "group": "dispatcher",
-      "note": "Eighteen declared routes. Also documented as \u201cWeb - Subsidiary Doc Actions\u201d.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/85c556f10b8244ba9d839a2ebe240b91/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "note": "Eighteen declared routes. Also documented as “Web - Subsidiary Doc Actions”.",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/85c556f10b8244ba9d839a2ebe240b91/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -161,7 +161,7 @@
       "name": "EDTMS NITDA_Read_API (Central Registry Dashboard Sync)",
       "group": "edtms",
       "note": "Dashboard sync read API.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c1d8dba2fc84423891c6b78b0126278f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c1d8dba2fc84423891c6b78b0126278f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -170,7 +170,7 @@
       "name": "EDTMS NITDA_Update_Task (Resolution)",
       "group": "edtms",
       "note": "Task resolution update.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/84f062159fe9422eb0195c251ca285b8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/84f062159fe9422eb0195c251ca285b8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -179,7 +179,7 @@
       "name": "EDTMS NITDA_Write_API (Ingestion)",
       "group": "edtms",
       "note": "Registry ingestion write API.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/471875bf903545eda4d10e8a6243d858/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/471875bf903545eda4d10e8a6243d858/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -187,8 +187,8 @@
       "workflowId": "2e37b6310842410eb15c4561f2b0c1eb",
       "name": "Send email notification",
       "group": "email",
-      "note": "The manifest also carries this flow unsigned as \u201cWeb - Send Email\u201d; the signed form is authoritative.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2e37b6310842410eb15c4561f2b0c1eb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "note": "The manifest also carries this flow unsigned as “Web - Send Email”; the signed form is authoritative.",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2e37b6310842410eb15c4561f2b0c1eb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": [
         {
@@ -202,7 +202,7 @@
       "name": "send-email variant",
       "group": "email",
       "note": "Second send-email endpoint.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7ee91bdefd3c449889d680c722a99d05/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7ee91bdefd3c449889d680c722a99d05/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -211,7 +211,7 @@
       "name": "DOCUMENT SUBMISSION PORTAL",
       "group": "portal",
       "note": "Public intake submission.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1ff7714c11a74fa4a876f8f6a79b64d2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1ff7714c11a74fa4a876f8f6a79b64d2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -220,7 +220,7 @@
       "name": "SUBMISSION_ECM_DOCS_PORTAL",
       "group": "portal",
       "note": "ECM document submission.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1041ed37ce924e3c886d891f23e8142c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1041ed37ce924e3c886d891f23e8142c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -229,7 +229,7 @@
       "name": "UPLOAD_ECM_DOCS_PORTAL",
       "group": "portal",
       "note": "ECM document upload / scan deposit.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f771d509dfb648b0b21eeec0a36614fa/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f771d509dfb648b0b21eeec0a36614fa/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -238,7 +238,7 @@
       "name": "all data and references",
       "group": "read",
       "note": "Merges what REFERENCE_DATA fetches separately.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1d56be97cd184fd9b2facede12b17c34/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1d56be97cd184fd9b2facede12b17c34/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -247,7 +247,7 @@
       "name": "API_GET (ACK build)",
       "group": "read",
       "note": "Generic getter from the ACK build.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/02a3a70f3dec4dcd9a85a244a60c65b9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/02a3a70f3dec4dcd9a85a244a60c65b9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -256,7 +256,7 @@
       "name": "BULK OPS GET DOCS",
       "group": "read",
       "note": "Bulk document listing.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7995c1eb50d94d5daa2780e71391d874/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7995c1eb50d94d5daa2780e71391d874/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -265,7 +265,7 @@
       "name": "DGO Attention Items",
       "group": "read",
       "note": "Attention queue.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/4f733288d90e49a68d4d5715d9198d40/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/4f733288d90e49a68d4d5715d9198d40/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -274,7 +274,7 @@
       "name": "emails, compose-select response variant",
       "group": "read",
       "note": "Compose-select email variant.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6d78b1940f4447b8b31b49657fe9c19c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6d78b1940f4447b8b31b49657fe9c19c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -283,7 +283,7 @@
       "name": "FETCH_ALL (lineage snapshot)",
       "group": "read",
       "note": "Fetch_All_Data_&_References_Matrix 02.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/4a250f97181b4a28abc1d0fb0f7d4c4d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/4a250f97181b4a28abc1d0fb0f7d4c4d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -292,7 +292,7 @@
       "name": "Fetch_All_Data_&_References_Matrix (03)",
       "group": "read",
       "note": "Third matrix variant carried by the manifest.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2d576af599c0421eb37213634b85fc4b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2d576af599c0421eb37213634b85fc4b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -301,7 +301,7 @@
       "name": "get all data",
       "group": "read",
       "note": "Register bootstrap; primary FETCH_ALL.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/31e02518075940d2bcfa9bdb0e9b0b8d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/31e02518075940d2bcfa9bdb0e9b0b8d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -310,7 +310,7 @@
       "name": "Get Categories",
       "group": "read",
       "note": "Category lookup.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/9df45c5086ea42f2ab2b6ee9afae3f29/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/9df45c5086ea42f2ab2b6ee9afae3f29/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -319,7 +319,7 @@
       "name": "get correspondence (flat response)",
       "group": "read",
       "note": "Flat correspondence response.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/5729f50aa0fc4248be30ed4e9d7a7a4f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/5729f50aa0fc4248be30ed4e9d7a7a4f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -328,7 +328,7 @@
       "name": "Get Departments",
       "group": "read",
       "note": "Department lookup.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3c7094de10ce473e985e5cadcf66bc67/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3c7094de10ce473e985e5cadcf66bc67/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -337,7 +337,7 @@
       "name": "GET DOCS",
       "group": "read",
       "note": "Document retrieval.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/818ec4053f1e4f0b87845114241d8b74/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/818ec4053f1e4f0b87845114241d8b74/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -346,7 +346,7 @@
       "name": "Get email attachments",
       "group": "read",
       "note": "Attachment retrieval.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/20e6340941ce4b1bbb87b43c9102a777/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/20e6340941ce4b1bbb87b43c9102a777/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -355,7 +355,7 @@
       "name": "GET EMAILS",
       "group": "read",
       "note": "Inbound email list.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3931e2ff995242b6b2c920c8b2209797/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3931e2ff995242b6b2c920c8b2209797/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -364,7 +364,7 @@
       "name": "Get Emails (Control Deck variant)",
       "group": "read",
       "note": "Control-deck email list.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/820c4a576cbb4a948d6a99dd85721e71/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/820c4a576cbb4a948d6a99dd85721e71/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -373,7 +373,7 @@
       "name": "Get Letters",
       "group": "read",
       "note": "Letter register.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f480ade951a1437c91604bee33279b0e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f480ade951a1437c91604bee33279b0e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -382,7 +382,7 @@
       "name": "GET REFERENCES / LOOKUPS (users, categories, departments)",
       "group": "read",
       "note": "Fetch_References_and_Lookups_Data 01; primary REFERENCE_DATA.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/ff455c68e9ac493e858fb984bcfd01fb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/ff455c68e9ac493e858fb984bcfd01fb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -391,7 +391,7 @@
       "name": "GET TASKS",
       "group": "read",
       "note": "Task list; wired to FETCH_ACTIVITIES.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/37642ba3597f4cf58288cc71b5e6b519/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/37642ba3597f4cf58288cc71b5e6b519/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -400,7 +400,7 @@
       "name": "Get Users",
       "group": "read",
       "note": "User directory lookup.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/607795813ee14d8abee6d1b4e8dd866b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/607795813ee14d8abee6d1b4e8dd866b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -409,7 +409,7 @@
       "name": "REFERENCE_DATA (lineage snapshot)",
       "group": "read",
       "note": "Second reference-data variant.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/d67f2acb3708449490eed561ee56efbe/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/d67f2acb3708449490eed561ee56efbe/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -418,7 +418,7 @@
       "name": "assign-item direct build endpoint",
       "group": "write",
       "note": "Direct assignment endpoint from the build corpus.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/5de1fc934e2944bb9cf9d9a0f9bd38e3/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/5de1fc934e2944bb9cf9d9a0f9bd38e3/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -427,7 +427,7 @@
       "name": "BULK ASSIGN (hybrid single or bulk)",
       "group": "write",
       "note": "Direct bulk variant.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e71fffe770a45ccb93bf216bb53786e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e71fffe770a45ccb93bf216bb53786e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -436,7 +436,7 @@
       "name": "BULK_ASSIGN (REGEN build)",
       "group": "write",
       "note": "Deployed Bulk Task Assignment_Create Task.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c43388639d14452faef4ca3042a95b23/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c43388639d14452faef4ca3042a95b23/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -445,7 +445,7 @@
       "name": "CREATE TASK FOR EMAIL",
       "group": "write",
       "note": "Email-to-task assignment.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a942d230337c4ddfa9a386e92bbd048b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a942d230337c4ddfa9a386e92bbd048b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -454,7 +454,7 @@
       "name": "Deployed Create task",
       "group": "write",
       "note": "Second create-task flow; recorded alternate for SINGLE_ASSIGNMENT.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6b3bad3005b44bf6bced0f8074d3f2ed/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6b3bad3005b44bf6bced0f8074d3f2ed/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -463,7 +463,7 @@
       "name": "optimized bulk assign",
       "group": "write",
       "note": "Primary bulk assignment path.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1154b50e1d17420dadb3b012e7e2a02c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1154b50e1d17420dadb3b012e7e2a02c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -471,12 +471,12 @@
       "workflowId": "f71397ff3ca145059dc8f78c04923e9f",
       "name": "SINGLE ASSIGN / create task and update activity",
       "group": "write",
-      "note": "Named SINGLE ASSIGN by the specification and \u201cCreate task\u201d by the numbered flow list.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f71397ff3ca145059dc8f78c04923e9f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "note": "Named SINGLE ASSIGN by the specification and “Create task” by the numbered flow list.",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f71397ff3ca145059dc8f78c04923e9f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": [
         {
-          "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f71397ff3ca145059dc8f78c04923e9f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+          "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f71397ff3ca145059dc8f78c04923e9f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
           "why": "second signature recorded for the same flow"
         }
       ]
@@ -486,7 +486,7 @@
       "name": "Status update (single and bulk)",
       "group": "write",
       "note": "Status transition flow.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3cea46a4f06748cb8a680ee1532d73cb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3cea46a4f06748cb8a680ee1532d73cb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     },
@@ -495,7 +495,7 @@
       "name": "task-created responder",
       "group": "write",
       "note": "Responds after a task is created.",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cae7796c721b47bc9aa95159eeb16081/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cae7796c721b47bc9aa95159eeb16081/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "signed": true,
       "variants": []
     }
@@ -504,11 +504,11 @@
     {
       "key": "FETCH_ALL",
       "workflowId": "31e02518075940d2bcfa9bdb0e9b0b8d",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/31e02518075940d2bcfa9bdb0e9b0b8d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/31e02518075940d2bcfa9bdb0e9b0b8d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "get all data",
       "group": "core",
       "role": "read",
-      "note": "The register itself \u2014 officers see nothing without it.",
+      "note": "The register itself — officers see nothing without it.",
       "signed": true,
       "expect": [
         "tasks",
@@ -538,7 +538,7 @@
     {
       "key": "FETCH_ACTIVITIES",
       "workflowId": "37642ba3597f4cf58288cc71b5e6b519",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/37642ba3597f4cf58288cc71b5e6b519/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/37642ba3597f4cf58288cc71b5e6b519/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "GET TASKS",
       "group": "core",
       "role": "read",
@@ -568,7 +568,7 @@
     {
       "key": "REFERENCE_DATA",
       "workflowId": "ff455c68e9ac493e858fb984bcfd01fb",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/ff455c68e9ac493e858fb984bcfd01fb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/ff455c68e9ac493e858fb984bcfd01fb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "GET REFERENCES / LOOKUPS (users, categories, departments)",
       "group": "core",
       "role": "read",
@@ -602,7 +602,7 @@
     {
       "key": "GET_DOCS",
       "workflowId": "818ec4053f1e4f0b87845114241d8b74",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/818ec4053f1e4f0b87845114241d8b74/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/818ec4053f1e4f0b87845114241d8b74/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "GET DOCS",
       "group": "core",
       "role": "read",
@@ -632,7 +632,7 @@
     {
       "key": "FETCH_EMAIL_ATTACHMENTS",
       "workflowId": "20e6340941ce4b1bbb87b43c9102a777",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/20e6340941ce4b1bbb87b43c9102a777/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/20e6340941ce4b1bbb87b43c9102a777/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "Get email attachments",
       "group": "core",
       "role": "read",
@@ -658,7 +658,7 @@
     {
       "key": "SINGLE_ASSIGNMENT",
       "workflowId": "f71397ff3ca145059dc8f78c04923e9f",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f71397ff3ca145059dc8f78c04923e9f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f71397ff3ca145059dc8f78c04923e9f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "SINGLE ASSIGN / create task and update activity",
       "group": "core",
       "role": "write",
@@ -686,7 +686,7 @@
     {
       "key": "BULK_ASSIGNMENT",
       "workflowId": "1154b50e1d17420dadb3b012e7e2a02c",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1154b50e1d17420dadb3b012e7e2a02c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1154b50e1d17420dadb3b012e7e2a02c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "optimized bulk assign",
       "group": "core",
       "role": "write",
@@ -714,7 +714,7 @@
     {
       "key": "BULK_ASSIGNMENT_DIRECT",
       "workflowId": "7e71fffe770a45ccb93bf216bb53786e",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e71fffe770a45ccb93bf216bb53786e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e71fffe770a45ccb93bf216bb53786e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "BULK ASSIGN (hybrid single or bulk)",
       "group": "core",
       "role": "write",
@@ -742,7 +742,7 @@
     {
       "key": "DYNAMIC_ACTIONS",
       "workflowId": "bc83d98acf474a088832d78f50085388",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bc83d98acf474a088832d78f50085388/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bc83d98acf474a088832d78f50085388/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "DYNAMIC GLOBAL ENDPOINT INTERFACE",
       "group": "core",
       "role": "write",
@@ -770,7 +770,7 @@
     {
       "key": "SUBSIDIARY_ACTIONS",
       "workflowId": "85c556f10b8244ba9d839a2ebe240b91",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/85c556f10b8244ba9d839a2ebe240b91/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/85c556f10b8244ba9d839a2ebe240b91/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "SUPPLEMENTARY / SUBSIDIARY ACTIONS (multi-route)",
       "group": "core",
       "role": "write",
@@ -798,7 +798,7 @@
     {
       "key": "EMAIL",
       "workflowId": "2e37b6310842410eb15c4561f2b0c1eb",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2e37b6310842410eb15c4561f2b0c1eb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2e37b6310842410eb15c4561f2b0c1eb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "Send email notification",
       "group": "core",
       "role": "write",
@@ -826,7 +826,7 @@
     {
       "key": "EMAIL_RELATED_TASK",
       "workflowId": "a942d230337c4ddfa9a386e92bbd048b",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a942d230337c4ddfa9a386e92bbd048b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a942d230337c4ddfa9a386e92bbd048b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "CREATE TASK FOR EMAIL",
       "group": "core",
       "role": "write",
@@ -854,7 +854,7 @@
     {
       "key": "AI_EMAIL_ANALYSIS",
       "workflowId": "fe794e0139784ac694768e5a716e0be7",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/fe794e0139784ac694768e5a716e0be7/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/fe794e0139784ac694768e5a716e0be7/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "AI over email and task context",
       "group": "core",
       "role": "ai",
@@ -880,8 +880,8 @@
     {
       "key": "AI_DOC_ANALYSIS",
       "workflowId": "5b29edc84b5d4a8db3c885d8441aa977",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/5b29edc84b5d4a8db3c885d8441aa977/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
-      "flow": "Events processing \u2014 AI over event documents",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/5b29edc84b5d4a8db3c885d8441aa977/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
+      "flow": "Events processing — AI over event documents",
       "group": "core",
       "role": "ai",
       "note": "AI analysis of event documents.",
@@ -906,7 +906,7 @@
     {
       "key": "AI_CHAT",
       "workflowId": "a13c8b577bd44f8787c50d095ea3faf9",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a13c8b577bd44f8787c50d095ea3faf9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a13c8b577bd44f8787c50d095ea3faf9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "AI chat",
       "group": "core",
       "role": "ai",
@@ -937,7 +937,7 @@
     {
       "key": "OTP_GENERATE",
       "workflowId": "314aaf27593147089b38322e5ca25936",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/314aaf27593147089b38322e5ca25936/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/314aaf27593147089b38322e5ca25936/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "OTP generate / send",
       "group": "core",
       "role": "auth",
@@ -963,7 +963,7 @@
     {
       "key": "OTP_VERIFY",
       "workflowId": "43879c5165de439680055ab4258b3f27",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/43879c5165de439680055ab4258b3f27/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/43879c5165de439680055ab4258b3f27/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "OTP verify",
       "group": "core",
       "role": "auth",
@@ -990,11 +990,11 @@
     {
       "key": "SCAN_INTAKE",
       "workflowId": "f771d509dfb648b0b21eeec0a36614fa",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f771d509dfb648b0b21eeec0a36614fa/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f771d509dfb648b0b21eeec0a36614fa/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "UPLOAD_ECM_DOCS_PORTAL",
       "group": "core",
       "role": "write",
-      "note": "Registry counter scan deposit, bound to the ECM upload flow \u2014 the only document-deposit endpoint in the supplied estate. Repoint from the Registry tab if the tenant exposes a dedicated raw-bytes intake.",
+      "note": "Registry counter scan deposit, bound to the ECM upload flow — the only document-deposit endpoint in the supplied estate. Repoint from the Registry tab if the tenant exposes a dedicated raw-bytes intake.",
       "signed": true,
       "expect": [],
       "sourcePreference": "R13 contract metadata + R12 live binding",
@@ -1044,7 +1044,7 @@
     {
       "key": "SUBMISSION_ECM_DOCS_PORTAL",
       "workflowId": "1041ed37ce924e3c886d891f23e8142c",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1041ed37ce924e3c886d891f23e8142c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1041ed37ce924e3c886d891f23e8142c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "SUBMISSION_ECM_DOCS_PORTAL",
       "group": "portal",
       "role": "write",
@@ -1072,7 +1072,7 @@
     {
       "key": "UPLOAD_ECM_DOCS_PORTAL",
       "workflowId": "f771d509dfb648b0b21eeec0a36614fa",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f771d509dfb648b0b21eeec0a36614fa/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f771d509dfb648b0b21eeec0a36614fa/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "UPLOAD_ECM_DOCS_PORTAL",
       "group": "portal",
       "role": "write",
@@ -1100,7 +1100,7 @@
     {
       "key": "INTAKE_SUBMISSION",
       "workflowId": "1ff7714c11a74fa4a876f8f6a79b64d2",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1ff7714c11a74fa4a876f8f6a79b64d2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1ff7714c11a74fa4a876f8f6a79b64d2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "DOCUMENT SUBMISSION PORTAL",
       "group": "portal",
       "role": "write",
@@ -1128,7 +1128,7 @@
     {
       "key": "EDTMS_NITDA_WRITE_API_INGESTION",
       "workflowId": "471875bf903545eda4d10e8a6243d858",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/471875bf903545eda4d10e8a6243d858/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/471875bf903545eda4d10e8a6243d858/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "EDTMS NITDA_Write_API (Ingestion)",
       "group": "edtms",
       "role": "write",
@@ -1156,7 +1156,7 @@
     {
       "key": "EDTMS_NITDA_READ_API_DASHBOARD_SYNC",
       "workflowId": "c1d8dba2fc84423891c6b78b0126278f",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c1d8dba2fc84423891c6b78b0126278f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c1d8dba2fc84423891c6b78b0126278f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "EDTMS NITDA_Read_API (Central Registry Dashboard Sync)",
       "group": "edtms",
       "role": "read",
@@ -1182,7 +1182,7 @@
     {
       "key": "EDTMS_NITDA_UPDATE_TASK_RESOLUTION",
       "workflowId": "84f062159fe9422eb0195c251ca285b8",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/84f062159fe9422eb0195c251ca285b8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/84f062159fe9422eb0195c251ca285b8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "EDTMS NITDA_Update_Task (Resolution)",
       "group": "edtms",
       "role": "write",
@@ -1238,7 +1238,7 @@
     {
       "key": "DISPATCH_OUTBOUND",
       "workflowId": "bc83d98acf474a088832d78f50085388",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bc83d98acf474a088832d78f50085388/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bc83d98acf474a088832d78f50085388/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "DYNAMIC GLOBAL ENDPOINT INTERFACE",
       "group": "derived",
       "role": "write",
@@ -1266,7 +1266,7 @@
     {
       "key": "CORRESPONDENCE_EMAIL_SEND",
       "workflowId": "7ee91bdefd3c449889d680c722a99d05",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7ee91bdefd3c449889d680c722a99d05/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7ee91bdefd3c449889d680c722a99d05/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "send-email variant",
       "group": "derived",
       "role": "write",
@@ -1294,7 +1294,7 @@
     {
       "key": "STATUS_UPDATE",
       "workflowId": "3cea46a4f06748cb8a680ee1532d73cb",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3cea46a4f06748cb8a680ee1532d73cb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3cea46a4f06748cb8a680ee1532d73cb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "Status update (single and bulk)",
       "group": "derived",
       "role": "write",
@@ -1322,7 +1322,7 @@
     {
       "key": "GET_EMAILS",
       "workflowId": "3931e2ff995242b6b2c920c8b2209797",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3931e2ff995242b6b2c920c8b2209797/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3931e2ff995242b6b2c920c8b2209797/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "GET EMAILS",
       "group": "derived",
       "role": "read",
@@ -1352,7 +1352,7 @@
     {
       "key": "GET_LETTERS",
       "workflowId": "f480ade951a1437c91604bee33279b0e",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f480ade951a1437c91604bee33279b0e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f480ade951a1437c91604bee33279b0e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "Get Letters",
       "group": "derived",
       "role": "read",
@@ -1382,7 +1382,7 @@
     {
       "key": "GET_USERS",
       "workflowId": "607795813ee14d8abee6d1b4e8dd866b",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/607795813ee14d8abee6d1b4e8dd866b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/607795813ee14d8abee6d1b4e8dd866b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "Get Users",
       "group": "derived",
       "role": "read",
@@ -1412,7 +1412,7 @@
     {
       "key": "GET_CATEGORIES",
       "workflowId": "9df45c5086ea42f2ab2b6ee9afae3f29",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/9df45c5086ea42f2ab2b6ee9afae3f29/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/9df45c5086ea42f2ab2b6ee9afae3f29/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "Get Categories",
       "group": "derived",
       "role": "read",
@@ -1442,7 +1442,7 @@
     {
       "key": "GET_DEPARTMENTS",
       "workflowId": "3c7094de10ce473e985e5cadcf66bc67",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3c7094de10ce473e985e5cadcf66bc67/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3c7094de10ce473e985e5cadcf66bc67/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "Get Departments",
       "group": "derived",
       "role": "read",
@@ -1472,7 +1472,7 @@
     {
       "key": "GET_CORRESPONDENCE",
       "workflowId": "5729f50aa0fc4248be30ed4e9d7a7a4f",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/5729f50aa0fc4248be30ed4e9d7a7a4f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/5729f50aa0fc4248be30ed4e9d7a7a4f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "get correspondence (flat response)",
       "group": "derived",
       "role": "read",
@@ -1498,7 +1498,7 @@
     {
       "key": "ATTENTION_ITEMS",
       "workflowId": "4f733288d90e49a68d4d5715d9198d40",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/4f733288d90e49a68d4d5715d9198d40/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/4f733288d90e49a68d4d5715d9198d40/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "DGO Attention Items",
       "group": "derived",
       "role": "read",
@@ -1528,7 +1528,7 @@
     {
       "key": "BULK_OPS_GET_DOCS",
       "workflowId": "7995c1eb50d94d5daa2780e71391d874",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7995c1eb50d94d5daa2780e71391d874/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7995c1eb50d94d5daa2780e71391d874/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "BULK OPS GET DOCS",
       "group": "derived",
       "role": "read",
@@ -1558,7 +1558,7 @@
     {
       "key": "API_GET",
       "workflowId": "02a3a70f3dec4dcd9a85a244a60c65b9",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/02a3a70f3dec4dcd9a85a244a60c65b9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/02a3a70f3dec4dcd9a85a244a60c65b9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "API_GET (ACK build)",
       "group": "derived",
       "role": "read",
@@ -1584,7 +1584,7 @@
     {
       "key": "ASSIGN_ITEM_DIRECT",
       "workflowId": "5de1fc934e2944bb9cf9d9a0f9bd38e3",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/5de1fc934e2944bb9cf9d9a0f9bd38e3/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/5de1fc934e2944bb9cf9d9a0f9bd38e3/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "assign-item direct build endpoint",
       "group": "derived",
       "role": "write",
@@ -1612,7 +1612,7 @@
     {
       "key": "TASK_CREATED_RESPONDER",
       "workflowId": "cae7796c721b47bc9aa95159eeb16081",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cae7796c721b47bc9aa95159eeb16081/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cae7796c721b47bc9aa95159eeb16081/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "task-created responder",
       "group": "derived",
       "role": "write",
@@ -1640,7 +1640,7 @@
     {
       "key": "EMAILS_COMPOSE_SELECT",
       "workflowId": "6d78b1940f4447b8b31b49657fe9c19c",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6d78b1940f4447b8b31b49657fe9c19c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6d78b1940f4447b8b31b49657fe9c19c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "emails, compose-select response variant",
       "group": "derived",
       "role": "read",
@@ -1666,7 +1666,7 @@
     {
       "key": "GET_EMAILS_CONTROL_DECK",
       "workflowId": "820c4a576cbb4a948d6a99dd85721e71",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/820c4a576cbb4a948d6a99dd85721e71/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/820c4a576cbb4a948d6a99dd85721e71/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "Get Emails (Control Deck variant)",
       "group": "derived",
       "role": "read",
@@ -1692,7 +1692,7 @@
     {
       "key": "FETCH_ALL_STANDALONE",
       "workflowId": "31e02518075940d2bcfa9bdb0e9b0b8d",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/31e02518075940d2bcfa9bdb0e9b0b8d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/31e02518075940d2bcfa9bdb0e9b0b8d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "get all data",
       "group": "alias",
       "role": "read",
@@ -1726,7 +1726,7 @@
     {
       "key": "FETCH_ALL_MATRIX_02",
       "workflowId": "4a250f97181b4a28abc1d0fb0f7d4c4d",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/4a250f97181b4a28abc1d0fb0f7d4c4d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/4a250f97181b4a28abc1d0fb0f7d4c4d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "FETCH_ALL (lineage snapshot)",
       "group": "alias",
       "role": "read",
@@ -1760,7 +1760,7 @@
     {
       "key": "FETCH_ALL_MATRIX_03",
       "workflowId": "2d576af599c0421eb37213634b85fc4b",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2d576af599c0421eb37213634b85fc4b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2d576af599c0421eb37213634b85fc4b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "Fetch_All_Data_&_References_Matrix (03)",
       "group": "alias",
       "role": "read",
@@ -1794,7 +1794,7 @@
     {
       "key": "FETCH_ALL_WITH_REFERENCES",
       "workflowId": "1d56be97cd184fd9b2facede12b17c34",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1d56be97cd184fd9b2facede12b17c34/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1d56be97cd184fd9b2facede12b17c34/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "all data and references",
       "group": "alias",
       "role": "read",
@@ -1830,7 +1830,7 @@
     {
       "key": "FETCH_ACTIVITIES_STANDALONE",
       "workflowId": "85c556f10b8244ba9d839a2ebe240b91",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/85c556f10b8244ba9d839a2ebe240b91/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/85c556f10b8244ba9d839a2ebe240b91/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "SUPPLEMENTARY / SUBSIDIARY ACTIONS (multi-route)",
       "group": "alias",
       "role": "read",
@@ -1856,7 +1856,7 @@
     {
       "key": "REFERENCE_DATA_LINEAGE",
       "workflowId": "d67f2acb3708449490eed561ee56efbe",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/d67f2acb3708449490eed561ee56efbe/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/d67f2acb3708449490eed561ee56efbe/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "REFERENCE_DATA (lineage snapshot)",
       "group": "alias",
       "role": "read",
@@ -1890,7 +1890,7 @@
     {
       "key": "SINGLE_ASSIGNMENT_DEPLOYED",
       "workflowId": "6b3bad3005b44bf6bced0f8074d3f2ed",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6b3bad3005b44bf6bced0f8074d3f2ed/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6b3bad3005b44bf6bced0f8074d3f2ed/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "Deployed Create task",
       "group": "alias",
       "role": "write",
@@ -1918,7 +1918,7 @@
     {
       "key": "BULK_ASSIGNMENT_REGEN",
       "workflowId": "c43388639d14452faef4ca3042a95b23",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c43388639d14452faef4ca3042a95b23/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c43388639d14452faef4ca3042a95b23/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "BULK_ASSIGN (REGEN build)",
       "group": "alias",
       "role": "write",
@@ -1946,7 +1946,7 @@
     {
       "key": "EMAIL_DYNAMIC_ACTIONS_STANDALONE",
       "workflowId": "bc83d98acf474a088832d78f50085388",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bc83d98acf474a088832d78f50085388/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bc83d98acf474a088832d78f50085388/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "DYNAMIC GLOBAL ENDPOINT INTERFACE",
       "group": "alias",
       "role": "write",
@@ -1974,7 +1974,7 @@
     {
       "key": "AI_DOC_ANALYSIS_LINEAGE",
       "workflowId": "20e3b003a57f47febae8a24ad5b9acd4",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/20e3b003a57f47febae8a24ad5b9acd4/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/20e3b003a57f47febae8a24ad5b9acd4/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "AI_DOC_ANALYSIS (lineage snapshot)",
       "group": "alias",
       "role": "ai",
@@ -2000,7 +2000,7 @@
     {
       "key": "OTP_GENERATE_NO_PORT",
       "workflowId": "314aaf27593147089b38322e5ca25936",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com/powerautomate/automations/direct/workflows/314aaf27593147089b38322e5ca25936/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com/powerautomate/automations/direct/workflows/314aaf27593147089b38322e5ca25936/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "OTP generate / send",
       "group": "alias",
       "role": "variant",
@@ -2026,7 +2026,7 @@
     {
       "key": "OTP_VERIFY_NO_PORT",
       "workflowId": "43879c5165de439680055ab4258b3f27",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com/powerautomate/automations/direct/workflows/43879c5165de439680055ab4258b3f27/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com/powerautomate/automations/direct/workflows/43879c5165de439680055ab4258b3f27/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "OTP verify",
       "group": "alias",
       "role": "variant",
@@ -2079,7 +2079,7 @@
     {
       "key": "SINGLE_ASSIGNMENT_ALT_SIG",
       "workflowId": "f71397ff3ca145059dc8f78c04923e9f",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f71397ff3ca145059dc8f78c04923e9f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f71397ff3ca145059dc8f78c04923e9f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "flow": "SINGLE ASSIGN / create task and update activity",
       "group": "alias",
       "role": "variant",
@@ -2336,7 +2336,7 @@
       "key": "AI_DOC_ANALYSIS",
       "action": "aiAnalyseEventDocs",
       "write": true,
-      "flow": "Events processing \u2014 AI over event documents"
+      "flow": "Events processing — AI over event documents"
     },
     {
       "key": "AI_CHAT",
@@ -3616,34 +3616,34 @@
     {
       "workflowId": "20e6340941ce4b1bbb87b43c9102a777",
       "flow": "Get email attachments",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/20e6340941ce4b1bbb87b43c9102a777/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
-      "sig": "\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/20e6340941ce4b1bbb87b43c9102a777/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
+      "sig": "«redacted»",
       "reason": "signature carries a character outside the base64url alphabet. Paste artefact.",
-      "correctUrl": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/20e6340941ce4b1bbb87b43c9102a777/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb"
+      "correctUrl": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/20e6340941ce4b1bbb87b43c9102a777/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»"
     },
     {
       "workflowId": "a942d230337c4ddfa9a386e92bbd048b",
       "flow": "CREATE TASK FOR EMAIL",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a942d230337c4ddfa9a386e92bbd048b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
-      "sig": "\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a942d230337c4ddfa9a386e92bbd048b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
+      "sig": "«redacted»",
       "reason": "signature is 40 characters; a Power Automate SAS signature is 43. Truncated in transit.",
-      "correctUrl": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a942d230337c4ddfa9a386e92bbd048b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb"
+      "correctUrl": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a942d230337c4ddfa9a386e92bbd048b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»"
     },
     {
       "workflowId": "20e6340941ce4b1bbb87b43c9102a777",
       "flow": "Get email attachments",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/20e6340941ce4b1bbb87b43c9102a777/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/20e6340941ce4b1bbb87b43c9102a777/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "sig": "aoDNRVjvGpUWGq2zB7H5JG10xQTEFhFLt1PTxmpCX6Y=",
       "reason": "signature carries a character outside the base64url alphabet. Paste artefact.",
-      "correctUrl": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/20e6340941ce4b1bbb87b43c9102a777/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb"
+      "correctUrl": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/20e6340941ce4b1bbb87b43c9102a777/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»"
     },
     {
       "workflowId": "a942d230337c4ddfa9a386e92bbd048b",
       "flow": "CREATE TASK FOR EMAIL",
-      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a942d230337c4ddfa9a386e92bbd048b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a942d230337c4ddfa9a386e92bbd048b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
       "sig": "KAItnmgczUUEDkdJTQvhBbPTZ3IB8paPPMqz0A7U",
       "reason": "signature is 40 characters; a Power Automate SAS signature is 43. Truncated in transit.",
-      "correctUrl": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a942d230337c4ddfa9a386e92bbd048b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb"
+      "correctUrl": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a942d230337c4ddfa9a386e92bbd048b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»"
     }
   ],
   "audit": {
@@ -3658,20 +3658,20 @@
     ],
     "missingUrlKeys": [],
     "duplicateUrls": {
-      "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/31e02518075940d2bcfa9bdb0e9b0b8d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb": [
+      "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/31e02518075940d2bcfa9bdb0e9b0b8d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»": [
         "FETCH_ALL",
         "FETCH_ALL_STANDALONE"
       ],
-      "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bc83d98acf474a088832d78f50085388/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb": [
+      "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bc83d98acf474a088832d78f50085388/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»": [
         "DYNAMIC_ACTIONS",
         "DISPATCH_OUTBOUND",
         "EMAIL_DYNAMIC_ACTIONS_STANDALONE"
       ],
-      "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/85c556f10b8244ba9d839a2ebe240b91/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb": [
+      "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/85c556f10b8244ba9d839a2ebe240b91/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»": [
         "SUBSIDIARY_ACTIONS",
         "FETCH_ACTIVITIES_STANDALONE"
       ],
-      "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f771d509dfb648b0b21eeec0a36614fa/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=\u00abredacted\u00bb": [
+      "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f771d509dfb648b0b21eeec0a36614fa/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»": [
         "SCAN_INTAKE",
         "UPLOAD_ECM_DOCS_PORTAL"
       ]

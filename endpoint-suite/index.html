@@ -74,8 +74,31 @@ async function probe(k, source){
   STATE.log.unshift(rec); render(); return rec;
 }
 
+// Derived live from REG.keys/REG.routes/REG.rejected on every call, so adding,
+// removing or editing an endpoint can never leave a stale count anywhere —
+// there is no separate summary to remember to update.
+function computeAudit(){
+  const keys=REG.keys;
+  const byUrl={};
+  keys.forEach(k=>{ if(k.url) (byUrl[k.url]=byUrl[k.url]||[]).push(k.key); });
+  const duplicateUrls={};
+  Object.entries(byUrl).forEach(([u,ks])=>{ if(ks.length>1) duplicateUrls[u]=ks; });
+  return {
+    keyCount: keys.length,
+    routeCount: REG.routes.length,
+    readKeyCount: keys.filter(k=>k.role==='read').length,
+    writeKeyCount: keys.filter(k=>k.role==='write').length,
+    unsignedKeys: keys.filter(k=>!k.signed).map(k=>k.key),
+    missingUrlKeys: keys.filter(k=>!k.url).map(k=>k.key),
+    duplicateUrls,
+    groups: Array.from(new Set(keys.map(k=>k.group).filter(Boolean))).sort(),
+    activeSignedKeys: keys.filter(k=>k.signed && k.url).length,
+    rejectedCount: (REG.rejected||[]).length,
+  };
+}
+
 function overview(){
-  const a=REG.audit;
+  const a=computeAudit();
   const liveN=REG.keys.filter(hasLiveUrl).length;
   return `<div class=grid>
     <div class=card><div class=metric><b>${a.keyCount}</b><span>Endpoint keys</span></div></div>
@@ -243,9 +266,9 @@ function copyPowerShell(){
   navigator.clipboard && navigator.clipboard.writeText(txt);
 }
 
-function redactAudit(){ return JSON.parse(JSON.stringify(REG.audit)); }
+function redactAudit(){ return computeAudit(); }
 function audit(){
-  let a=REG.audit;
+  let a=computeAudit();
   let rej=(REG.rejected||[]).map(r=>`<tr><td>${esc(r.flow)}</td><td><code>${esc(r.workflowId)}</code></td><td>${esc(r.reason)}</td></tr>`).join('');
   return `<div class=grid><div class=card><b>${a.unsignedKeys.length}</b><br>Unsigned keys</div><div class=card><b>${a.missingUrlKeys.length}</b><br>Missing URL keys</div><div class=card><b>${Object.keys(a.duplicateUrls).length}</b><br>Duplicate URL groups</div><div class=card><b>${a.groups.length}</b><br>Groups</div></div>
   <div class=card><h2>Unsigned keys</h2><p>${a.unsignedKeys.map(esc).join(', ')||'none'} — these cannot authenticate until Power Automate issues a signature; see Estate to repoint one for testing.</p></div>
