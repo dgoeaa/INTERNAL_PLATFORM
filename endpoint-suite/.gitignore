@@ -1,14 +1,8 @@
 # Guard rail: this suite must never carry live Power Automate trigger URLs
-# (SAS signatures are bearer credentials) into source control. Anything
-# matching these patterns is operator-local only. See config/README.md and
-# reports/CONSOLIDATION_REPORT.md section 13 for the full policy.
+# (SAS signatures are bearer credentials) into source control.
 *.full.js
 *.full.json
 *.local.js
 *.local.json
-config/config.local.js
-config/runtime.config.full.js
 registry/unified-registry.full.json
-tests/contract-probes.full.json
-exports/private/
 private/

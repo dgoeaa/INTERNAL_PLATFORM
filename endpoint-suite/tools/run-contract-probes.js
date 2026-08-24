@@ -7,10 +7,11 @@
 //
 // registryPath defaults to ../registry/unified-registry.redacted.json, which
 // ships with every signature replaced by the literal string "«redacted»" and
-// therefore cannot authenticate against Power Automate. Pass your own
-// git-ignored full/local registry (or --local) to probe live endpoints; see
-// config/config.local.example.js and reports/CONSOLIDATION_REPORT.md
-// section 13 for how to obtain and rotate those signatures safely.
+// therefore cannot authenticate against Power Automate. Pass --local with a
+// path to your own git-ignored registry JSON (shaped like
+// {"keys":[{"key","url","signed"}, ...]}, with rotated sig= values pulled
+// from each flow's "Get callback URL" in Power Automate) to probe live
+// endpoints. Never commit that file.
 'use strict';
 const fs = require('fs');
 const path = require('path');

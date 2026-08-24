@@ -312,7 +312,7 @@ function exportView(){
     <button onclick="download('cems-session.md', mdReport())">Download session Markdown</button>
     <button ${liveN?'':'disabled'} onclick="download('cems-local.env', envExport())">Download .env (local credentials)</button>
     <button ${liveN?'':'disabled'} onclick="download('cems-curl-book.md', curlBookExport())">Download curl book (local credentials)</button>
-  </div><p class=muted>${liveN?'The .env and curl-book downloads use the registry you loaded on Overview; they are generated entirely in this tab and never leave it.':'Load a local registry on Overview to enable the .env and curl-book downloads.'} Pre-built redacted exports (OpenAPI 3.1, Postman, CSV, curl-book, .env) also ship in <code>exports/redacted/</code> alongside this file.</p></div>
+  </div><p class=muted>${liveN?'The .env and curl-book downloads use the registry you loaded on Overview; they are generated entirely in this tab and never leave it.':'Load a local registry on Overview to enable the .env and curl-book downloads.'}</p></div>
   <div class=card><pre>${esc(JSON.stringify(redactAll(),null,2).slice(0,12000))}</pre></div>`;
 }
 
