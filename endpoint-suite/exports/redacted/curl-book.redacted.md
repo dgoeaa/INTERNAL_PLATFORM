@@ -1,0 +1,282 @@
+# CEMS R14 redacted curl book
+
+
+## FETCH_ALL
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/31e02518075940d2bcfa9bdb0e9b0b8d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "fetchAll", "name": "fetchAll", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## FETCH_ACTIVITIES
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/37642ba3597f4cf58288cc71b5e6b519/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "LIST-ACTIVITIES", "name": "LIST-ACTIVITIES", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## REFERENCE_DATA
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/ff455c68e9ac493e858fb984bcfd01fb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "lookups", "name": "lookups", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## GET_DOCS
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/818ec4053f1e4f0b87845114241d8b74/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "getDocs", "name": "getDocs", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## FETCH_EMAIL_ATTACHMENTS
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/20e6340941ce4b1bbb87b43c9102a777/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "fetchEmailAttachments", "name": "fetchEmailAttachments", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## SINGLE_ASSIGNMENT
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f71397ff3ca145059dc8f78c04923e9f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "singleassignment", "name": "singleassignment", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## BULK_ASSIGNMENT
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1154b50e1d17420dadb3b012e7e2a02c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "bulkassignment", "name": "bulkassignment", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## BULK_ASSIGNMENT_DIRECT
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7e71fffe770a45ccb93bf216bb53786e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "bulkassignment", "name": "bulkassignment", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## DYNAMIC_ACTIONS
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bc83d98acf474a088832d78f50085388/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "dynamicGlobalAction", "name": "dynamicGlobalAction", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## SUBSIDIARY_ACTIONS
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/85c556f10b8244ba9d839a2ebe240b91/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "INIT", "name": "INIT", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## EMAIL
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2e37b6310842410eb15c4561f2b0c1eb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "dispatchEmail", "name": "dispatchEmail", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## EMAIL_RELATED_TASK
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a942d230337c4ddfa9a386e92bbd048b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "emailtotaskassignment", "name": "emailtotaskassignment", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## AI_EMAIL_ANALYSIS
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/fe794e0139784ac694768e5a716e0be7/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "aiAnalyseEmail", "name": "aiAnalyseEmail", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## AI_DOC_ANALYSIS
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/5b29edc84b5d4a8db3c885d8441aa977/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "aiAnalyseEventDocs", "name": "aiAnalyseEventDocs", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## AI_CHAT
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a13c8b577bd44f8787c50d095ea3faf9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "aiChat", "name": "aiChat", "userEmail": "dgo.probe@example.invalid", "message": "__DGO_PROBE__"}'
+```
+
+## OTP_GENERATE
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/314aaf27593147089b38322e5ca25936/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "otpGenerate", "name": "otpGenerate", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## OTP_VERIFY
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/43879c5165de439680055ab4258b3f27/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "otpVerify", "name": "otpVerify", "userEmail": "dgo.probe@example.invalid", "code": "000000"}'
+```
+
+## SCAN_INTAKE
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f771d509dfb648b0b21eeec0a36614fa/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "upload", "name": "upload", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## AUTH_LOGIN_START
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/80fab00617c84db5af989f985d0288a5/triggers/manual/paths/invoke?api-version=1' -H 'content-type: application/json' -d '{"action": "loginStart", "name": "loginStart", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## SUBMISSION_ECM_DOCS_PORTAL
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1041ed37ce924e3c886d891f23e8142c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "submit", "name": "submit", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## UPLOAD_ECM_DOCS_PORTAL
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f771d509dfb648b0b21eeec0a36614fa/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "upload", "name": "upload", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## INTAKE_SUBMISSION
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1ff7714c11a74fa4a876f8f6a79b64d2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "submit", "name": "submit", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## EDTMS_NITDA_WRITE_API_INGESTION
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/471875bf903545eda4d10e8a6243d858/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "ingest", "name": "ingest", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## EDTMS_NITDA_READ_API_DASHBOARD_SYNC
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c1d8dba2fc84423891c6b78b0126278f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "sync", "name": "sync", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## EDTMS_NITDA_UPDATE_TASK_RESOLUTION
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/84f062159fe9422eb0195c251ca285b8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "resolve", "name": "resolve", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## ARCHIVE
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c2afaf028b50408995738b9e14c0662d/triggers/manual/paths/invoke?api-version=1' -H 'content-type: application/json' -d '{"action": "archive", "name": "archive", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## DISPATCH_OUTBOUND
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bc83d98acf474a088832d78f50085388/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "dispatchOutbound", "name": "dispatchOutbound", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## CORRESPONDENCE_EMAIL_SEND
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7ee91bdefd3c449889d680c722a99d05/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "sendEmail", "name": "sendEmail", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## STATUS_UPDATE
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3cea46a4f06748cb8a680ee1532d73cb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "statusUpdate", "name": "statusUpdate", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## GET_EMAILS
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3931e2ff995242b6b2c920c8b2209797/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "getEmails", "name": "getEmails", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## GET_LETTERS
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f480ade951a1437c91604bee33279b0e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "getLetters", "name": "getLetters", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## GET_USERS
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/607795813ee14d8abee6d1b4e8dd866b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "getUsers", "name": "getUsers", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## GET_CATEGORIES
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/9df45c5086ea42f2ab2b6ee9afae3f29/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "getCategories", "name": "getCategories", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## GET_DEPARTMENTS
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3c7094de10ce473e985e5cadcf66bc67/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "getDepartments", "name": "getDepartments", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## GET_CORRESPONDENCE
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/5729f50aa0fc4248be30ed4e9d7a7a4f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "getCorrespondence", "name": "getCorrespondence", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## ATTENTION_ITEMS
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/4f733288d90e49a68d4d5715d9198d40/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "getAttentionItems", "name": "getAttentionItems", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## BULK_OPS_GET_DOCS
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7995c1eb50d94d5daa2780e71391d874/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "getDocs", "name": "getDocs", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## API_GET
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/02a3a70f3dec4dcd9a85a244a60c65b9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "get", "name": "get", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## ASSIGN_ITEM_DIRECT
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/5de1fc934e2944bb9cf9d9a0f9bd38e3/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "assignItem", "name": "assignItem", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## TASK_CREATED_RESPONDER
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cae7796c721b47bc9aa95159eeb16081/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "taskCreated", "name": "taskCreated", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## EMAILS_COMPOSE_SELECT
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6d78b1940f4447b8b31b49657fe9c19c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "getEmails", "name": "getEmails", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## GET_EMAILS_CONTROL_DECK
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/820c4a576cbb4a948d6a99dd85721e71/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "getEmails", "name": "getEmails", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## FETCH_ALL_STANDALONE
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/31e02518075940d2bcfa9bdb0e9b0b8d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "fetchAll", "name": "fetchAll", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## FETCH_ALL_MATRIX_02
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/4a250f97181b4a28abc1d0fb0f7d4c4d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "fetchAll", "name": "fetchAll", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## FETCH_ALL_MATRIX_03
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2d576af599c0421eb37213634b85fc4b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "fetchAll", "name": "fetchAll", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## FETCH_ALL_WITH_REFERENCES
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1d56be97cd184fd9b2facede12b17c34/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "fetchAll", "name": "fetchAll", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## FETCH_ACTIVITIES_STANDALONE
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/85c556f10b8244ba9d839a2ebe240b91/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "LIST-ACTIVITIES", "name": "LIST-ACTIVITIES", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## REFERENCE_DATA_LINEAGE
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/d67f2acb3708449490eed561ee56efbe/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "lookups", "name": "lookups", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## SINGLE_ASSIGNMENT_DEPLOYED
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6b3bad3005b44bf6bced0f8074d3f2ed/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "singleassignment", "name": "singleassignment", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## BULK_ASSIGNMENT_REGEN
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/c43388639d14452faef4ca3042a95b23/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "bulkassignment", "name": "bulkassignment", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## EMAIL_DYNAMIC_ACTIONS_STANDALONE
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bc83d98acf474a088832d78f50085388/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "dispatchEmail", "name": "dispatchEmail", "userEmail": "dgo.probe@example.invalid", "operation": "create", "tag": "__DGO_PROBE__"}'
+```
+
+## AI_DOC_ANALYSIS_LINEAGE
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/20e3b003a57f47febae8a24ad5b9acd4/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "aiAnalyseEventDocs", "name": "aiAnalyseEventDocs", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## OTP_GENERATE_NO_PORT
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com/powerautomate/automations/direct/workflows/314aaf27593147089b38322e5ca25936/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "otpGenerate", "name": "otpGenerate", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## OTP_VERIFY_NO_PORT
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com/powerautomate/automations/direct/workflows/43879c5165de439680055ab4258b3f27/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "otpVerify", "name": "otpVerify", "userEmail": "dgo.probe@example.invalid", "code": "000000"}'
+```
+
+## WEB_SEND_EMAIL_UNSIGNED
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2e37b6310842410eb15c4561f2b0c1eb/triggers/manual/paths/invoke?api-version=1' -H 'content-type: application/json' -d '{"action": "dispatchEmail", "name": "dispatchEmail", "userEmail": "dgo.probe@example.invalid"}'
+```
+
+## SINGLE_ASSIGNMENT_ALT_SIG
+```bash
+curl -sS -X POST 'https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f71397ff3ca145059dc8f78c04923e9f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»' -H 'content-type: application/json' -d '{"action": "singleassignment", "name": "singleassignment", "userEmail": "dgo.probe@example.invalid"}'
+```
