@@ -1,0 +1,70 @@
+{
+  "keys": [
+    {
+      "key": "FETCH_ALL",
+      "url": "https://YOUR_ENV.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/00000000000000000000000000000000/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ROTATE_ME",
+      "signed": true,
+      "workflowId": "00000000000000000000000000000000",
+      "flow": "get all data",
+      "group": "core",
+      "role": "read",
+      "note": "The register itself — officers see nothing without it.",
+      "expect": ["tasks", "docs", "emails"],
+      "probe": {
+        "method": "POST",
+        "body": { "action": "fetchAll", "name": "fetchAll", "userEmail": "probe@example.invalid" },
+        "expect": ["tasks", "docs", "emails"]
+      },
+      "governance": {
+        "mutates": false,
+        "requiresDryRun": true,
+        "redactInReports": true,
+        "fullUrlIsBearerCredential": true
+      }
+    },
+    {
+      "key": "SINGLE_ASSIGNMENT",
+      "url": "https://YOUR_ENV.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/11111111111111111111111111111111/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ROTATE_ME",
+      "signed": true,
+      "workflowId": "11111111111111111111111111111111",
+      "flow": "SINGLE ASSIGN / create task and update activity",
+      "group": "core",
+      "role": "write",
+      "note": "Assign one correspondence to one officer.",
+      "expect": [],
+      "probe": {
+        "method": "POST",
+        "body": { "action": "singleassignment", "name": "singleassignment", "userEmail": "probe@example.invalid", "operation": "create", "dryRun": true, "validateOnly": true, "tag": "__PROBE__" },
+        "expect": []
+      },
+      "governance": {
+        "mutates": true,
+        "requiresDryRun": true,
+        "redactInReports": true,
+        "fullUrlIsBearerCredential": true
+      }
+    },
+    {
+      "key": "AUTH_LOGIN_START",
+      "url": "https://YOUR_ENV.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/22222222222222222222222222222222/triggers/manual/paths/invoke?api-version=1",
+      "signed": false,
+      "workflowId": "22222222222222222222222222222222",
+      "flow": "AUTH_LOGIN_START",
+      "group": "auth",
+      "role": "read",
+      "note": "Login start. Supplied with no sp/sv/sig — needs Get callback URL in Power Automate before it will authenticate.",
+      "expect": [],
+      "probe": {
+        "method": "POST",
+        "body": { "action": "authloginstart", "name": "authloginstart" },
+        "expect": []
+      },
+      "governance": {
+        "mutates": false,
+        "requiresDryRun": true,
+        "redactInReports": true,
+        "fullUrlIsBearerCredential": true
+      }
+    }
+  ]
+}
