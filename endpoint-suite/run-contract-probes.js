@@ -43,7 +43,7 @@ function withTimeout(url, opts, ms) {
 
 async function probeOnce(k, timeoutMs) {
   const started = Date.now();
-  if (!k.url || k.url.includes('«redacted»')) {
+  if (!k.url || k.url.includes('«redacted»') || !/[?&]sig=/.test(k.url)) {
     return { key: k.key, status: 0, ok: false, ms: 0, verdict: 'no live url' };
   }
   const body = (k.probe && k.probe.body) || { action: String(k.key).toLowerCase(), name: String(k.key).toLowerCase(), dryRun: true, validateOnly: true };
@@ -100,7 +100,7 @@ async function main() {
   reg = mergeLocal(reg, args.local);
 
   const list = reg.keys.filter((k) => k.url && (args.scope === 'all' || k.role === args.scope || (args.scope === 'signed' && k.signed)));
-  const liveCount = list.filter((k) => !k.url.includes('«redacted»')).length;
+  const liveCount = list.filter((k) => k.url && !k.url.includes('«redacted»') && /[?&]sig=/.test(k.url)).length;
   if (liveCount === 0) {
     console.error(`[cems] Warning: ${args.registryPath} carries no live signatures (redacted mode). Every result below will read 'no live url'. Pass --local <path-to-your-gitignored-full-registry> to probe for real.`);
   }

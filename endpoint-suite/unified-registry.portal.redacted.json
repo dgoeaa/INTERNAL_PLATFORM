@@ -1,0 +1,165 @@
+{
+  "format": "cems.unified.runtime/14",
+  "release": "R14-unified-production-runtime (portal-scoped)",
+  "builtAt": "2026-08-19T20:49:09+00:00",
+  "platform": "Customized Endpoints Management Suite — Portal",
+  "buildId": "cems-r14-7af2adb6cfc88dfe",
+  "sourceInputs": {
+    "ecm2": {
+      "release": "R13-production-contract-first",
+      "keys": 56,
+      "routes": 81,
+      "files": 4
+    },
+    "ecm3": {
+      "release": "R13-production-contract-first",
+      "keys": 56,
+      "routes": 81,
+      "files": 23
+    },
+    "dgo_r12": {
+      "release": "R12",
+      "endpoints": 56,
+      "flows": 47,
+      "files": 5
+    }
+  },
+  "contractFirst": {
+    "requestEnvelope": [
+      "action",
+      "name",
+      "userEmail",
+      "runId",
+      "dryRun",
+      "validateOnly",
+      "payload"
+    ],
+    "responseEnvelope": [
+      "ok",
+      "status",
+      "request",
+      "data",
+      "errors",
+      "meta",
+      "timing"
+    ],
+    "routeDiscriminators": [
+      "action",
+      "name"
+    ],
+    "writeProbePolicy": "write probes require dryRun=true and validateOnly=true by default"
+  },
+  "security": {
+    "signedUrlsAreBearerCredentials": true,
+    "redactedReportsDefault": true,
+    "rotateTriggerUrlsBeforeExternalDistribution": true,
+    "fullSecretFilesLocation": "operator-supplied locally via the Overview tab's file loader or run-contract-probes.js --local; never committed to this repository"
+  },
+  "keys": [
+    {
+      "key": "SUBMISSION_ECM_DOCS_PORTAL",
+      "workflowId": "1041ed37ce924e3c886d891f23e8142c",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1041ed37ce924e3c886d891f23e8142c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
+      "flow": "SUBMISSION_ECM_DOCS_PORTAL",
+      "group": "portal",
+      "role": "write",
+      "note": "ECM document submission.",
+      "signed": true,
+      "expect": [],
+      "sourcePreference": "R13 contract metadata + R12 live binding",
+      "probe": {
+        "body": {
+          "action": "submit",
+          "name": "submit",
+          "userEmail": "dgo.probe@example.invalid",
+          "operation": "create",
+          "tag": "__DGO_PROBE__"
+        },
+        "expect": []
+      },
+      "governance": {
+        "mutates": true,
+        "requiresDryRun": true,
+        "redactInReports": true,
+        "fullUrlIsBearerCredential": true
+      }
+    },
+    {
+      "key": "UPLOAD_ECM_DOCS_PORTAL",
+      "workflowId": "f771d509dfb648b0b21eeec0a36614fa",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f771d509dfb648b0b21eeec0a36614fa/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
+      "flow": "UPLOAD_ECM_DOCS_PORTAL",
+      "group": "portal",
+      "role": "write",
+      "note": "ECM document upload.",
+      "signed": true,
+      "expect": [],
+      "sourcePreference": "R13 contract metadata + R12 live binding",
+      "probe": {
+        "body": {
+          "action": "upload",
+          "name": "upload",
+          "userEmail": "dgo.probe@example.invalid",
+          "operation": "create",
+          "tag": "__DGO_PROBE__"
+        },
+        "expect": []
+      },
+      "governance": {
+        "mutates": true,
+        "requiresDryRun": true,
+        "redactInReports": true,
+        "fullUrlIsBearerCredential": true
+      }
+    },
+    {
+      "key": "INTAKE_SUBMISSION",
+      "workflowId": "1ff7714c11a74fa4a876f8f6a79b64d2",
+      "url": "https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1ff7714c11a74fa4a876f8f6a79b64d2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»",
+      "flow": "DOCUMENT SUBMISSION PORTAL",
+      "group": "portal",
+      "role": "write",
+      "note": "Public document submission portal.",
+      "signed": true,
+      "expect": [],
+      "sourcePreference": "R13 contract metadata + R12 live binding",
+      "probe": {
+        "body": {
+          "action": "submit",
+          "name": "submit",
+          "userEmail": "dgo.probe@example.invalid",
+          "operation": "create",
+          "tag": "__DGO_PROBE__"
+        },
+        "expect": []
+      },
+      "governance": {
+        "mutates": true,
+        "requiresDryRun": true,
+        "redactInReports": true,
+        "fullUrlIsBearerCredential": true
+      }
+    }
+  ],
+  "routes": [
+    {
+      "key": "SUBMISSION_ECM_DOCS_PORTAL",
+      "action": "submit",
+      "write": true,
+      "flow": "SUBMISSION_ECM_DOCS_PORTAL"
+    },
+    {
+      "key": "UPLOAD_ECM_DOCS_PORTAL",
+      "action": "upload",
+      "write": true,
+      "flow": "UPLOAD_ECM_DOCS_PORTAL"
+    },
+    {
+      "key": "INTAKE_SUBMISSION",
+      "action": "submit",
+      "write": true,
+      "flow": "DOCUMENT SUBMISSION PORTAL"
+    }
+  ],
+  "rejected": []
+}

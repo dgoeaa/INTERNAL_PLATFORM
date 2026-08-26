@@ -18,7 +18,7 @@ function h(tag,attrs='',body=''){return `<${tag} ${attrs}>${body}</${tag}>`}
 function activeKeys(){let q=STATE.q.toLowerCase();return REG.keys.filter(k=>!q||JSON.stringify(k).toLowerCase().includes(q));}
 function cfgLoadedCount(){return CFG?Object.keys(CFG).length:0}
 function effectiveUrl(k){if(STATE.estateOverride[k.workflowId])return STATE.estateOverride[k.workflowId]; if(CFG&&CFG[k.key]&&CFG[k.key].url)return CFG[k.key].url; return k.url;}
-function hasLiveUrl(k){return !effectiveUrl(k).includes('«redacted»')}
+function hasLiveUrl(k){const u=effectiveUrl(k); return !!u && !u.includes('«redacted»') && /[?&]sig=/.test(u)}
 function urlDisplay(k){let u=effectiveUrl(k); return STATE.showUrls?u:red(u)}
 function ensureCFG(){ if(!CFG)CFG={}; return CFG; }
 function clearCFG(){ CFG=null; render(); }
