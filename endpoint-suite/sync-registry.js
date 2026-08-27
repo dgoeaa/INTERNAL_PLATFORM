@@ -1,20 +1,29 @@
 #!/usr/bin/env node
-// Regenerates index.html's embedded registry from unified-registry.redacted.json,
-// which is the single source of truth. Run this after adding, editing, or
-// removing an endpoint:
+// Regenerates a runtime HTML's embedded registry from a registry JSON file.
+// Run this after adding, editing, or removing an endpoint:
 //
 //   node sync-registry.js
 //
-// index.html carries its own copy of the registry (one line, `const REG=...;`)
-// so the page works by itself with no server and no fetch(). This script is
-// the only thing that keeps that copy in sync with the JSON file — hand-edit
-// index.html's REG line and the next run of this script will overwrite it.
+// With no arguments: reads unified-registry.redacted.json, writes index.html
+// (the default pairing). Pass a different registry and/or output name to
+// build a scoped standalone tool instead - e.g. to turn
+// unified-registry.portal.redacted.json into its own portal.html:
+//
+//   node sync-registry.js unified-registry.portal.redacted.json portal.html
+//
+// index.html is always read as the UI shell (CSS/JS), regardless of the
+// output name, so a scoped build stays a full copy of the same tool with a
+// smaller REG - never hand-edit a generated file like portal.html directly;
+// re-run this script instead so it keeps picking up index.html's own fixes.
 'use strict';
 const fs = require('fs');
 const path = require('path');
 
-const jsonPath = path.join(__dirname, 'unified-registry.redacted.json');
-const htmlPath = path.join(__dirname, 'index.html');
+const registryArg = process.argv[2] || 'unified-registry.redacted.json';
+const outArg = process.argv[3] || 'index.html';
+const jsonPath = path.join(__dirname, registryArg);
+const shellPath = path.join(__dirname, 'index.html');
+const outPath = path.join(__dirname, outArg);
 
 const reg = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
 
@@ -24,12 +33,12 @@ const reg = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
 const compact = JSON.stringify(reg);
 const liveSig = /sig=(?!«redacted»)[A-Za-z0-9_-]{10,}/;
 if (liveSig.test(compact)) {
-  console.error('[sync-registry] Refusing to embed: unified-registry.redacted.json contains what looks like a live signature.');
+  console.error(`[sync-registry] Refusing to embed: ${registryArg} contains what looks like a live signature.`);
   console.error('[sync-registry] Every sig= value must be the literal string «redacted» in this file — real credentials belong only in your own git-ignored local registry, loaded at runtime via the Overview tab or run-contract-probes.js --local.');
   process.exit(1);
 }
 
-const html = fs.readFileSync(htmlPath, 'utf8');
+const html = fs.readFileSync(shellPath, 'utf8');
 const lines = html.split('\n');
 const idx = lines.findIndex((l) => l.startsWith('const REG='));
 if (idx === -1) {
@@ -37,6 +46,6 @@ if (idx === -1) {
   process.exit(1);
 }
 lines[idx] = `const REG=${compact};`;
-fs.writeFileSync(htmlPath, lines.join('\n'));
+fs.writeFileSync(outPath, lines.join('\n'));
 
-console.log(`[sync-registry] index.html updated: ${reg.keys.length} keys, ${reg.routes.length} routes.`);
+console.log(`[sync-registry] ${outArg} written from ${registryArg}: ${reg.keys.length} keys, ${reg.routes.length} routes.`);
