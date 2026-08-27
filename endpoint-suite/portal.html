@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Customized Endpoints Management Suite</title>
+<style>
+:root{--bg:#0f1216;--card:#171c24;--fg:#e8edf3;--muted:#9aa6b2;--line:#2b3440;--ok:#4ade80;--bad:#f87171;--warn:#fbbf24;--accent:#7aa2f7;--code:#0b0f14}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,Segoe UI,Arial,sans-serif}header{padding:18px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#0f1216;z-index:2}h1{font-size:20px;margin:0}.sub{color:var(--muted);font-size:12px;margin-top:4px}main{max-width:1400px;margin:0 auto;padding:18px}.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}button{border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg);padding:8px 12px;cursor:pointer;font:inherit}button.primary{background:var(--accent);color:#06111e;border-color:var(--accent);font-weight:700}button.danger{background:#3a1a1a;border-color:var(--bad);color:var(--bad)}button:disabled{opacity:.45;cursor:not-allowed}button[aria-selected=true]{border-color:var(--accent);color:#fff}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.metric b{font-size:28px;display:block}input,select,textarea{background:var(--code);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px;max-width:100%}textarea{width:100%;min-height:160px;font-family:ui-monospace,Consolas,monospace}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border-bottom:1px solid var(--line);padding:7px;vertical-align:top}th{text-align:left;color:var(--muted);position:sticky;top:82px;background:var(--card)}code,pre{font-family:ui-monospace,Consolas,monospace;background:var(--code);border-radius:6px}pre{padding:12px;overflow:auto;max-height:460px}.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}.muted{color:var(--muted)}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:end}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 8px;color:var(--muted);font-size:11px}.pill.live{border-color:var(--ok);color:var(--ok)}.pill.redacted{border-color:var(--warn);color:var(--warn)}.bar{height:8px;border-radius:999px;background:var(--code);overflow:hidden;border:1px solid var(--line)}.bar>i{display:block;height:100%;background:var(--accent)}.spark{display:inline-block;vertical-align:middle}.banner{border:1px solid var(--warn);background:#241d0c;color:var(--warn);border-radius:10px;padding:10px 12px;font-size:12px;margin-bottom:12px}.banner.ok{border-color:var(--ok);background:#0f2417;color:var(--ok)}
+</style></head><body><header><h1>Customized Endpoints Management Suite</h1><div class="sub" id="headSub">Unified runtime — merges ECM3 (R13) contract-first registry, DGO Enterprise Endpoint Workbench (R12) operational capability, and ECM2's compact instrument. This file ships with signatures redacted; load your own registry locally to probe live.</div></header><main>
+<nav class="tabs" id="tabs"></nav><section id="view"></section>
+</main><script>
+const REG={"format":"cems.unified.runtime/14","release":"R14-unified-production-runtime (portal-scoped)","builtAt":"2026-08-19T20:49:09+00:00","platform":"Customized Endpoints Management Suite — Portal","buildId":"cems-r14-7af2adb6cfc88dfe","sourceInputs":{"ecm2":{"release":"R13-production-contract-first","keys":56,"routes":81,"files":4},"ecm3":{"release":"R13-production-contract-first","keys":56,"routes":81,"files":23},"dgo_r12":{"release":"R12","endpoints":56,"flows":47,"files":5}},"contractFirst":{"requestEnvelope":["action","name","userEmail","runId","dryRun","validateOnly","payload"],"responseEnvelope":["ok","status","request","data","errors","meta","timing"],"routeDiscriminators":["action","name"],"writeProbePolicy":"write probes require dryRun=true and validateOnly=true by default"},"security":{"signedUrlsAreBearerCredentials":true,"redactedReportsDefault":true,"rotateTriggerUrlsBeforeExternalDistribution":true,"fullSecretFilesLocation":"operator-supplied locally via the Overview tab's file loader or run-contract-probes.js --local; never committed to this repository"},"keys":[{"key":"SUBMISSION_ECM_DOCS_PORTAL","workflowId":"1041ed37ce924e3c886d891f23e8142c","url":"https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1041ed37ce924e3c886d891f23e8142c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»","flow":"SUBMISSION_ECM_DOCS_PORTAL","group":"portal","role":"write","note":"ECM document submission.","signed":true,"expect":[],"sourcePreference":"R13 contract metadata + R12 live binding","probe":{"body":{"action":"submit","name":"submit","userEmail":"dgo.probe@example.invalid","operation":"create","tag":"__DGO_PROBE__"},"expect":[]},"governance":{"mutates":true,"requiresDryRun":true,"redactInReports":true,"fullUrlIsBearerCredential":true}},{"key":"UPLOAD_ECM_DOCS_PORTAL","workflowId":"f771d509dfb648b0b21eeec0a36614fa","url":"https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f771d509dfb648b0b21eeec0a36614fa/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»","flow":"UPLOAD_ECM_DOCS_PORTAL","group":"portal","role":"write","note":"ECM document upload.","signed":true,"expect":[],"sourcePreference":"R13 contract metadata + R12 live binding","probe":{"body":{"action":"upload","name":"upload","userEmail":"dgo.probe@example.invalid","operation":"create","tag":"__DGO_PROBE__"},"expect":[]},"governance":{"mutates":true,"requiresDryRun":true,"redactInReports":true,"fullUrlIsBearerCredential":true}},{"key":"INTAKE_SUBMISSION","workflowId":"1ff7714c11a74fa4a876f8f6a79b64d2","url":"https://defaultca6a4b3f912349bcbcb927085ebbf1.a1.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1ff7714c11a74fa4a876f8f6a79b64d2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=«redacted»","flow":"DOCUMENT SUBMISSION PORTAL","group":"portal","role":"write","note":"Public document submission portal.","signed":true,"expect":[],"sourcePreference":"R13 contract metadata + R12 live binding","probe":{"body":{"action":"submit","name":"submit","userEmail":"dgo.probe@example.invalid","operation":"create","tag":"__DGO_PROBE__"},"expect":[]},"governance":{"mutates":true,"requiresDryRun":true,"redactInReports":true,"fullUrlIsBearerCredential":true}}],"routes":[{"key":"SUBMISSION_ECM_DOCS_PORTAL","action":"submit","write":true,"flow":"SUBMISSION_ECM_DOCS_PORTAL"},{"key":"UPLOAD_ECM_DOCS_PORTAL","action":"upload","write":true,"flow":"UPLOAD_ECM_DOCS_PORTAL"},{"key":"INTAKE_SUBMISSION","action":"submit","write":true,"flow":"DOCUMENT SUBMISSION PORTAL"}],"rejected":[]};
+let CFG=null;
+let STATE={tab:'overview', q:'', showUrls:false, log:[], selected:null, estateOverride:{}};
+const tabs=['overview','check','registry','routes','estate','console','audit','monitor','export','environment','report'];
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function red(u){return (u||'').replace(/([?&]sig=)[^&]+/,'$1«redacted»')}
+function esc(s){return String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function h(tag,attrs='',body=''){return `<${tag} ${attrs}>${body}</${tag}>`}
+function activeKeys(){let q=STATE.q.toLowerCase();return REG.keys.filter(k=>!q||JSON.stringify(k).toLowerCase().includes(q));}
+function cfgLoadedCount(){return CFG?Object.keys(CFG).length:0}
+function effectiveUrl(k){if(STATE.estateOverride[k.workflowId])return STATE.estateOverride[k.workflowId]; if(CFG&&CFG[k.key]&&CFG[k.key].url)return CFG[k.key].url; return k.url;}
+function hasLiveUrl(k){const u=effectiveUrl(k); return !!u && !u.includes('«redacted»') && /[?&]sig=/.test(u)}
+function urlDisplay(k){let u=effectiveUrl(k); return STATE.showUrls?u:red(u)}
+function ensureCFG(){ if(!CFG)CFG={}; return CFG; }
+function clearCFG(){ CFG=null; render(); }
+
+// Three ways to feed the tool a live URL, all writing into the same in-memory
+// CFG map so they compose (load a file, then top up or override single keys):
+//  1. loadLocalRegistry  — a JSON file, many keys at once
+//  2. applyBulkPaste     — pasted "KEY=URL" lines, many keys at once
+//  3. setLiveUrl         — one key, one URL, typed straight into a Registry row
+// None of these ever write back into this HTML file or leave the browser tab.
+
+function loadLocalRegistry(file){
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      const list=Array.isArray(data.keys)?data.keys:Array.isArray(data)?data:null;
+      if(!list)throw new Error('expected {"keys":[...]} or an array of {key,url,signed}');
+      const c=ensureCFG();
+      let n=0;
+      list.forEach(k=>{ if(k&&k.key&&k.url){ c[k.key]={url:k.url, signed:!!k.signed}; n++; } });
+      if(!n) throw new Error('no entries with both key and url were found');
+      render();
+    }catch(e){ alert('Could not read that file as a registry: '+e.message); }
+  };
+  reader.readAsText(file);
+}
+function applyBulkPaste(){
+  const el=document.getElementById('bulkPaste');
+  const text=el.value;
+  const c=ensureCFG();
+  const known=new Set(REG.keys.map(k=>k.key));
+  const unknown=[];
+  let n=0;
+  text.split('\n').forEach(line=>{
+    line=line.trim();
+    if(!line||line.startsWith('#'))return;
+    const eq=line.indexOf('='), comma=line.indexOf(',');
+    const sep=eq<0?comma:(comma<0?eq:Math.min(eq,comma));
+    if(sep<0)return;
+    const key=line.slice(0,sep).trim();
+    const url=line.slice(sep+1).trim();
+    if(!key||!url)return;
+    if(!known.has(key)){ unknown.push(key); return; }
+    c[key]={url, signed:true};
+    n++;
+  });
+  el.value='';
+  render();
+  alert(`${n} URL(s) applied.`+(unknown.length?` Skipped ${unknown.length} unrecognised key(s): ${unknown.slice(0,5).join(', ')}${unknown.length>5?'…':''}`:''));
+}
+function setLiveUrl(key, url){
+  url=(url||'').trim();
+  if(!url)return;
+  ensureCFG()[key]={url, signed:true};
+  render();
+}
+function setTab(t){STATE.tab=t; render();}
+function renderTabs(){document.getElementById('tabs').innerHTML=tabs.map(t=>`<button onclick="setTab('${t}')" aria-selected="${STATE.tab===t}">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}
+
+async function probeOnce(k, opts={}){
+  const timeoutMs=opts.timeoutMs||20000;
+  const started=performance.now();
+  const at=new Date().toISOString();
+  const source=opts.source||'manual';
+  if(!hasLiveUrl(k)) return {key:k.key, at, source, status:0, ok:false, ms:0, verdict:'no live url', error:'No live credential loaded for this key. Load a local registry on the Overview tab, or repoint it on Estate.'};
+  const url=effectiveUrl(k);
+  const p=k.probe||{};
+  const body=p.body||{action:k.key.toLowerCase(), name:k.key.toLowerCase(), dryRun:true, validateOnly:true};
+  const ctrl=new AbortController();
+  if(opts.track) opts.track(ctrl);
+  const tm=setTimeout(()=>ctrl.abort(), timeoutMs);
+  let rec={key:k.key, at, source};
+  try{
+    const res=await fetch(url,{method:p.method||'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body), signal:ctrl.signal});
+    clearTimeout(tm);
+    const txt=await res.text();
+    let data=null; try{data=JSON.parse(txt)}catch(err){}
+    const expect=k.expect||[];
+    const present=data?expect.filter(e=>JSON.stringify(data).includes(e)):[];
+    rec=Object.assign(rec,{status:res.status, ok:res.ok, ms:Math.round(performance.now()-started),
+      verdict: res.ok ? (expect.length&&present.length<expect.length?'thin body':'answered') : (res.status===401||res.status===403?'signature':(res.status===429?'throttled':'refused')),
+      response: data||txt.slice(0,2000)});
+  }catch(e){
+    clearTimeout(tm);
+    rec=Object.assign(rec,{status:0, ok:false, ms:Math.round(performance.now()-started), verdict: e.name==='AbortError' ? (opts.isCancelled&&opts.isCancelled()?'cancelled':'timed out') : 'not reached', error:e.message});
+  }
+  return rec;
+}
+async function probe(k, source){
+  const key=typeof k==='string'?REG.keys.find(x=>x.key===k):k;
+  const rec=await probeOnce(key,{timeoutMs:20000, source:source||'manual'});
+  STATE.log.unshift(rec); render(); return rec;
+}
+
+// Derived live from REG.keys/REG.routes/REG.rejected on every call, so adding,
+// removing or editing an endpoint can never leave a stale count anywhere —
+// there is no separate summary to remember to update.
+function computeAudit(){
+  const keys=REG.keys;
+  const byUrl={};
+  keys.forEach(k=>{ if(k.url) (byUrl[k.url]=byUrl[k.url]||[]).push(k.key); });
+  const duplicateUrls={};
+  Object.entries(byUrl).forEach(([u,ks])=>{ if(ks.length>1) duplicateUrls[u]=ks; });
+  return {
+    keyCount: keys.length,
+    routeCount: REG.routes.length,
+    readKeyCount: keys.filter(k=>k.role==='read').length,
+    writeKeyCount: keys.filter(k=>k.role==='write').length,
+    unsignedKeys: keys.filter(k=>!k.signed).map(k=>k.key),
+    missingUrlKeys: keys.filter(k=>!k.url).map(k=>k.key),
+    duplicateUrls,
+    groups: Array.from(new Set(keys.map(k=>k.group).filter(Boolean))).sort(),
+    activeSignedKeys: keys.filter(k=>k.signed && k.url).length,
+    rejectedCount: (REG.rejected||[]).length,
+  };
+}
+
+function overview(){
+  const a=computeAudit();
+  const liveN=REG.keys.filter(hasLiveUrl).length;
+  return `<div class=grid>
+    <div class=card><div class=metric><b>${a.keyCount}</b><span>Endpoint keys</span></div></div>
+    <div class=card><div class=metric><b>${a.routeCount}</b><span>Declared routes</span></div></div>
+    <div class=card><div class=metric><b>${a.activeSignedKeys}</b><span>Active signed bindings (source)</span></div></div>
+    <div class=card><div class=metric><b>${a.rejectedCount}</b><span>Rejected URL records</span></div></div>
+  </div>
+  <div class=card><h2>Runtime summary</h2><p>Merges the R13 contract-first registry (ECM2/ECM3), the R12 enterprise workbench's operational capability, and this build's own Check, Estate and audit additions into one browser runtime. This page embeds the <b>redacted</b> registry only — no live signature ships in this file's source.</p>
+  <p><span class=pill>${esc(REG.release)}</span> <span class=pill>built ${esc(REG.builtAt)}</span> <span class="pill ${liveN?'live':'redacted'}">${liveN} / ${a.keyCount} keys have a live URL loaded this session</span></p></div>
+  <div class="card"><h2>Feed the tool live URLs</h2>
+  <p class=muted>Three ways in, all local to this browser tab only — nothing here is uploaded or written back into this file, and it's cleared the moment you refresh.</p>
+  <div class="row" style="align-items:center">
+    <span class="pill ${cfgLoadedCount()?'live':'redacted'}">${cfgLoadedCount()?cfgLoadedCount()+' key(s) live this session':'no live URLs yet — probes will report ‘no live url’'}</span>
+    ${cfgLoadedCount()?'<button onclick="clearCFG()">Clear live credentials</button>':''}
+  </div>
+  <h3 style="margin:16px 0 6px;font-size:13px">1 — Upload a file (bulk)</h3>
+  <p class=muted style="margin:0 0 8px">A JSON file shaped <code>{"keys":[{"key","url","signed"}, ...]}</code> — e.g. your own <code>unified-registry.full.json</code>.</p>
+  <input type=file accept="application/json" onchange="loadLocalRegistry(this.files[0]); this.value=''">
+  <h3 style="margin:18px 0 6px;font-size:13px">2 — Paste many at once (bulk)</h3>
+  <p class=muted style="margin:0 0 8px">One <code>KEY=URL</code> (or <code>KEY,URL</code>) per line — the same format as <code>Export → .env</code>. Unrecognised keys are skipped and listed, not silently dropped.</p>
+  <textarea id=bulkPaste placeholder="FETCH_ALL=https://...&sig=...&#10;OTP_VERIFY=https://...&sig=..." style="min-height:90px"></textarea>
+  <div class=row style="margin-top:8px"><button class=primary onclick="applyBulkPaste()">Apply pasted URLs</button></div>
+  <h3 style="margin:18px 0 6px;font-size:13px">3 — Set one key at a time</h3>
+  <p class=muted style="margin:0">Paste a single URL directly into any row's URL field on the <a href="#" onclick="setTab('registry');return false">Registry</a> tab and click Set live — no file or bulk paste needed for a one-off.</p>
+  </div>`;
+}
+
+let CHK={running:false, controllers:[], total:0, done:0, ok:0, fail:0, cancelled:false};
+async function startCheck(){
+  if(CHK.running)return;
+  const scope=document.getElementById('chkScope').value;
+  const conc=Math.max(1,Math.min(16,+document.getElementById('chkConc').value||4));
+  const timeoutMs=Math.max(500,+document.getElementById('chkTimeout').value||20000);
+  const retries=Math.max(0,Math.min(5,+document.getElementById('chkRetries').value||0));
+  const pace=Math.max(0,+document.getElementById('chkPace').value||0);
+  const list=REG.keys.filter(k=>k.url&&(scope==='all'||k.role===scope||(scope==='signed'&&k.signed)));
+  CHK={running:true, controllers:[], total:list.length, done:0, ok:0, fail:0, cancelled:false};
+  render();
+  let idx=0;
+  const worker=async()=>{
+    while(CHK.running && idx<list.length){
+      const k=list[idx++];
+      let attempt=0, rec;
+      while(true){
+        rec=await probeOnce(k,{timeoutMs, source:'check', track:c=>CHK.controllers.push(c), isCancelled:()=>CHK.cancelled});
+        if(rec.ok||rec.verdict==='no live url'||CHK.cancelled||attempt>=retries)break;
+        attempt++;
+        await sleep(Math.min(8000, 400*Math.pow(2,attempt)));
+      }
+      STATE.log.unshift(rec);
+      CHK.done++; if(rec.ok)CHK.ok++; else CHK.fail++;
+      if(pace && CHK.running) await sleep(pace);
+      render();
+    }
+  };
+  await Promise.all(Array.from({length:conc}, worker));
+  CHK.running=false; render();
+}
+function cancelCheck(){ CHK.cancelled=true; CHK.running=false; CHK.controllers.forEach(c=>{try{c.abort()}catch(e){}}); render(); }
+function check(){
+  const pct=CHK.total?Math.round(100*CHK.done/CHK.total):0;
+  return `<div class=card><div class=row>
+    <label>Scope <select id=chkScope ${CHK.running?'disabled':''}><option value=read>read</option><option value=write>write</option><option value=signed>signed</option><option value=all>all</option></select></label>
+    <label>Concurrency <input id=chkConc type=number min=1 max=16 value=4 style="width:64px" ${CHK.running?'disabled':''}></label>
+    <label>Timeout ms <input id=chkTimeout type=number min=500 value=20000 style="width:90px" ${CHK.running?'disabled':''}></label>
+    <label>Retries <input id=chkRetries type=number min=0 max=5 value=1 style="width:56px" ${CHK.running?'disabled':''}></label>
+    <label>Pacing ms <input id=chkPace type=number min=0 value=0 style="width:70px" ${CHK.running?'disabled':''}></label>
+    <button class=primary onclick="startCheck()" ${CHK.running?'disabled':''}>Run sweep</button>
+    <button class=danger onclick="cancelCheck()" ${CHK.running?'':'disabled'}>Cancel</button>
+  </div>
+  <p class=muted>Adjustable-parallelism sweep across the selected scope, with per-request timeout, retry with exponential backoff, and inter-call pacing. Cancel aborts every in-flight request immediately. Keys with no live URL loaded report ‘no live url’ rather than being skipped silently.</p>
+  ${CHK.total?`<div class=row style="align-items:center"><div class=bar style="flex:1"><i style="width:${pct}%"></i></div><span class=muted>${CHK.done}/${CHK.total} · <span class=ok>${CHK.ok} ok</span> · <span class=bad>${CHK.fail} failed</span> · ${pct}%</span></div>`:''}
+  </div><div class=card>${logTable()}</div>`;
+}
+
+function registry(){
+  let rows=activeKeys().map(k=>{
+    const urlCell=hasLiveUrl(k)
+      ? `<code>${esc(urlDisplay(k))}</code>`
+      : `<code>${esc(urlDisplay(k))}</code><div class=row style="margin-top:6px"><input placeholder="paste this key's live URL" id="seturl-${esc(k.key)}" style="min-width:200px;font-size:12px"><button onclick="setLiveUrl('${k.key}', document.getElementById('seturl-${esc(k.key)}').value)">Set live</button></div>`;
+    return `<tr><td><b>${esc(k.key)}</b><br><span class=muted>${esc(k.note||'')}</span></td><td>${esc(k.group)}/${esc(k.role)}</td><td>${esc(k.flow)}</td><td><code>${esc(k.workflowId)}</code></td><td>${k.signed?'<span class=ok>signed</span>':'<span class=bad>unsigned</span>'} ${hasLiveUrl(k)?'<span class="pill live">live</span>':'<span class="pill redacted">redacted</span>'}</td><td>${urlCell}</td><td><button onclick="STATE.selected='${k.key}';setTab('console')">console</button> <button onclick="probe('${k.key}','registry')">probe</button></td></tr>`;
+  }).join('');
+  return `<div class=card><div class=row><input placeholder="search key, flow, workflow" value="${esc(STATE.q)}" oninput="STATE.q=this.value;render()"><label><input type=checkbox ${STATE.showUrls?'checked':''} onchange="STATE.showUrls=this.checked;render()"> show full URLs</label></div></div><div class=card><table><thead><tr><th>Key</th><th>Group/Role</th><th>Flow</th><th>Workflow</th><th>Signature</th><th>URL</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function routes(){
+  let rows=REG.routes.filter(r=>!STATE.q||JSON.stringify(r).toLowerCase().includes(STATE.q.toLowerCase())).map(r=>`<tr><td><b>${esc(r.key)}</b></td><td><code>${esc(r.action)}</code></td><td>${r.write?'<span class=warn>write</span>':'<span class=ok>read</span>'}</td><td>${esc(r.flow)}</td><td><button onclick="routeProbe('${r.key}','${r.action}',${r.write?'true':'false'})">probe route</button></td></tr>`).join('');
+  return `<div class=card><p class=warn>Green means accepted, not necessarily implemented. Route probes send both action and name.</p><input placeholder="filter routes" value="${esc(STATE.q)}" oninput="STATE.q=this.value;render()"></div><div class=card><table><thead><tr><th>Key</th><th>Discriminator</th><th>Mode</th><th>Flow</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function routeProbe(key,action,write){
+  let k=REG.keys.find(x=>x.key===key); if(!k)return;
+  let old=k.probe;
+  k.probe={method:'POST', body:{action,name:action,runId:'CEMS-'+Date.now(),dryRun:true,validateOnly:true}, expect:k.expect||[]};
+  probe(k,'routes').then(()=>{k.probe=old});
+}
+
+function flowGroups(){
+  const map={};
+  REG.keys.forEach(k=>{ (map[k.workflowId]=map[k.workflowId]||{workflowId:k.workflowId, flow:k.flow, keys:[]}).keys.push(k.key); });
+  return Object.values(map);
+}
+function estate(){
+  const groups=flowGroups().filter(g=>!STATE.q||JSON.stringify(g).toLowerCase().includes(STATE.q.toLowerCase()));
+  const options=REG.keys.map(k=>`<option value="${esc(k.key)}">${esc(k.key)} — ${esc(k.flow)}</option>`).join('');
+  const rows=groups.map(g=>{
+    const sampleKey=REG.keys.find(k=>k.key===g.keys[0]);
+    const overridden=!!STATE.estateOverride[g.workflowId];
+    const shown=esc(urlDisplay(sampleKey));
+    return `<tr><td><b>${esc(g.flow)}</b><br><span class=muted>${g.keys.map(esc).join(', ')}</span></td><td><code>${esc(g.workflowId)}</code></td><td><code style="font-size:11px">${shown}</code>${overridden?' <span class="pill live">repointed</span>':''}</td><td>
+      <div class=row><select id="repoint-${g.workflowId}" style="max-width:220px"><option value="">— pick a key/flow to repoint to —</option>${options}</select>
+      <button onclick="applyRepoint('${g.workflowId}')">Repoint</button>
+      <input placeholder="or paste a URL" id="repointUrl-${g.workflowId}" style="min-width:180px">
+      <button onclick="probe(REG.keys.find(k=>k.key==='${g.keys[0]}'),'estate')">Probe</button>
+      ${overridden?`<button onclick="undoRepoint('${g.workflowId}')">Undo</button>`:''}</div>
+    </td></tr>`;
+  }).join('');
+  return `<div class=card><p class=muted>In-page only: aim a flow's key(s) at a different URL and probe it before anyone commits a values line to config. Nothing here is saved to disk or sent anywhere; refreshing the page discards it.</p><input placeholder="filter flows" value="${esc(STATE.q)}" oninput="STATE.q=this.value;render()"></div><div class=card><table><thead><tr><th>Flow</th><th>Workflow</th><th>Current URL</th><th>Repoint</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function applyRepoint(workflowId){
+  const selEl=document.getElementById('repoint-'+workflowId);
+  const urlEl=document.getElementById('repointUrl-'+workflowId);
+  const sel=selEl?selEl.value:'';
+  const pasted=urlEl?urlEl.value.trim():'';
+  let url=pasted;
+  if(!url && sel){ const selK=REG.keys.find(k=>k.key===sel); url=(CFG&&CFG[sel]&&CFG[sel].url) || (selK&&selK.url); }
+  if(!url)return;
+  STATE.estateOverride[workflowId]=url;
+  render();
+}
+function undoRepoint(workflowId){ delete STATE.estateOverride[workflowId]; render(); }
+
+const CONSOLE_TEMPLATES={
+  'This key’s probe body': (k)=>(k.probe&&k.probe.body)||{action:k.key.toLowerCase(), name:k.key.toLowerCase(), dryRun:true, validateOnly:true},
+  'Dry-run ping': (k)=>({action:k.key.toLowerCase(), name:k.key.toLowerCase(), dryRun:true, validateOnly:true}),
+  'Validate only': (k)=>({action:k.key.toLowerCase(), name:k.key.toLowerCase(), validateOnly:true}),
+  'Minimal action': (k)=>({action:k.key.toLowerCase()})
+};
+function consoleView(){
+  let keysOpt=REG.keys.map(k=>`<option ${STATE.selected===k.key?'selected':''}>${esc(k.key)}</option>`).join('');
+  let k=REG.keys.find(x=>x.key===(STATE.selected||REG.keys[0].key));
+  let body=JSON.stringify(CONSOLE_TEMPLATES["This key’s probe body"](k),null,2);
+  let tmplOpts=Object.keys(CONSOLE_TEMPLATES).map(t=>`<option>${esc(t)}</option>`).join('');
+  return `<div class=card>
+    ${hasLiveUrl(k)?'':'<div class=banner>No live URL loaded for this key — Send will report ‘no live url’. Load a local registry on Overview, or repoint it on Estate, to probe for real.</div>'}
+    <div class=row>
+      <select onchange="STATE.selected=this.value;render()">${keysOpt}</select>
+      <select id=conTemplate onchange="document.getElementById('conBody').value=JSON.stringify(CONSOLE_TEMPLATES[this.value](REG.keys.find(x=>x.key===(STATE.selected||REG.keys[0].key))),null,2)">${tmplOpts}</select>
+      <button class=primary onclick="sendConsole()">Send</button>
+      <button onclick="copyCurl()">Copy curl</button>
+      <button onclick="copyFetch()">Copy fetch</button>
+      <button onclick="copyPowerShell()">Copy PowerShell</button>
+    </div>
+    <p class=muted>${esc(k.flow)} · ${esc(urlDisplay(k))}</p>
+    <textarea id=conBody>${esc(body)}</textarea>
+  </div>
+  <div class=card><h2>Session transcript</h2>${logTable()}</div>`;
+}
+async function sendConsole(){
+  let k=REG.keys.find(x=>x.key===(STATE.selected||REG.keys[0].key));
+  let parsed;
+  try{ parsed=JSON.parse(document.getElementById('conBody').value); }catch(e){ alert('Invalid JSON: '+e.message); return; }
+  let old=k.probe;
+  k.probe={method:'POST', body:parsed, expect:k.expect||[]};
+  await probe(k,'console');
+  k.probe=old;
+}
+function copyCurl(){
+  let k=REG.keys.find(x=>x.key===(STATE.selected||REG.keys[0].key));
+  let body=document.getElementById('conBody').value;
+  let txt=`curl -sS -X POST '${effectiveUrl(k)}' -H 'content-type: application/json' -d '${body.replaceAll("'","'\\''")}'`;
+  navigator.clipboard && navigator.clipboard.writeText(txt);
+}
+function copyFetch(){
+  let k=REG.keys.find(x=>x.key===(STATE.selected||REG.keys[0].key));
+  let body=document.getElementById('conBody').value;
+  let txt=`fetch(${JSON.stringify(effectiveUrl(k))}, {method:'POST', headers:{'content-type':'application/json'}, body: ${JSON.stringify(body)}}).then(r=>r.json()).then(console.log)`;
+  navigator.clipboard && navigator.clipboard.writeText(txt);
+}
+function copyPowerShell(){
+  let k=REG.keys.find(x=>x.key===(STATE.selected||REG.keys[0].key));
+  let body=document.getElementById('conBody').value;
+  let txt=`Invoke-RestMethod -Method Post -Uri '${effectiveUrl(k)}' -ContentType 'application/json' -Body '${body.replaceAll("'","''")}'`;
+  navigator.clipboard && navigator.clipboard.writeText(txt);
+}
+
+function redactAudit(){ return computeAudit(); }
+function audit(){
+  let a=computeAudit();
+  let rej=(REG.rejected||[]).map(r=>`<tr><td>${esc(r.flow)}</td><td><code>${esc(r.workflowId)}</code></td><td>${esc(r.reason)}</td></tr>`).join('');
+  return `<div class=grid><div class=card><b>${a.unsignedKeys.length}</b><br>Unsigned keys</div><div class=card><b>${a.missingUrlKeys.length}</b><br>Missing URL keys</div><div class=card><b>${Object.keys(a.duplicateUrls).length}</b><br>Duplicate URL groups</div><div class=card><b>${a.groups.length}</b><br>Groups</div></div>
+  <div class=card><h2>Unsigned keys</h2><p>${a.unsignedKeys.map(esc).join(', ')||'none'} — these cannot authenticate until Power Automate issues a signature; see Estate to repoint one for testing.</p></div>
+  ${rej?`<div class=card><h2>Rejected / damaged source URLs (retained for audit)</h2><table><thead><tr><th>Flow</th><th>Workflow</th><th>Reason refused</th></tr></thead><tbody>${rej}</tbody></table></div>`:''}
+  <div class=card><h2>Audit JSON</h2><pre>${esc(JSON.stringify(redactAudit(),null,2))}</pre></div>`;
+}
+
+function sparkSvg(values){
+  if(!values.length)return '';
+  const w=90,h=22,max=Math.max(...values,1),min=Math.min(...values,0);
+  const range=Math.max(1,max-min);
+  const pts=values.map((v,i)=>`${(i/((values.length-1)||1))*w},${h-((v-min)/range)*h}`).join(' ');
+  return `<svg class=spark width=${w} height=${h} viewBox="0 0 ${w} ${h}"><polyline fill=none stroke="var(--accent)" stroke-width="1.5" points="${pts}"/></svg>`;
+}
+function monitorStats(){
+  const byKey={};
+  STATE.log.filter(l=>l.source==='monitor').forEach(l=>{ (byKey[l.key]=byKey[l.key]||[]).push(l); });
+  return Object.entries(byKey).map(([key,recs])=>{
+    const ordered=recs.slice().reverse();
+    const okN=recs.filter(r=>r.ok).length;
+    const uptime=recs.length?Math.round(100*okN/recs.length):0;
+    const last=ordered.slice(-12).map(r=>r.ms||0);
+    return {key, n:recs.length, uptime, avgMs: recs.length?Math.round(recs.reduce((s,r)=>s+(r.ms||0),0)/recs.length):0, spark:sparkSvg(last)};
+  });
+}
+let monTimer=null, monRounds=0;
+function monitor(){
+  const stats=monitorStats();
+  const rows=stats.map(s=>`<tr><td>${esc(s.key)}</td><td>${s.n}</td><td class="${s.uptime>=99?'ok':s.uptime>=80?'warn':'bad'}">${s.uptime}%</td><td>${s.avgMs} ms</td><td>${s.spark}</td></tr>`).join('');
+  return `<div class=card><div class=row>
+    <label>Interval seconds <input id=monInt type=number value=60 min=15 style="width:70px"></label>
+    <label>Scope <select id=monScope><option value=read>read</option><option value=signed>signed</option><option value=all>all</option></select></label>
+    <button class=primary onclick="startMonitor()" ${monTimer?'disabled':''}>Start</button>
+    <button onclick="stopMonitor()" ${monTimer?'':'disabled'}>Stop</button>
+    <span class=muted>${monTimer?('running · round '+monRounds):'stopped'}</span>
+  </div><p class=muted>Read-only monitoring repeatedly probes the selected scope and appends to the transcript; catches expiry and drift a single run cannot see.</p></div>
+  ${rows?`<div class=card><h2>Per-key uptime (this session)</h2><table><thead><tr><th>Key</th><th>Samples</th><th>Uptime</th><th>Avg latency</th><th>Trend</th></tr></thead><tbody>${rows}</tbody></table></div>`:''}
+  <div class=card>${logTable()}</div>`;
+}
+function startMonitor(){
+  stopMonitor();
+  const sec=+document.getElementById('monInt').value||60;
+  const scope=document.getElementById('monScope').value;
+  const run=async()=>{
+    const list=REG.keys.filter(k=>k.url&&(scope==='all'||k.role===scope||(scope==='signed'&&k.signed))).slice(0,20);
+    for(const k of list){ const rec=await probeOnce(k,{timeoutMs:20000, source:'monitor'}); STATE.log.unshift(rec); }
+    monRounds++; render();
+  };
+  run();
+  monTimer=setInterval(run, sec*1000);
+  render();
+}
+function stopMonitor(){ if(monTimer)clearInterval(monTimer); monTimer=null; render(); }
+
+function redactAll(){ return JSON.parse(JSON.stringify(REG).replace(/([?&]sig=)[^&"\]]+/g,'$1«redacted»')); }
+function envExport(){ return REG.keys.map(k=>`${k.key}=${effectiveUrl(k)}`).join('\n')+'\n'; }
+function curlBookExport(){ return REG.keys.map(k=>`### ${k.key}\n\n\`\`\`bash\ncurl -sS -X POST '${effectiveUrl(k)}' -H 'content-type: application/json' -d '${JSON.stringify((k.probe&&k.probe.body)||{action:k.key.toLowerCase()})}'\n\`\`\`\n`).join('\n'); }
+function download(n,t){ let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'})); a.download=n; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }
+function exportView(){
+  const liveN=cfgLoadedCount();
+  return `<div class=card><h2>In-browser exports</h2><div class=row>
+    <button onclick="download('cems-redacted-registry.json', JSON.stringify(redactAll(),null,2))">Download redacted registry</button>
+    <button onclick="download('cems-session.json', JSON.stringify({at:new Date().toISOString(),log:STATE.log},null,2))">Download session JSON</button>
+    <button onclick="download('cems-session.md', mdReport())">Download session Markdown</button>
+    <button ${liveN?'':'disabled'} onclick="download('cems-local.env', envExport())">Download .env (local credentials)</button>
+    <button ${liveN?'':'disabled'} onclick="download('cems-curl-book.md', curlBookExport())">Download curl book (local credentials)</button>
+  </div><p class=muted>${liveN?'The .env and curl-book downloads use the registry you loaded on Overview; they are generated entirely in this tab and never leave it.':'Load a local registry on Overview to enable the .env and curl-book downloads.'}</p></div>
+  <div class=card><pre>${esc(JSON.stringify(redactAll(),null,2).slice(0,12000))}</pre></div>`;
+}
+
+function environment(){
+  return `<div class=card><pre>${esc(JSON.stringify({origin:location.origin, protocol:location.protocol, secureContext:isSecureContext, online:navigator.onLine, fetch:!!window.fetch, clipboard:!!navigator.clipboard, userAgent:navigator.userAgent, keys:REG.keys.length, routes:REG.routes.length, localRegistryLoaded:cfgLoadedCount(), estateOverrides:Object.keys(STATE.estateOverride).length},null,2))}</pre></div>`;
+}
+function mdReport(){
+  return '# CEMS session\n\n|time|key|src|verdict|status|ms|\n|-|-|-|-|-|-|\n'+STATE.log.map(l=>`|${l.at}|${l.key}|${l.source||''}|${l.verdict}|${l.status}|${l.ms}|`).join('\n');
+}
+function report(){
+  return `<div class=card><button onclick="download('cems-session.json', JSON.stringify({at:new Date().toISOString(),log:STATE.log},null,2))">Download JSON</button> <button onclick="download('cems-session.md', mdReport())">Download Markdown</button><button onclick="STATE.log=[];render()">Clear</button></div><div class=card>${logTable()}</div>`;
+}
+function logTable(){
+  return `<table><thead><tr><th>Time</th><th>Key</th><th>Src</th><th>Verdict</th><th>Status</th><th>ms</th><th>Detail</th></tr></thead><tbody>${STATE.log.slice(0,300).map(l=>`<tr><td>${esc(l.at)}</td><td>${esc(l.key)}</td><td class=muted>${esc(l.source||'')}</td><td class="${l.ok?'ok':(l.verdict==='no live url'?'warn':'bad')}">${esc(l.verdict)}</td><td>${esc(l.status)}</td><td>${esc(l.ms)}</td><td><pre>${esc(JSON.stringify(l.response||l.error||'',null,2))}</pre></td></tr>`).join('')}</tbody></table>`;
+}
+function render(){
+  renderTabs();
+  let map={overview, check, registry, routes, estate, console:consoleView, audit, monitor, export:exportView, environment, report};
+  document.getElementById('view').innerHTML=map[STATE.tab]();
+}
+render();
+</script></body></html>
