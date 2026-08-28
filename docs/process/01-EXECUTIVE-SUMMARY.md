@@ -35,8 +35,8 @@ carries the artifact it was read from.
 
 ## The four findings that matter most
 
-1. **No automated process states what it is for.** 0 workflows were walked action by
-   action, so every step, branch and connector call is confirmed. Not one export states a business
+1. **No automated process states what it is for.** 0 workflows carrying 0
+   actions between them were walked action by action, so every step, branch and connector call is confirmed. Not one export states a business
    purpose, an owner or a criticality. Until someone supplies those three facts per workflow, no
    automated process in this estate can be documented to a confirmed standard, however completely
    its mechanics are known.
@@ -46,10 +46,12 @@ carries the artifact it was read from.
    those five edges are recorded in their own source as readings rather than decisions. A citizen and
    an officer looking at the same matter are not guaranteed to be looking at the same thing.
 
-3. **Routing is provisional and its clocks have no consequence.** The matrix that decides which
-   directorate answers a citizen marks itself provisional in its own source. Its acknowledgement and
-   completion clocks are declared; nothing in the supplied inputs states what happens when one expires.
-   A clock with no consequence is a measurement, not a control.
+3. **The routing matrix is a fallback, and its clocks have no consequence.** The 6 rows that decide which directorate answers a citizen live under a key
+   named `fallbackMatrix`, beside a declared list of the column names the live matrix may arrive
+   under from reference data. That reference data is not among the supplied inputs, so what the
+   estate routes on in the ordinary case is not documented anywhere here. Its acknowledgement and completion
+   clocks are declared; nothing in the supplied inputs states what happens when one expires. A clock
+   with no consequence is a measurement, not a control.
 
 4. **Authorisation is evidenced only on the client.** Every route is gated on a role held in the
    browser. No server-side authorisation of the caller is evidenced. What is documented here as the

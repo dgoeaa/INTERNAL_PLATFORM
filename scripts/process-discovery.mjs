@@ -631,7 +631,15 @@ const statIdByName = {};
       }));
     }
     const mapBlk = (t.match(/InternalStatusToGoverned\s*=\s*Object\.freeze\(\{([\s\S]*?)\}\)/) || [])[1] || '';
-    const flagged = /Accepted\s+→\s+review|Archived\s+→\s+approved/.test(t);
+    /* The source flags its own disputed edges in the comment above the map, and states the
+       alternative reading for each. Both readings belong in the record: the standard forbids
+       silently choosing one, and the alternative is evidence, not speculation. */
+    const disputeBlk = (t.match(/Two of these edges are readings[\s\S]*?\*\//) || [])[0] || '';
+    const flagged = /→\s+\w+/.test(disputeBlk);
+    const alternatives = {};
+    for (const m of disputeBlk.matchAll(/^\s*\*\s+(\w+) → (\w+)\s+([\s\S]*?)(?=\n\s*\*\s+\w+ → |\n\s*\*\/)/gm)) {
+      alternatives[m[1]] = m[3].replace(/\n\s*\*\s+/g, ' ').replace(/\s+/g, ' ').trim();
+    }
     for (const m of mapBlk.matchAll(/(\w+):\s*'([^']+)'/g)) {
       const disputed = ['Accepted', 'Archived'].includes(m[1]) && flagged;
       out.transitions.push(compact({
@@ -646,6 +654,16 @@ const statIdByName = {};
         evidenceNote: disputed
           ? 'The mapping is declared, and its own source records this particular edge as a reading rather than a fact, flagged for agency confirmation.'
           : 'Declared edge of the internal-to-public status map.',
+        conflictingReading: disputed ? alternatives[m[1]] : undefined,
+        conflictAuthorityAssessment: disputed
+          ? `Both readings come from the same artifact, so neither is more current than the other and neither can settle the question. The artifact is authoritative for what the software DOES — it is the map the renderer calls — and is explicitly not authoritative for what the status MEANS to the agency, which it defers.`
+          : undefined,
+        conflictImplementationRelevance: disputed
+          ? `Implemented: the declared edge is what governedStatusLabel() returns today. A citizen is already being shown '${m[2]}' for a record the platform holds as '${m[1]}'.`
+          : undefined,
+        conflictValidationRequired: disputed
+          ? 'The registry owner states which reading is intended. If the alternative is intended, the map changes and, for the archived case, a distinct public state is needed.'
+          : undefined,
         validationStatus: disputed ? VALIDATION.OWNER : VALIDATION.NONE,
         source: [s],
       }));
@@ -655,7 +673,7 @@ const statIdByName = {};
           process: 'Public status presentation',
           subject: `Internal status '${m[1]}' maps to public '${m[2]}' on a reading, not a decision`,
           missing: 'An agency decision on what this internal status means to a citizen.',
-          available: 'The mapping is declared, and its own source records the ambiguity and the alternative reading.',
+          available: `The mapping is declared, and its own source records the ambiguity and the alternative reading: ${alternatives[m[1]] || 'stated in the source comment above the map'}`,
           evidence: EV.CONFLICTING,
           reason: 'A citizen reading the public label and an officer reading the internal one must be looking at the same thing.',
           impact: 'A citizen may be told a matter is at a stage the agency does not consider it to be at.',

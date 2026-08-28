@@ -18,7 +18,7 @@ show is needed.
 | 2 | State a server-side authorisation posture for every endpoint: trigger authentication type and the role check applied before the work is done. | GAP-012 | Security or access authority | Each endpoint names its authentication type, and a call bypassing the client is refused. |
 | 3 | Give every workflow an owner, a one-sentence purpose and a criticality grade. | — | Technical owner | No automated process in document 7 has a blank owner, purpose or criticality. |
 | 4 | Reconcile the two status models: give every lifecycle state a declared public status, or merge the models. | GAP-005 GAP-006 GAP-007 | Business owner | A citizen viewing a record and an officer holding it see states that correspond by declaration, not by reading. |
-| 5 | Confirm the routing matrix against the agency structure and remove the provisional marker. | GAP-008 | Business owner | Each row is confirmed and the source no longer marks itself provisional. |
+| 5 | Supply the reference data the assignment cascade reads its routing matrix from, and confirm each mapping, priority and clock in it against the agency structure. | GAP-008 | Business owner | The live matrix is catalogued row by row, and the rules documented here are the agency's routing rather than the cascade's fallback. |
 
 ## Priority 2 — the documentation cannot be completed without these
 

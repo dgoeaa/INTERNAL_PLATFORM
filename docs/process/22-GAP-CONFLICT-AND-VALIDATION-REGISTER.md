@@ -17,8 +17,8 @@
 | GAP-002 | DGO Internal Platform | core/lifecycle.js | Internal correspondence lifecycle | — | Lifecycle state 'on_hold' has no declared successor | Either an outgoing transition, or a statement that this state is intentionally terminal. | 'on_hold' is the target of a transition from arrival, registered and declares no outgoing transition. | Confirmed | A record entering this state cannot lawfully progress or be reopened through the guard. | Work reaching this state stops there with no evidenced route out. | Records may be operationally stranded, with no path the software will permit. | The process owner for the correspondence lifecycle. | Process owner | The transition map declares an outgoing edge, or a written statement records the state as intentionally terminal. | Open | SRC-037 |
 | GAP-003 | DGO Internal Platform | core/lifecycle.js | Internal correspondence lifecycle | — | Lifecycle state 'reassign_requested' has no declared successor | Either an outgoing transition, or a statement that this state is intentionally terminal. | 'reassign_requested' is the target of a transition from assigned and declares no outgoing transition. | Confirmed | A record entering this state cannot lawfully progress or be reopened through the guard. | Work reaching this state stops there with no evidenced route out. | Records may be operationally stranded, with no path the software will permit. | The process owner for the correspondence lifecycle. | Process owner | The transition map declares an outgoing edge, or a written statement records the state as intentionally terminal. | Open | SRC-037 |
 | GAP-004 | DGO Internal Platform | core/lifecycle.js | Internal correspondence lifecycle | — | Lifecycle state 'rejected' has no declared successor | Either an outgoing transition, or a statement that this state is intentionally terminal. | 'rejected' is the target of a transition from arrival, registered, pending_review, escalated and declares no outgoing transition. | Confirmed | A record entering this state cannot lawfully progress or be reopened through the guard. | Work reaching this state stops there with no evidenced route out. | Records may be operationally stranded, with no path the software will permit. | The process owner for the correspondence lifecycle. | Process owner | The transition map declares an outgoing edge, or a written statement records the state as intentionally terminal. | Open | SRC-037 |
-| GAP-005 | Both platforms | config/status-vocabulary.config.js | Public status presentation | — | Internal status 'Accepted' maps to public 'review' on a reading, not a decision | An agency decision on what this internal status means to a citizen. | The mapping is declared, and its own source records the ambiguity and the alternative reading. | Conflicting | A citizen reading the public label and an officer reading the internal one must be looking at the same thing. | A citizen may be told a matter is at a stage the agency does not consider it to be at. | Misinformed applicants, and complaints founded on a label the agency never intended. | The registry owner. The source itself names docs/audits/DESIGN_AUDIT_BRIEF_ASSESSMENT.md as the point of confirmation. | Business owner | The agency confirms the mapping, or supplies a distinct public state. | Open | SRC-038 |
-| GAP-006 | Both platforms | config/status-vocabulary.config.js | Public status presentation | — | Internal status 'Archived' maps to public 'approved' on a reading, not a decision | An agency decision on what this internal status means to a citizen. | The mapping is declared, and its own source records the ambiguity and the alternative reading. | Conflicting | A citizen reading the public label and an officer reading the internal one must be looking at the same thing. | A citizen may be told a matter is at a stage the agency does not consider it to be at. | Misinformed applicants, and complaints founded on a label the agency never intended. | The registry owner. The source itself names docs/audits/DESIGN_AUDIT_BRIEF_ASSESSMENT.md as the point of confirmation. | Business owner | The agency confirms the mapping, or supplies a distinct public state. | Open | SRC-038 |
+| GAP-005 | Both platforms | config/status-vocabulary.config.js | Public status presentation | — | Internal status 'Accepted' maps to public 'review' on a reading, not a decision | An agency decision on what this internal status means to a citizen. | The mapping is declared, and its own source records the ambiguity and the alternative reading: "Accepted" means the registry accepted the item for handling, which is the public "Under review". If it instead means the request itself was granted, it maps to "approved". | Conflicting | A citizen reading the public label and an officer reading the internal one must be looking at the same thing. | A citizen may be told a matter is at a stage the agency does not consider it to be at. | Misinformed applicants, and complaints founded on a label the agency never intended. | The registry owner. The source itself names docs/audits/DESIGN_AUDIT_BRIEF_ASSESSMENT.md as the point of confirmation. | Business owner | The agency confirms the mapping, or supplies a distinct public state. | Open | SRC-038 |
+| GAP-006 | Both platforms | config/status-vocabulary.config.js | Public status presentation | — | Internal status 'Archived' maps to public 'approved' on a reading, not a decision | An agency decision on what this internal status means to a citizen. | The mapping is declared, and its own source records the ambiguity and the alternative reading: Archive is a closure step, and closure in the internal model does not record an outcome. If a matter can be archived without being granted, this needs a distinct public state. | Conflicting | A citizen reading the public label and an officer reading the internal one must be looking at the same thing. | A citizen may be told a matter is at a stage the agency does not consider it to be at. | Misinformed applicants, and complaints founded on a label the agency never intended. | The registry owner. The source itself names docs/audits/DESIGN_AUDIT_BRIEF_ASSESSMENT.md as the point of confirmation. | Business owner | The agency confirms the mapping, or supplies a distinct public state. | Open | SRC-038 |
 | GAP-007 | Both platforms | — | — | — | Two status models govern the same records | A stated relationship between the internal lifecycle states and the seven-state public vocabulary. | Both models are declared in configuration. A mapping exists from five internal values to public ones; the lifecycle states are not among those five. | Conflicting | A record moving through the lifecycle must carry a public status at every point, or the public surface shows a stale one. | For most lifecycle states there is no evidenced public status. | A citizen tracking a submission sees a status that does not move while the matter does. | The registry owner, with the platform technical owner. | Business owner | Every lifecycle state carries a declared public status, or the two models are reconciled into one. | Open | SRC-038 SRC-037 |
 | GAP-008 | DGO Internal Platform | config/assignment-cascade.config.js | [PROC-004](detail/PROC-004.md) | — | The authoritative routing matrix is not among the supplied inputs; only the cascade fallback is | The reference data that supplies the live category-to-unit matrix, and confirmation of each mapping, priority and clock in it. | 6 fallback rows, complete and machine-readable, under a key named fallbackMatrix, beside a declared list of the column names the live matrix may arrive under from reference data. | Requires authoritative validation | Routing decides which directorate answers a citizen. It is an operating-model decision the software cannot make, and a fallback is by definition not the decision. | Every routing rule documented here is a fallback. What the estate routes on when the reference data does supply a match is not documented at all, because that data is not present. | Correspondence reaches the wrong unit and the service-level clock starts against the wrong owner. | The registry owner, with the SharePoint reference data the cascade reads its matrix from. | Business owner | The live matrix is supplied, catalogued row by row, and each mapping confirmed against the agency structure. | Open | SRC-039 |
 | GAP-009 | DGO Internal Platform | config/assignment-cascade.config.js | — | — | No escalation behaviour is bound to the service-level clocks | What happens when an acknowledgement or completion clock expires: who is told, what changes, what state the record enters. | 6 rows carrying acknowledgement and completion day counts. | Unavailable | A clock with no consequence is a measurement, not a control. | Breach is undetectable from the supplied inputs and no escalation is documented. | Overdue matters accumulate with no evidenced trigger for intervention. | The process owner for the correspondence lifecycle. | Operational owner | An escalation rule exists, bound to the clock, naming the recipient and the resulting state. | Open | SRC-039 |
@@ -50,15 +50,73 @@
 
 ## Conflicts
 
-Where two artifacts disagree, both readings are recorded and neither is silently preferred.
+Where sources disagree, both readings are recorded, the authority and currency of each is
+assessed, and neither is silently preferred. Each row names the validation that would settle it.
 
-| ID | Subject | Conflicting reading | Authority to resolve | Sources |
-| --- | --- | --- | --- | --- |
-| TRAN-053 | internal 'Accepted' | The mapping is declared, and its own source records this particular edge as a reading rather than a fact, flagged for agency confirmation. | Named in the gap register row for this subject. | SRC-038 |
-| TRAN-056 | internal 'Archived' | The mapping is declared, and its own source records this particular edge as a reading rather than a fact, flagged for agency confirmation. | Named in the gap register row for this subject. | SRC-038 |
-| GAP-005 | Internal status 'Accepted' maps to public 'review' on a reading, not a decision | The mapping is declared, and its own source records the ambiguity and the alternative reading. | The registry owner. The source itself names docs/audits/DESIGN_AUDIT_BRIEF_ASSESSMENT.md as the point of confirmation. | SRC-038 |
-| GAP-006 | Internal status 'Archived' maps to public 'approved' on a reading, not a decision | The mapping is declared, and its own source records the ambiguity and the alternative reading. | The registry owner. The source itself names docs/audits/DESIGN_AUDIT_BRIEF_ASSESSMENT.md as the point of confirmation. | SRC-038 |
-| GAP-007 | Two status models govern the same records | Both models are declared in configuration. A mapping exists from five internal values to public ones; the lifecycle states are not among those five. | The registry owner, with the platform technical owner. | SRC-038 SRC-037 |
+### TRAN-053 — internal 'Accepted' → public 'review'
+
+| Aspect | Record |
+| --- | --- |
+| Conflicting sources | `SRC-038` config/status-vocabulary.config.js |
+| Reading the implementation takes | The mapping is declared, and its own source records this particular edge as a reading rather than a fact, flagged for agency confirmation. |
+| Alternative reading, as its own source states it | "Accepted" means the registry accepted the item for handling, which is the public "Under review". If it instead means the request itself was granted, it maps to "approved". |
+| Source authority | Both readings come from the same artifact, so neither is more current than the other and neither can settle the question. The artifact is authoritative for what the software DOES — it is the map the renderer calls — and is explicitly not authoritative for what the status MEANS to the agency, which it defers. |
+| Currency | Both readings are carried by the same artifact at the same revision, so neither is the more recent. |
+| Implementation relevance | Implemented: the declared edge is what governedStatusLabel() returns today. A citizen is already being shown 'review' for a record the platform holds as 'Accepted'. |
+| Validation required | The registry owner states which reading is intended. If the alternative is intended, the map changes and, for the archived case, a distinct public state is needed. |
+| Authority to resolve | Named in the gap register row for this subject. |
+
+### TRAN-056 — internal 'Archived' → public 'approved'
+
+| Aspect | Record |
+| --- | --- |
+| Conflicting sources | `SRC-038` config/status-vocabulary.config.js |
+| Reading the implementation takes | The mapping is declared, and its own source records this particular edge as a reading rather than a fact, flagged for agency confirmation. |
+| Alternative reading, as its own source states it | Archive is a closure step, and closure in the internal model does not record an outcome. If a matter can be archived without being granted, this needs a distinct public state. |
+| Source authority | Both readings come from the same artifact, so neither is more current than the other and neither can settle the question. The artifact is authoritative for what the software DOES — it is the map the renderer calls — and is explicitly not authoritative for what the status MEANS to the agency, which it defers. |
+| Currency | Both readings are carried by the same artifact at the same revision, so neither is the more recent. |
+| Implementation relevance | Implemented: the declared edge is what governedStatusLabel() returns today. A citizen is already being shown 'approved' for a record the platform holds as 'Archived'. |
+| Validation required | The registry owner states which reading is intended. If the alternative is intended, the map changes and, for the archived case, a distinct public state is needed. |
+| Authority to resolve | Named in the gap register row for this subject. |
+
+### GAP-005 — Internal status 'Accepted' maps to public 'review' on a reading, not a decision
+
+| Aspect | Record |
+| --- | --- |
+| Conflicting sources | `SRC-038` config/status-vocabulary.config.js |
+| Reading the implementation takes | The mapping is declared, and its own source records the ambiguity and the alternative reading: "Accepted" means the registry accepted the item for handling, which is the public "Under review". If it instead means the request itself was granted, it maps to "approved". |
+| Alternative reading, as its own source states it | The mapping is declared, and its own source records the ambiguity and the alternative reading: "Accepted" means the registry accepted the item for handling, which is the public "Under review". If it instead means the request itself was granted, it maps to "approved". |
+| Source authority | The artifact states the fact and is not authoritative for it; the gap register row for this subject names who is. |
+| Currency | Not separately assessable: the disagreement is between an artifact and an absence, not between two dated artifacts. |
+| Implementation relevance | The declared reading is the one the software acts on today. |
+| Validation required | The agency confirms the mapping, or supplies a distinct public state. |
+| Authority to resolve | The registry owner. The source itself names docs/audits/DESIGN_AUDIT_BRIEF_ASSESSMENT.md as the point of confirmation. |
+
+### GAP-006 — Internal status 'Archived' maps to public 'approved' on a reading, not a decision
+
+| Aspect | Record |
+| --- | --- |
+| Conflicting sources | `SRC-038` config/status-vocabulary.config.js |
+| Reading the implementation takes | The mapping is declared, and its own source records the ambiguity and the alternative reading: Archive is a closure step, and closure in the internal model does not record an outcome. If a matter can be archived without being granted, this needs a distinct public state. |
+| Alternative reading, as its own source states it | The mapping is declared, and its own source records the ambiguity and the alternative reading: Archive is a closure step, and closure in the internal model does not record an outcome. If a matter can be archived without being granted, this needs a distinct public state. |
+| Source authority | The artifact states the fact and is not authoritative for it; the gap register row for this subject names who is. |
+| Currency | Not separately assessable: the disagreement is between an artifact and an absence, not between two dated artifacts. |
+| Implementation relevance | The declared reading is the one the software acts on today. |
+| Validation required | The agency confirms the mapping, or supplies a distinct public state. |
+| Authority to resolve | The registry owner. The source itself names docs/audits/DESIGN_AUDIT_BRIEF_ASSESSMENT.md as the point of confirmation. |
+
+### GAP-007 — Two status models govern the same records
+
+| Aspect | Record |
+| --- | --- |
+| Conflicting sources | `SRC-038` config/status-vocabulary.config.js<br>`SRC-037` core/lifecycle.js |
+| Reading the implementation takes | Both models are declared in configuration. A mapping exists from five internal values to public ones; the lifecycle states are not among those five. |
+| Alternative reading, as its own source states it | Both models are declared in configuration. A mapping exists from five internal values to public ones; the lifecycle states are not among those five. |
+| Source authority | The artifact states the fact and is not authoritative for it; the gap register row for this subject names who is. |
+| Currency | Not separately assessable: the disagreement is between an artifact and an absence, not between two dated artifacts. |
+| Implementation relevance | The declared reading is the one the software acts on today. |
+| Validation required | Every lifecycle state carries a declared public status, or the two models are reconciled into one. |
+| Authority to resolve | The registry owner, with the platform technical owner. |
 
 ## Missing ownership, by type
 

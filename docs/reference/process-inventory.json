@@ -8313,6 +8313,10 @@
    "exceptionOutcome": "@@8",
    "evidence": "Conflicting",
    "evidenceNote": "The mapping is declared, and its own source records this particular edge as a reading rather than a fact, flagged for agency confirmation.",
+   "conflictingReading": "\"Accepted\" means the registry accepted the item for handling, which is the public \"Under review\". If it instead means the request itself was granted, it maps to \"approved\".",
+   "conflictAuthorityAssessment": "Both readings come from the same artifact, so neither is more current than the other and neither can settle the question. The artifact is authoritative for what the software DOES — it is the map the renderer calls — and is explicitly not authoritative for what the status MEANS to the agency, which it defers.",
+   "conflictImplementationRelevance": "Implemented: the declared edge is what governedStatusLabel() returns today. A citizen is already being shown 'review' for a record the platform holds as 'Accepted'.",
+   "conflictValidationRequired": "The registry owner states which reading is intended. If the alternative is intended, the map changes and, for the archived case, a distinct public state is needed.",
    "validationStatus": "Requires confirmation by the named owner",
    "source": [
     "SRC-038"
@@ -8364,6 +8368,10 @@
    "exceptionOutcome": "@@8",
    "evidence": "Conflicting",
    "evidenceNote": "The mapping is declared, and its own source records this particular edge as a reading rather than a fact, flagged for agency confirmation.",
+   "conflictingReading": "Archive is a closure step, and closure in the internal model does not record an outcome. If a matter can be archived without being granted, this needs a distinct public state.",
+   "conflictAuthorityAssessment": "Both readings come from the same artifact, so neither is more current than the other and neither can settle the question. The artifact is authoritative for what the software DOES — it is the map the renderer calls — and is explicitly not authoritative for what the status MEANS to the agency, which it defers.",
+   "conflictImplementationRelevance": "Implemented: the declared edge is what governedStatusLabel() returns today. A citizen is already being shown 'approved' for a record the platform holds as 'Archived'.",
+   "conflictValidationRequired": "The registry owner states which reading is intended. If the alternative is intended, the map changes and, for the archived case, a distinct public state is needed.",
    "validationStatus": "Requires confirmation by the named owner",
    "source": [
     "SRC-038"
@@ -13459,7 +13467,7 @@
    "affectedProcess": "Public status presentation",
    "subject": "Internal status 'Accepted' maps to public 'review' on a reading, not a decision",
    "missingInformation": "An agency decision on what this internal status means to a citizen.",
-   "availableEvidence": "The mapping is declared, and its own source records the ambiguity and the alternative reading.",
+   "availableEvidence": "The mapping is declared, and its own source records the ambiguity and the alternative reading: \"Accepted\" means the registry accepted the item for handling, which is the public \"Under review\". If it instead means the request itself was granted, it maps to \"approved\".",
    "evidence": "Conflicting",
    "reasonRequired": "A citizen reading the public label and an officer reading the internal one must be looking at the same thing.",
    "impactOfAbsence": "A citizen may be told a matter is at a stage the agency does not consider it to be at.",
@@ -13480,7 +13488,7 @@
    "affectedProcess": "Public status presentation",
    "subject": "Internal status 'Archived' maps to public 'approved' on a reading, not a decision",
    "missingInformation": "An agency decision on what this internal status means to a citizen.",
-   "availableEvidence": "The mapping is declared, and its own source records the ambiguity and the alternative reading.",
+   "availableEvidence": "The mapping is declared, and its own source records the ambiguity and the alternative reading: Archive is a closure step, and closure in the internal model does not record an outcome. If a matter can be archived without being granted, this needs a distinct public state.",
    "evidence": "Conflicting",
    "reasonRequired": "A citizen reading the public label and an officer reading the internal one must be looking at the same thing.",
    "impactOfAbsence": "A citizen may be told a matter is at a stage the agency does not consider it to be at.",

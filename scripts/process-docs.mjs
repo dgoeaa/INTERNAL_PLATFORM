@@ -134,8 +134,8 @@ ${table(['Evidence class', 'Records', 'What that means'],
 
 ## The four findings that matter most
 
-1. **No automated process states what it is for.** ${flows.length} workflows were walked action by
-   action, so every step, branch and connector call is confirmed. Not one export states a business
+1. **No automated process states what it is for.** ${flows.length} workflows carrying ${D.steps.filter(s => s.responsibleKind !== 'Manual — operator-initiated').length}
+   actions between them were walked action by action, so every step, branch and connector call is confirmed. Not one export states a business
    purpose, an owner or a criticality. Until someone supplies those three facts per workflow, no
    automated process in this estate can be documented to a confirmed standard, however completely
    its mechanics are known.
@@ -145,10 +145,13 @@ ${table(['Evidence class', 'Records', 'What that means'],
    those five edges are recorded in their own source as readings rather than decisions. A citizen and
    an officer looking at the same matter are not guaranteed to be looking at the same thing.
 
-3. **Routing is provisional and its clocks have no consequence.** The matrix that decides which
-   directorate answers a citizen marks itself provisional in its own source. Its acknowledgement and
-   completion clocks are declared; nothing in the supplied inputs states what happens when one expires.
-   A clock with no consequence is a measurement, not a control.
+3. **The routing matrix is a fallback, and its clocks have no consequence.** ${D.rules.filter(r => r.matrix === 'Fallback matrix').length ? `The ${D.rules.filter(r => r.matrix === 'Fallback matrix').length} rows that decide which directorate answers a citizen live under a key
+   named \`fallbackMatrix\`, beside a declared list of the column names the live matrix may arrive
+   under from reference data. That reference data is not among the supplied inputs, so what the
+   estate routes on in the ordinary case is not documented anywhere here.` : `The routing matrix marks itself provisional in its own source: the category-to-directorate mapping
+   is an operating-model decision the software cannot make.`} Its acknowledgement and completion
+   clocks are declared; nothing in the supplied inputs states what happens when one expires. A clock
+   with no consequence is a measurement, not a control.
 
 4. **Authorisation is evidenced only on the client.** Every route is gated on a role held in the
    browser. No server-side authorisation of the caller is evidenced. What is documented here as the
@@ -1154,16 +1157,29 @@ ${table(['ID', 'System', 'Module', 'Process', 'Step', 'Gap', 'Missing informatio
 
 ## Conflicts
 
-Where two artifacts disagree, both readings are recorded and neither is silently preferred.
+Where sources disagree, both readings are recorded, the authority and currency of each is
+assessed, and neither is silently preferred. Each row names the validation that would settle it.
 
 ${(() => {
         const conflicts = ALL_RECORDS.filter(x => x.evidence === EV.CONFLICTING);
-        return conflicts.length
-          ? table(['ID', 'Subject', 'Conflicting reading', 'Authority to resolve', 'Sources'],
-            conflicts.map(c => [c.id, c.subject || c.name || c.from, c.evidenceNote || c.availableEvidence,
-              c.requiredAuthoritativeSource || 'Named in the gap register row for this subject.',
-              (c.source || []).join(' ')]))
-          : '_No conflicting evidence was found._\n';
+        if (!conflicts.length) return '_No conflicting evidence was found._\n';
+        return conflicts.map(c => `### ${c.id} — ${cell(c.subject || c.name || `${c.from} → ${c.to}`)}
+
+${table(['Aspect', 'Record'], [
+          ['Conflicting sources', srcLinks(c.source)],
+          ['Reading the implementation takes', c.evidenceNote || c.availableEvidence],
+          ['Alternative reading, as its own source states it', c.conflictingReading || c.availableEvidence],
+          ['Source authority', c.conflictAuthorityAssessment
+            || 'The artifact states the fact and is not authoritative for it; the gap register row for this subject names who is.'],
+          ['Currency', c.conflictAuthorityAssessment
+            ? 'Both readings are carried by the same artifact at the same revision, so neither is the more recent.'
+            : 'Not separately assessable: the disagreement is between an artifact and an absence, not between two dated artifacts.'],
+          ['Implementation relevance', c.conflictImplementationRelevance
+            || 'The declared reading is the one the software acts on today.'],
+          ['Validation required', c.conflictValidationRequired || c.resolutionCriteria
+            || 'Named in the gap register row for this subject.'],
+          ['Authority to resolve', c.requiredAuthoritativeSource || 'Named in the gap register row for this subject.'],
+        ])}`).join('\n');
       })()}
 
 ## Missing ownership, by type
@@ -1343,7 +1359,14 @@ ${table(['#', 'Recommendation', 'Closes', 'Owner needed', 'Done when'], [
     ['2', 'State a server-side authorisation posture for every endpoint: trigger authentication type and the role check applied before the work is done.', D.gaps.filter(g => /Authorisation is evidenced only on the client/.test(g.subject || '')).map(g => g.id).join(' ') || '—', 'Security or access authority', 'Each endpoint names its authentication type, and a call bypassing the client is refused.'],
     ['3', 'Give every workflow an owner, a one-sentence purpose and a criticality grade.', D.gaps.filter(g => /business purpose, owner or criticality/.test(g.subject || '')).map(g => g.id).join(' ') || '—', 'Technical owner', 'No automated process in document 7 has a blank owner, purpose or criticality.'],
     ['4', 'Reconcile the two status models: give every lifecycle state a declared public status, or merge the models.', D.gaps.filter(g => /status model|maps to public/.test(g.subject || '')).map(g => g.id).join(' ') || '—', 'Business owner', 'A citizen viewing a record and an officer holding it see states that correspond by declaration, not by reading.'],
-    ['5', 'Confirm the routing matrix against the agency structure and remove the provisional marker.', D.gaps.filter(g => /routing matrix/i.test(g.subject || '')).map(g => g.id).join(' ') || '—', 'Business owner', 'Each row is confirmed and the source no longer marks itself provisional.'],
+    ['5', D.rules.some(r => r.matrix === 'Fallback matrix')
+      ? 'Supply the reference data the assignment cascade reads its routing matrix from, and confirm each mapping, priority and clock in it against the agency structure.'
+      : 'Confirm the routing matrix against the agency structure and remove the provisional marker.',
+    D.gaps.filter(g => /routing matrix|authoritative routing/i.test(g.subject || '')).map(g => g.id).join(' ') || '—',
+    'Business owner',
+    D.rules.some(r => r.matrix === 'Fallback matrix')
+      ? 'The live matrix is catalogued row by row, and the rules documented here are the agency\'s routing rather than the cascade\'s fallback.'
+      : 'Each row is confirmed and the source no longer marks itself provisional.'],
   ])}
 
 ## Priority 2 — the documentation cannot be completed without these
