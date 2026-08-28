@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'settings' |
 | Category | User-initiated · operational |
 | Description | Manage profile, settings and users. Restricted to IT — see the System · Restricted group. |
+| Description declared in the artifact itself | — |
 | Business objective | Manage profile, settings and users. Restricted to IT — see the System · Restricted group. |
 | Operational objective | Boundary role 'configuration'. Owns profile, theme, density, endpoint-restore, state-import-export; must not own runtime-certification, live-monitoring. |
 | Process owner | The settings module, per the per-action governance table. |
@@ -41,7 +42,7 @@
 
 | Step | Name | Responsible | Kind |
 | --- | --- | --- | --- |
-| STEP-0040 | Import that file | settings workspace | Manual — operator-initiated |
+| STEP-0053 | Import that file | settings workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -59,7 +60,7 @@
 
 | Step | Required inputs |
 | --- | --- |
-| STEP-0040 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0053 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
@@ -67,7 +68,7 @@
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STEP-0040 | 1 | Import that file | modules/settings.js | settings workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls DataReconciler.apply. | Ownership: settings.<br>Backend: none. | Not evidenced for this action. | An updated record in application state. | — | — | — | none | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:state-imported | Confirmed | No external validation required | SRC-030 SRC-035 |
+| STEP-0053 | 1 | Import that file | modules/settings.js | settings workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls DataReconciler.apply. | Ownership: settings.<br>Backend: none. | Not evidenced for this action. | An updated record in application state. | — | — | — | none | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:state-imported | Confirmed | No external validation required | SRC-030 SRC-035 |
 
 ## 5.6 Decisions and branches
 
@@ -107,13 +108,13 @@ _No exception path is evidenced in this process. Where the process is a request-
 
 | ID | Kind | Name | Description | Threshold | Escalation threshold | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| MON-039 | Audit event | Audit event audit:state-imported | The governance table binds action 'import-state' to the audit vocabulary 'audit:state-imported'. | — | — | Confirmed |
+| MON-049 | Audit event | Audit event audit:state-imported | The governance table binds action 'import-state' to the audit vocabulary 'audit:state-imported'. | — | — | Confirmed |
 
 ### Audit events written by this process
 
 | Step | Audit event |
 | --- | --- |
-| STEP-0040 Import that file | audit:state-imported |
+| STEP-0053 Import that file | audit:state-imported |
 
 ## Relationships
 

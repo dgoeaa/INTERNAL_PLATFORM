@@ -13,21 +13,21 @@
 | SRC-002 | `core/boot.js` | Source code — platform core | Confirmed | High | No external validation required | 1 |
 | SRC-003 | `config/endpoints.config.js` | Configuration file | Confirmed | High | No external validation required | 22 |
 | SRC-004 | `modules/acknowledgment.js` | Source code — workspace module | Confirmed | High | No external validation required | 12 |
-| SRC-005 | `config/module-boundaries.config.js` | Configuration file | Confirmed | High | No external validation required | 53 |
-| SRC-006 | `modules/activities.js` | Source code — workspace module | Confirmed | High | No external validation required | 16 |
-| SRC-007 | `modules/approvals.js` | Source code — workspace module | Confirmed | High | No external validation required | 5 |
+| SRC-005 | `config/module-boundaries.config.js` | Configuration file | Confirmed | High | No external validation required | 57 |
+| SRC-006 | `modules/activities.js` | Source code — workspace module | Confirmed | High | No external validation required | 20 |
+| SRC-007 | `modules/approvals.js` | Source code — workspace module | Confirmed | High | No external validation required | 7 |
 | SRC-008 | `modules/archive.js` | Source code — workspace module | Confirmed | High | No external validation required | 6 |
 | SRC-009 | `modules/assistant.js` | Source code — workspace module | Confirmed | High | No external validation required | 10 |
-| SRC-010 | `modules/briefs.js` | Source code — workspace module | Confirmed | High | No external validation required | 10 |
+| SRC-010 | `modules/briefs.js` | Source code — workspace module | Confirmed | High | No external validation required | 12 |
 | SRC-011 | `modules/bulk-assignment.js` | Source code — workspace module | Confirmed | High | No external validation required | 9 |
 | SRC-012 | `modules/comments.js` | Source code — workspace module | Confirmed | High | No external validation required | 7 |
 | SRC-013 | `modules/correspondence-email.js` | Source code — workspace module | Confirmed | High | No external validation required | 15 |
-| SRC-014 | `modules/correspondence.js` | Source code — workspace module | Confirmed | High | No external validation required | 24 |
+| SRC-014 | `modules/correspondence.js` | Source code — workspace module | Confirmed | High | No external validation required | 30 |
 | SRC-015 | `modules/diagnostics.js` | Source code — workspace module | Confirmed | High | No external validation required | 3 |
 | SRC-016 | `modules/dispatch.js` | Source code — workspace module | Confirmed | High | No external validation required | 16 |
 | SRC-017 | `modules/ecm-erp-charter.js` | Source code — workspace module | Confirmed | High | No external validation required | 2 |
-| SRC-018 | `modules/executive.js` | Source code — workspace module | Confirmed | High | No external validation required | 20 |
-| SRC-019 | `modules/fasttrack.js` | Source code — workspace module | Confirmed | High | No external validation required | 6 |
+| SRC-018 | `modules/executive.js` | Source code — workspace module | Confirmed | High | No external validation required | 28 |
+| SRC-019 | `modules/fasttrack.js` | Source code — workspace module | Confirmed | High | No external validation required | 11 |
 | SRC-020 | `modules/home.js` | Source code — workspace module | Confirmed | High | No external validation required | 2 |
 | SRC-021 | `modules/lookup.js` | Source code — workspace module | Confirmed | High | No external validation required | 17 |
 | SRC-022 | `modules/meetings.js` | Source code — workspace module | Confirmed | High | No external validation required | 13 |
@@ -41,21 +41,34 @@
 | SRC-030 | `modules/settings.js` | Source code — workspace module | Confirmed | High | No external validation required | 13 |
 | SRC-031 | `modules/single-assignment.js` | Source code — workspace module | Confirmed | High | No external validation required | 12 |
 | SRC-032 | `modules/statistics.js` | Source code — workspace module | Confirmed | High | No external validation required | 12 |
-| SRC-033 | `modules/user-admin.js` | Source code — workspace module | Confirmed | High | No external validation required | 9 |
-| SRC-034 | `config/rbac.config.js` | Configuration file | Confirmed | High | No external validation required | 24 |
-| SRC-035 | `config/action-ownership.config.js` | Configuration file | Confirmed | High | No external validation required | 151 |
+| SRC-033 | `modules/user-admin.js` | Source code — workspace module | Confirmed | High | No external validation required | 13 |
+| SRC-034 | `config/rbac.config.js` | Configuration file | Confirmed | High | No external validation required | 25 |
+| SRC-035 | `config/action-ownership.config.js` | Configuration file | Confirmed | High | No external validation required | 178 |
 | SRC-036 | `config/workflow-clarity.config.js` | Configuration file | Confirmed | High | No external validation required | 29 |
-| SRC-037 | `core/lifecycle.js` | Source code — platform core | Confirmed | High | No external validation required | 87 |
-| SRC-038 | `config/status-vocabulary.config.js` | Configuration file | Confirmed | High | No external validation required | 15 |
-| SRC-039 | `config/assignment-cascade.config.js` | Configuration file | Confirmed | High | No external validation required | 14 |
-| SRC-040 | `config/acknowledgement-flow.config.js` | Configuration file | Confirmed | High | No external validation required | 1 |
-| SRC-041 | `core/retention.js` | Source code — platform core | Confirmed | High | No external validation required | 7 |
-| SRC-042 | `config/support-routing.config.js` | Configuration file | Confirmed | High | No external validation required | 14 |
-| SRC-043 | `config/priority.config.js` | Configuration file | Confirmed | High | No external validation required | 0 |
-| SRC-044 | `config/receipt-ledger.config.js` | Configuration file | Confirmed | High | No external validation required | 0 |
-| SRC-045 | `config/browser-certification.config.js` | Configuration file | Confirmed | High | No external validation required | 0 |
-| SRC-046 | `config/performance-budget.config.js` | Configuration file | Confirmed | High | No external validation required | 0 |
-| SRC-047 | `tests` | Automated test suite | Confirmed | High | No external validation required | 1 |
+| SRC-037 | `core/action-authority.js` | Source code — platform core | Confirmed | High | No external validation required | 1 |
+| SRC-038 | `shared/shell.js` | Artifact | Confirmed | High | No external validation required | 1 |
+| SRC-039 | `shared/welcome-runtime.js` | Artifact | Confirmed | High | No external validation required | 1 |
+| SRC-040 | `shared/accessibility.js` | Artifact | Confirmed | High | No external validation required | 0 |
+| SRC-041 | `shared/components.js` | Artifact | Confirmed | High | No external validation required | 0 |
+| SRC-042 | `shared/design-system-adapter.js` | Artifact | Confirmed | High | No external validation required | 0 |
+| SRC-043 | `shared/figma-uiux-runtime.js` | Artifact | Confirmed | High | No external validation required | 0 |
+| SRC-044 | `shared/relationship-runtime.js` | Artifact | Confirmed | High | No external validation required | 0 |
+| SRC-045 | `shared/workspace-guide.js` | Artifact | Confirmed | High | No external validation required | 0 |
+| SRC-046 | `core/lifecycle.js` | Source code — platform core | Confirmed | High | No external validation required | 88 |
+| SRC-047 | `config/status-vocabulary.config.js` | Configuration file | Confirmed | High | No external validation required | 16 |
+| SRC-048 | `config/assignment-cascade.config.js` | Configuration file | Confirmed | High | No external validation required | 14 |
+| SRC-049 | `core/assignment-cascade.js` | Source code — platform core | Confirmed | High | No external validation required | 1 |
+| SRC-050 | `config/acknowledgement-flow.config.js` | Configuration file | Confirmed | High | No external validation required | 1 |
+| SRC-051 | `core/retention.js` | Source code — platform core | Confirmed | High | No external validation required | 7 |
+| SRC-052 | `styles/app.css` | Artifact | Confirmed | High | No external validation required | 4 |
+| SRC-053 | `config/support-routing.config.js` | Configuration file | Confirmed | High | No external validation required | 14 |
+| SRC-054 | `config/priority.config.js` | Configuration file | Confirmed | High | No external validation required | 0 |
+| SRC-055 | `config/receipt-ledger.config.js` | Configuration file | Confirmed | High | No external validation required | 0 |
+| SRC-056 | `config/browser-certification.config.js` | Configuration file | Confirmed | High | No external validation required | 0 |
+| SRC-057 | `config/performance-budget.config.js` | Configuration file | Confirmed | High | No external validation required | 0 |
+| SRC-058 | `core/auth.js` | Source code — platform core | Confirmed | High | No external validation required | 1 |
+| SRC-059 | `config/auth.config.js` | Configuration file | Confirmed | High | No external validation required | 1 |
+| SRC-060 | `tests` | Automated test suite | Confirmed | High | No external validation required | 1 |
 
 ## Reverse index
 
@@ -69,7 +82,7 @@
 
 ### SRC-003 — `config/endpoints.config.js`
 
-22 record(s): DEP-033, DEP-034, DEP-035, DEP-036, DEP-037, DEP-038, DEP-039, DEP-040, DEP-041, DEP-042, DEP-043, DEP-044, DEP-045, DEP-046, DEP-047, DEP-048, DEP-049, DEP-050, DEP-051, DEP-052, SYS-002, GAP-011
+22 record(s): DEP-033, DEP-034, DEP-035, DEP-036, DEP-037, DEP-038, DEP-039, DEP-040, DEP-041, DEP-042, DEP-043, DEP-044, DEP-045, DEP-046, DEP-047, DEP-048, DEP-049, DEP-050, DEP-051, DEP-052, SYS-002, GAP-014
 
 ### SRC-004 — `modules/acknowledgment.js`
 
@@ -77,43 +90,43 @@
 
 ### SRC-005 — `config/module-boundaries.config.js`
 
-53 record(s): PROC-001, PROC-002, PROC-003, PROC-004, PROC-005, PROC-006, PROC-007, PROC-008, PROC-009, PROC-010, PROC-011, PROC-012, PROC-013, PROC-014, PROC-015, PROC-016, PROC-017, PROC-018, PROC-019, PROC-020, PROC-021, PROC-022, PROC-023, PROC-024, MOD-001, MOD-002, MOD-003, MOD-004, MOD-005, MOD-006, MOD-007, MOD-008, MOD-009, MOD-010, MOD-011, MOD-012, MOD-013, MOD-014, MOD-015, MOD-016, MOD-017, MOD-018, MOD-019, MOD-020, MOD-021, MOD-022, MOD-023, MOD-024, MOD-025, MOD-026, MOD-027, MOD-028, MOD-029
+57 record(s): PROC-001, PROC-002, PROC-003, PROC-004, PROC-005, PROC-006, PROC-007, PROC-008, PROC-009, PROC-010, PROC-011, PROC-012, PROC-013, PROC-014, PROC-015, PROC-016, PROC-017, PROC-018, PROC-019, PROC-020, PROC-021, PROC-022, PROC-023, PROC-024, STEP-0035, STEP-0036, STEP-0037, MOD-001, MOD-002, MOD-003, MOD-004, MOD-005, MOD-006, MOD-007, MOD-008, MOD-009, MOD-010, MOD-011, MOD-012, MOD-013, MOD-014, MOD-015, MOD-016, MOD-017, MOD-018, MOD-019, MOD-020, MOD-021, MOD-022, MOD-023, MOD-024, MOD-025, MOD-026, MOD-027, MOD-028, MOD-029, GAP-001
 
 ### SRC-006 — `modules/activities.js`
 
-16 record(s): PROC-003, STEP-0003, STEP-0004, CTRL-016, NOTIF-004, NOTIF-005, NOTIF-006, NOTIF-007, NOTIF-008, NOTIF-009, DEP-004, DEP-005, DEP-006, DEP-007, DEP-008, MOD-002
+20 record(s): PROC-003, STEP-0003, STEP-0004, STEP-0005, STEP-0006, STEP-0007, CTRL-016, NOTIF-004, NOTIF-005, NOTIF-006, NOTIF-007, NOTIF-008, NOTIF-009, DEP-004, DEP-005, DEP-006, DEP-007, DEP-008, MOD-002, GAP-002
 
 ### SRC-007 — `modules/approvals.js`
 
-5 record(s): PROC-012, STEP-0005, NOTIF-010, NOTIF-011, MOD-003
+7 record(s): PROC-012, STEP-0008, STEP-0009, STEP-0010, NOTIF-010, NOTIF-011, MOD-003
 
 ### SRC-008 — `modules/archive.js`
 
-6 record(s): SUBPROC-004, STEP-0006, CTRL-017, NOTIF-012, NOTIF-013, MOD-004
+6 record(s): SUBPROC-004, STEP-0011, CTRL-017, NOTIF-012, NOTIF-013, MOD-004
 
 ### SRC-009 — `modules/assistant.js`
 
-10 record(s): PROC-021, STEP-0007, CTRL-018, CTRL-019, NOTIF-014, NOTIF-015, NOTIF-016, NOTIF-017, NOTIF-018, MOD-005
+10 record(s): PROC-021, STEP-0012, CTRL-018, CTRL-019, NOTIF-014, NOTIF-015, NOTIF-016, NOTIF-017, NOTIF-018, MOD-005
 
 ### SRC-010 — `modules/briefs.js`
 
-10 record(s): PROC-013, STEP-0008, CTRL-020, NOTIF-019, NOTIF-020, NOTIF-021, NOTIF-022, NOTIF-023, DEP-009, MOD-006
+12 record(s): PROC-013, STEP-0013, STEP-0014, STEP-0015, CTRL-020, NOTIF-019, NOTIF-020, NOTIF-021, NOTIF-022, NOTIF-023, DEP-009, MOD-006
 
 ### SRC-011 — `modules/bulk-assignment.js`
 
-9 record(s): SUBPROC-002, STEP-0009, CTRL-021, NOTIF-024, NOTIF-025, NOTIF-026, NOTIF-027, DEP-010, MOD-007
+9 record(s): SUBPROC-002, STEP-0016, CTRL-021, NOTIF-024, NOTIF-025, NOTIF-026, NOTIF-027, DEP-010, MOD-007
 
 ### SRC-012 — `modules/comments.js`
 
-7 record(s): PROC-008, STEP-0010, CTRL-022, NOTIF-028, NOTIF-029, NOTIF-030, MOD-008
+7 record(s): PROC-008, STEP-0017, CTRL-022, NOTIF-028, NOTIF-029, NOTIF-030, MOD-008
 
 ### SRC-013 — `modules/correspondence-email.js`
 
-15 record(s): PROC-020, STEP-0011, STEP-0012, STEP-0013, STEP-0014, CTRL-023, CTRL-024, NOTIF-031, NOTIF-032, NOTIF-033, NOTIF-034, NOTIF-035, NOTIF-036, NOTIF-037, MOD-009
+15 record(s): PROC-020, STEP-0018, STEP-0019, STEP-0020, STEP-0021, CTRL-023, CTRL-024, NOTIF-031, NOTIF-032, NOTIF-033, NOTIF-034, NOTIF-035, NOTIF-036, NOTIF-037, MOD-009
 
 ### SRC-014 — `modules/correspondence.js`
 
-24 record(s): PROC-004, STEP-0015, STEP-0016, STEP-0017, CTRL-025, CTRL-026, CTRL-027, NOTIF-038, NOTIF-039, NOTIF-040, NOTIF-041, NOTIF-042, NOTIF-043, NOTIF-044, NOTIF-045, NOTIF-046, NOTIF-047, NOTIF-048, NOTIF-049, NOTIF-050, DEP-011, DEP-012, DEP-013, MOD-010
+30 record(s): PROC-004, STEP-0022, STEP-0023, STEP-0024, CTRL-025, CTRL-026, CTRL-027, NOTIF-038, NOTIF-039, NOTIF-040, NOTIF-041, NOTIF-042, NOTIF-043, NOTIF-044, NOTIF-045, NOTIF-046, NOTIF-047, NOTIF-048, NOTIF-049, NOTIF-050, DEP-011, DEP-012, DEP-013, STAT-039, STAT-040, STAT-041, STAT-042, STAT-043, MOD-010, GAP-010
 
 ### SRC-015 — `modules/diagnostics.js`
 
@@ -121,7 +134,7 @@
 
 ### SRC-016 — `modules/dispatch.js`
 
-16 record(s): PROC-019, STEP-0018, STEP-0019, STEP-0020, STEP-0021, CTRL-028, CTRL-029, CTRL-030, NOTIF-052, NOTIF-053, NOTIF-054, NOTIF-055, NOTIF-056, NOTIF-057, NOTIF-058, MOD-012
+16 record(s): PROC-019, STEP-0025, STEP-0026, STEP-0027, STEP-0028, CTRL-028, CTRL-029, CTRL-030, NOTIF-052, NOTIF-053, NOTIF-054, NOTIF-055, NOTIF-056, NOTIF-057, NOTIF-058, MOD-012
 
 ### SRC-017 — `modules/ecm-erp-charter.js`
 
@@ -129,11 +142,11 @@
 
 ### SRC-018 — `modules/executive.js`
 
-20 record(s): PROC-018, STEP-0022, STEP-0023, CTRL-031, CTRL-032, CTRL-033, NOTIF-059, NOTIF-060, NOTIF-061, NOTIF-062, NOTIF-063, NOTIF-064, NOTIF-065, NOTIF-066, NOTIF-067, NOTIF-068, DEP-014, DEP-015, DEP-016, MOD-014
+28 record(s): PROC-018, STEP-0029, STEP-0030, STEP-0031, STEP-0032, STEP-0033, VAR-009, VAR-010, VAR-011, CTRL-031, CTRL-032, CTRL-033, NOTIF-059, NOTIF-060, NOTIF-061, NOTIF-062, NOTIF-063, NOTIF-064, NOTIF-065, NOTIF-066, NOTIF-067, NOTIF-068, DEP-014, DEP-015, DEP-016, MOD-014, GAP-002, GAP-015
 
 ### SRC-019 — `modules/fasttrack.js`
 
-6 record(s): PROC-011, STEP-0024, CTRL-034, NOTIF-069, NOTIF-070, MOD-015
+11 record(s): PROC-011, STEP-0034, STEP-0035, STEP-0036, STEP-0037, CTRL-034, NOTIF-069, NOTIF-070, MOD-015, GAP-002, GAP-012
 
 ### SRC-020 — `modules/home.js`
 
@@ -141,11 +154,11 @@
 
 ### SRC-021 — `modules/lookup.js`
 
-17 record(s): PROC-009, STEP-0025, STEP-0026, STEP-0027, CTRL-035, CTRL-036, CTRL-037, NOTIF-071, NOTIF-072, NOTIF-073, NOTIF-074, NOTIF-075, NOTIF-076, NOTIF-077, NOTIF-078, DEP-017, MOD-017
+17 record(s): PROC-009, STEP-0038, STEP-0039, STEP-0040, CTRL-035, CTRL-036, CTRL-037, NOTIF-071, NOTIF-072, NOTIF-073, NOTIF-074, NOTIF-075, NOTIF-076, NOTIF-077, NOTIF-078, DEP-017, MOD-017
 
 ### SRC-022 — `modules/meetings.js`
 
-13 record(s): PROC-014, STEP-0028, STEP-0029, STEP-0030, CTRL-038, NOTIF-079, NOTIF-080, NOTIF-081, NOTIF-082, NOTIF-083, NOTIF-084, DEP-018, MOD-018
+13 record(s): PROC-014, STEP-0041, STEP-0042, STEP-0043, CTRL-038, NOTIF-079, NOTIF-080, NOTIF-081, NOTIF-082, NOTIF-083, NOTIF-084, DEP-018, MOD-018
 
 ### SRC-023 — `modules/operator-hud.js`
 
@@ -153,15 +166,15 @@
 
 ### SRC-024 — `modules/orchestrator.js`
 
-15 record(s): PROC-005, STEP-0031, STEP-0032, CTRL-039, CTRL-040, NOTIF-086, NOTIF-087, NOTIF-088, NOTIF-089, NOTIF-090, NOTIF-091, DEP-019, DEP-020, DEP-021, MOD-020
+15 record(s): PROC-005, STEP-0044, STEP-0045, CTRL-039, CTRL-040, NOTIF-086, NOTIF-087, NOTIF-088, NOTIF-089, NOTIF-090, NOTIF-091, DEP-019, DEP-020, DEP-021, MOD-020
 
 ### SRC-025 — `modules/projects.js`
 
-13 record(s): PROC-015, STEP-0033, STEP-0034, CTRL-041, CTRL-042, NOTIF-092, NOTIF-093, NOTIF-094, NOTIF-095, NOTIF-096, NOTIF-097, DEP-022, MOD-021
+13 record(s): PROC-015, STEP-0046, STEP-0047, CTRL-041, CTRL-042, NOTIF-092, NOTIF-093, NOTIF-094, NOTIF-095, NOTIF-096, NOTIF-097, DEP-022, MOD-021
 
 ### SRC-026 — `modules/registry.js`
 
-18 record(s): PROC-007, STEP-0035, STEP-0036, STEP-0037, STEP-0038, CTRL-043, CTRL-044, NOTIF-098, NOTIF-099, NOTIF-100, NOTIF-101, NOTIF-102, NOTIF-103, NOTIF-104, NOTIF-105, DEP-023, DEP-024, MOD-022
+18 record(s): PROC-007, STEP-0048, STEP-0049, STEP-0050, STEP-0051, CTRL-043, CTRL-044, NOTIF-098, NOTIF-099, NOTIF-100, NOTIF-101, NOTIF-102, NOTIF-103, NOTIF-104, NOTIF-105, DEP-023, DEP-024, MOD-022
 
 ### SRC-027 — `modules/reports.js`
 
@@ -173,15 +186,15 @@
 
 ### SRC-029 — `modules/scan-intake.js`
 
-7 record(s): SUBPROC-003, STEP-0039, CTRL-048, NOTIF-113, NOTIF-114, DEP-029, MOD-025
+7 record(s): SUBPROC-003, STEP-0052, CTRL-048, NOTIF-113, NOTIF-114, DEP-029, MOD-025
 
 ### SRC-030 — `modules/settings.js`
 
-13 record(s): PROC-023, STEP-0040, CTRL-049, CTRL-050, CTRL-051, CTRL-052, NOTIF-115, NOTIF-116, NOTIF-117, NOTIF-118, NOTIF-119, NOTIF-120, MOD-026
+13 record(s): PROC-023, STEP-0053, CTRL-049, CTRL-050, CTRL-051, CTRL-052, NOTIF-115, NOTIF-116, NOTIF-117, NOTIF-118, NOTIF-119, NOTIF-120, MOD-026
 
 ### SRC-031 — `modules/single-assignment.js`
 
-12 record(s): SUBPROC-001, STEP-0041, CTRL-053, NOTIF-121, NOTIF-122, NOTIF-123, NOTIF-124, NOTIF-125, NOTIF-126, NOTIF-127, DEP-030, MOD-027
+12 record(s): SUBPROC-001, STEP-0054, CTRL-053, NOTIF-121, NOTIF-122, NOTIF-123, NOTIF-124, NOTIF-125, NOTIF-126, NOTIF-127, DEP-030, MOD-027
 
 ### SRC-032 — `modules/statistics.js`
 
@@ -189,60 +202,112 @@
 
 ### SRC-033 — `modules/user-admin.js`
 
-9 record(s): SUBPROC-005, STEP-0042, CTRL-056, CTRL-057, NOTIF-135, NOTIF-136, NOTIF-137, DEP-032, MOD-029
+13 record(s): SUBPROC-005, STEP-0055, STEP-0056, STEP-0057, STEP-0058, CTRL-056, CTRL-057, NOTIF-135, NOTIF-136, NOTIF-137, DEP-032, MOD-029, GAP-002
 
 ### SRC-034 — `config/rbac.config.js`
 
-24 record(s): CTRL-001, CTRL-002, CTRL-003, CTRL-004, CTRL-005, CTRL-006, CTRL-007, CTRL-008, CTRL-009, CTRL-010, CTRL-011, CTRL-012, CTRL-013, ROLE-001, ROLE-002, ROLE-003, ROLE-004, ROLE-005, ROLE-006, ROLE-007, ROLE-008, ROLE-009, ROLE-010, GAP-012
+25 record(s): CTRL-001, CTRL-002, CTRL-003, CTRL-004, CTRL-005, CTRL-006, CTRL-007, CTRL-008, CTRL-009, CTRL-010, CTRL-011, CTRL-012, CTRL-013, ROLE-001, ROLE-002, ROLE-003, ROLE-004, ROLE-005, ROLE-006, ROLE-007, ROLE-008, ROLE-009, ROLE-010, GAP-015, GAP-016
 
 ### SRC-035 — `config/action-ownership.config.js`
 
-151 record(s): SUBPROC-006, SUBPROC-007, SUBPROC-008, SUBPROC-009, SUBPROC-010, SUBPROC-011, SUBPROC-012, SUBPROC-013, SUBPROC-014, SUBPROC-015, SUBPROC-016, SUBPROC-017, SUBPROC-018, SUBPROC-019, SUBPROC-020, SUBPROC-021, SUBPROC-022, SUBPROC-023, SUBPROC-024, SUBPROC-025, SUBPROC-026, SUBPROC-027, SUBPROC-028, SUBPROC-029, SUBPROC-030, SUBPROC-031, SUBPROC-032, SUBPROC-033, SUBPROC-034, SUBPROC-035, SUBPROC-036, SUBPROC-037, SUBPROC-038, SUBPROC-039, SUBPROC-040, SUBPROC-041, SUBPROC-042, SUBPROC-043, SUBPROC-044, SUBPROC-045, SUBPROC-046, SUBPROC-047, SUBPROC-048, SUBPROC-049, SUBPROC-050, SUBPROC-051, SUBPROC-052, SUBPROC-053, SUBPROC-054, SUBPROC-055, SUBPROC-056, SUBPROC-057, SUBPROC-058, SUBPROC-059, SUBPROC-060, SUBPROC-061, SUBPROC-062, SUBPROC-063, SUBPROC-064, SUBPROC-065, SUBPROC-066, STEP-0001, STEP-0002, STEP-0003, STEP-0004, STEP-0005, STEP-0006, STEP-0008, STEP-0009, STEP-0010, STEP-0011, STEP-0012, STEP-0013, STEP-0014, STEP-0015, STEP-0016, STEP-0017, STEP-0018, STEP-0019, STEP-0020, STEP-0021, STEP-0022, STEP-0023, STEP-0024, STEP-0025, STEP-0026, STEP-0027, STEP-0028, STEP-0029, STEP-0030, STEP-0031, STEP-0032, STEP-0033, STEP-0034, STEP-0035, STEP-0036, STEP-0037, STEP-0038, STEP-0039, STEP-0040, STEP-0041, STEP-0042, VAR-001, VAR-002, VAR-003, VAR-004, VAR-005, VAR-006, VAR-007, VAR-008, MON-001, MON-002, MON-003, MON-004, MON-005, MON-006, MON-007, MON-008, MON-009, MON-010, MON-011, MON-012, MON-013, MON-014, MON-015, MON-016, MON-017, MON-018, MON-019, MON-020, MON-021, MON-022, MON-023, MON-024, MON-025, MON-026, MON-027, MON-028, MON-029, MON-030, MON-031, MON-032, MON-033, MON-034, MON-035, MON-036, MON-037, MON-038, MON-039, MON-040, MON-041
+178 record(s): SUBPROC-006, SUBPROC-007, SUBPROC-008, SUBPROC-009, SUBPROC-010, SUBPROC-011, SUBPROC-012, SUBPROC-013, SUBPROC-014, SUBPROC-015, SUBPROC-016, SUBPROC-017, SUBPROC-018, SUBPROC-019, SUBPROC-020, SUBPROC-021, SUBPROC-022, SUBPROC-023, SUBPROC-024, SUBPROC-025, SUBPROC-026, SUBPROC-027, SUBPROC-028, SUBPROC-029, SUBPROC-030, SUBPROC-031, SUBPROC-032, SUBPROC-033, SUBPROC-034, SUBPROC-035, SUBPROC-036, SUBPROC-037, SUBPROC-038, SUBPROC-039, SUBPROC-040, SUBPROC-041, SUBPROC-042, SUBPROC-043, SUBPROC-044, SUBPROC-045, SUBPROC-046, SUBPROC-047, SUBPROC-048, SUBPROC-049, SUBPROC-050, SUBPROC-051, SUBPROC-052, SUBPROC-053, SUBPROC-054, SUBPROC-055, SUBPROC-056, SUBPROC-057, SUBPROC-058, SUBPROC-059, SUBPROC-060, SUBPROC-061, SUBPROC-062, SUBPROC-063, SUBPROC-064, SUBPROC-065, SUBPROC-066, STEP-0001, STEP-0002, STEP-0003, STEP-0004, STEP-0005, STEP-0006, STEP-0007, STEP-0008, STEP-0009, STEP-0010, STEP-0011, STEP-0013, STEP-0014, STEP-0015, STEP-0016, STEP-0017, STEP-0018, STEP-0019, STEP-0020, STEP-0021, STEP-0022, STEP-0023, STEP-0024, STEP-0025, STEP-0026, STEP-0027, STEP-0028, STEP-0029, STEP-0030, STEP-0031, STEP-0032, STEP-0033, STEP-0034, STEP-0038, STEP-0039, STEP-0040, STEP-0041, STEP-0042, STEP-0043, STEP-0044, STEP-0045, STEP-0046, STEP-0047, STEP-0048, STEP-0049, STEP-0050, STEP-0051, STEP-0052, STEP-0053, STEP-0054, STEP-0055, STEP-0056, STEP-0057, STEP-0058, VAR-001, VAR-002, VAR-003, VAR-004, VAR-005, VAR-006, VAR-007, VAR-008, MON-001, MON-002, MON-003, MON-004, MON-005, MON-006, MON-007, MON-008, MON-009, MON-010, MON-011, MON-012, MON-013, MON-014, MON-015, MON-016, MON-017, MON-018, MON-019, MON-020, MON-021, MON-022, MON-023, MON-024, MON-025, MON-026, MON-027, MON-028, MON-029, MON-030, MON-031, MON-032, MON-033, MON-034, MON-035, MON-036, MON-037, MON-038, MON-039, MON-040, MON-041, MON-042, MON-043, MON-044, MON-045, MON-046, MON-047, MON-048, MON-049, MON-050, MON-051, MON-052, MON-053, MON-054, GAP-001
 
 ### SRC-036 — `config/workflow-clarity.config.js`
 
 29 record(s): PROC-001, PROC-002, PROC-003, PROC-004, PROC-005, PROC-006, PROC-007, PROC-008, PROC-009, PROC-010, PROC-011, PROC-012, PROC-013, PROC-014, PROC-015, PROC-016, PROC-017, PROC-018, PROC-019, PROC-020, PROC-021, PROC-022, PROC-023, PROC-024, SUBPROC-001, SUBPROC-002, SUBPROC-003, SUBPROC-004, SUBPROC-005
 
-### SRC-037 — `core/lifecycle.js`
+### SRC-037 — `core/action-authority.js`
 
-87 record(s): STAT-001, STAT-002, STAT-003, STAT-004, STAT-005, STAT-006, STAT-007, STAT-008, STAT-009, STAT-010, STAT-011, STAT-012, STAT-013, STAT-014, STAT-015, STAT-016, STAT-017, STAT-018, STAT-019, STAT-020, STAT-021, STAT-022, STAT-023, STAT-024, STAT-025, STAT-026, STAT-027, STAT-028, STAT-029, STAT-030, STAT-031, TRAN-001, TRAN-002, TRAN-003, TRAN-004, TRAN-005, TRAN-006, TRAN-007, TRAN-008, TRAN-009, TRAN-010, TRAN-011, TRAN-012, TRAN-013, TRAN-014, TRAN-015, TRAN-016, TRAN-017, TRAN-018, TRAN-019, TRAN-020, TRAN-021, TRAN-022, TRAN-023, TRAN-024, TRAN-025, TRAN-026, TRAN-027, TRAN-028, TRAN-029, TRAN-030, TRAN-031, TRAN-032, TRAN-033, TRAN-034, TRAN-035, TRAN-036, TRAN-037, TRAN-038, TRAN-039, TRAN-040, TRAN-041, TRAN-042, TRAN-043, TRAN-044, TRAN-045, TRAN-046, TRAN-047, TRAN-048, TRAN-049, TRAN-050, TRAN-051, GAP-001, GAP-002, GAP-003, GAP-004, GAP-007
+1 record(s): GAP-001
 
-### SRC-038 — `config/status-vocabulary.config.js`
+### SRC-038 — `shared/shell.js`
 
-15 record(s): STAT-032, STAT-033, STAT-034, STAT-035, STAT-036, STAT-037, STAT-038, TRAN-052, TRAN-053, TRAN-054, TRAN-055, TRAN-056, GAP-005, GAP-006, GAP-007
+1 record(s): NOTIF-138
 
-### SRC-039 — `config/assignment-cascade.config.js`
+### SRC-039 — `shared/welcome-runtime.js`
 
-14 record(s): RULE-001, RULE-002, RULE-003, RULE-004, RULE-005, RULE-006, MON-042, MON-043, MON-044, MON-045, MON-046, MON-047, GAP-008, GAP-009
+1 record(s): NOTIF-139
 
-### SRC-040 — `config/acknowledgement-flow.config.js`
+### SRC-040 — `shared/accessibility.js`
+
+_No record cites this source directly._
+
+### SRC-041 — `shared/components.js`
+
+_No record cites this source directly._
+
+### SRC-042 — `shared/design-system-adapter.js`
+
+_No record cites this source directly._
+
+### SRC-043 — `shared/figma-uiux-runtime.js`
+
+_No record cites this source directly._
+
+### SRC-044 — `shared/relationship-runtime.js`
+
+_No record cites this source directly._
+
+### SRC-045 — `shared/workspace-guide.js`
+
+_No record cites this source directly._
+
+### SRC-046 — `core/lifecycle.js`
+
+88 record(s): STAT-001, STAT-002, STAT-003, STAT-004, STAT-005, STAT-006, STAT-007, STAT-008, STAT-009, STAT-010, STAT-011, STAT-012, STAT-013, STAT-014, STAT-015, STAT-016, STAT-017, STAT-018, STAT-019, STAT-020, STAT-021, STAT-022, STAT-023, STAT-024, STAT-025, STAT-026, STAT-027, STAT-028, STAT-029, STAT-030, STAT-031, TRAN-001, TRAN-002, TRAN-003, TRAN-004, TRAN-005, TRAN-006, TRAN-007, TRAN-008, TRAN-009, TRAN-010, TRAN-011, TRAN-012, TRAN-013, TRAN-014, TRAN-015, TRAN-016, TRAN-017, TRAN-018, TRAN-019, TRAN-020, TRAN-021, TRAN-022, TRAN-023, TRAN-024, TRAN-025, TRAN-026, TRAN-027, TRAN-028, TRAN-029, TRAN-030, TRAN-031, TRAN-032, TRAN-033, TRAN-034, TRAN-035, TRAN-036, TRAN-037, TRAN-038, TRAN-039, TRAN-040, TRAN-041, TRAN-042, TRAN-043, TRAN-044, TRAN-045, TRAN-046, TRAN-047, TRAN-048, TRAN-049, TRAN-050, TRAN-051, GAP-003, GAP-004, GAP-005, GAP-006, GAP-009, GAP-010
+
+### SRC-047 — `config/status-vocabulary.config.js`
+
+16 record(s): STAT-032, STAT-033, STAT-034, STAT-035, STAT-036, STAT-037, STAT-038, TRAN-052, TRAN-053, TRAN-054, TRAN-055, TRAN-056, GAP-007, GAP-008, GAP-009, GAP-010
+
+### SRC-048 — `config/assignment-cascade.config.js`
+
+14 record(s): RULE-001, RULE-002, RULE-003, RULE-004, RULE-005, RULE-006, MON-055, MON-056, MON-057, MON-058, MON-059, MON-060, GAP-011, GAP-012
+
+### SRC-049 — `core/assignment-cascade.js`
+
+1 record(s): GAP-012
+
+### SRC-050 — `config/acknowledgement-flow.config.js`
 
 1 record(s): CTRL-058
 
-### SRC-041 — `core/retention.js`
+### SRC-051 — `core/retention.js`
 
-7 record(s): RULE-007, RULE-008, RULE-009, RULE-010, RULE-011, RULE-012, GAP-010
+7 record(s): RULE-007, RULE-008, RULE-009, RULE-010, RULE-011, RULE-012, GAP-013
 
-### SRC-042 — `config/support-routing.config.js`
+### SRC-052 — `styles/app.css`
 
-14 record(s): VAR-009, VAR-010, VAR-011, VAR-012, VAR-013, VAR-014, VAR-015, RULE-013, RULE-014, RULE-015, RULE-016, RULE-017, RULE-018, RULE-019
+4 record(s): VAR-009, VAR-010, VAR-011, GAP-015
 
-### SRC-043 — `config/priority.config.js`
+### SRC-053 — `config/support-routing.config.js`
 
-_No record cites this source directly._
+14 record(s): VAR-012, VAR-013, VAR-014, VAR-015, VAR-016, VAR-017, VAR-018, RULE-013, RULE-014, RULE-015, RULE-016, RULE-017, RULE-018, RULE-019
 
-### SRC-044 — `config/receipt-ledger.config.js`
-
-_No record cites this source directly._
-
-### SRC-045 — `config/browser-certification.config.js`
+### SRC-054 — `config/priority.config.js`
 
 _No record cites this source directly._
 
-### SRC-046 — `config/performance-budget.config.js`
+### SRC-055 — `config/receipt-ledger.config.js`
 
 _No record cites this source directly._
 
-### SRC-047 — `tests`
+### SRC-056 — `config/browser-certification.config.js`
 
-1 record(s): GAP-020
+_No record cites this source directly._
+
+### SRC-057 — `config/performance-budget.config.js`
+
+_No record cites this source directly._
+
+### SRC-058 — `core/auth.js`
+
+1 record(s): GAP-016
+
+### SRC-059 — `config/auth.config.js`
+
+1 record(s): GAP-016
+
+### SRC-060 — `tests`
+
+1 record(s): GAP-024

@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'diagnostics' |
 | Category | User-initiated · operational |
 | Description | System health, connectivity and configuration checks. Restricted to IT. |
+| Description declared in the artifact itself | — |
 | Business objective | System health, connectivity and configuration checks. Restricted to IT. |
 | Operational objective | Boundary role 'certification-health'. Owns run-checks, contract-health, route-health, governance-health, release-blockers; must not own configuration-edit, business-action. |
 | Process owner | The diagnostics module, per the per-action governance table. |
@@ -104,7 +105,7 @@ _No monitoring control, metric, service-level expectation or audit event is evid
 
 | ID | Name | Kind | Differs from the primary path | Activation |
 | --- | --- | --- | --- | --- |
-| VAR-013 | Support request — Offline / Queue Issue | Conditional variant selected by the reported category | A support request of category 'Offline / Queue Issue' is routed to the diagnostics workspace at severity high, rather than into a single support queue. | The requester selects category 'offline-queue'. |
+| VAR-016 | Support request — Offline / Queue Issue | Conditional variant selected by the reported category | A support request of category 'Offline / Queue Issue' is routed to the diagnostics workspace at severity high, rather than into a single support queue. | The requester selects category 'offline-queue'. |
 
 ## Operational status
 

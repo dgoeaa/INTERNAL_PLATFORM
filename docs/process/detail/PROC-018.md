@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'executive' |
 | Category | User-initiated · operational |
 | Description | Executive review and decision surface for DG/CEO correspondence and exceptions. |
+| Description declared in the artifact itself | — |
 | Business objective | Executive review and decision surface for DG/CEO correspondence and exceptions. |
 | Operational objective | Boundary role 'executive-exception-authority'. Owns executive-approve, executive-return, executive-escalate, request-clarification; must not own routine-approval-queue, task-execution. |
 | Process owner | The executive module, per the per-action governance table. |
@@ -41,8 +42,11 @@
 
 | Step | Name | Responsible | Kind |
 | --- | --- | --- | --- |
-| STEP-0022 | Add the minute | executive workspace | Manual — operator-initiated |
-| STEP-0023 | Route the task | single-assignment workspace | Manual — operator-initiated |
+| STEP-0029 | Add the minute | executive workspace | Manual — operator-initiated |
+| STEP-0030 | Route the task | single-assignment workspace | Manual — operator-initiated |
+| STEP-0031 | Record the executive approval | executive workspace | Manual — operator-initiated |
+| STEP-0032 | Return the item to the sender | executive workspace | Manual — operator-initiated |
+| STEP-0033 | Delegate the item | executive workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -60,17 +64,23 @@
 
 | Step | Required inputs |
 | --- | --- |
-| STEP-0022 | The record the operator has selected, and any values captured by the form attached to the control. |
-| STEP-0023 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0029 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0030 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0031 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0032 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0033 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
-2 step(s).
+5 step(s).
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STEP-0022 | 1 | Add the minute | modules/executive.js | executive workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: executive.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:executive-minute | Confirmed | No external validation required | SRC-018 SRC-035 |
-| STEP-0023 | 2 | Route the task | modules/executive.js | single-assignment workspace | An operator activates the control that raises this action. | executive is a declared allowed invoker; ownership of the action rests with single-assignment.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls createTask. | Ownership: single-assignment; allowed invokers executive.<br>Backend: SINGLE_ASSIGNMENT. | Not evidenced for this action. | An updated record in application state. | — | — | — | SINGLE_ASSIGNMENT | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:task-routed | Confirmed | No external validation required | SRC-018 SRC-035 |
+| STEP-0029 | 1 | Add the minute | modules/executive.js | executive workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: executive.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:executive-minute | Confirmed | No external validation required | SRC-018 SRC-035 |
+| STEP-0030 | 2 | Route the task | modules/executive.js | single-assignment workspace | An operator activates the control that raises this action. | executive is a declared allowed invoker; ownership of the action rests with single-assignment.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls createTask. | Ownership: single-assignment; allowed invokers executive.<br>Backend: SINGLE_ASSIGNMENT. | Not evidenced for this action. | An updated record in application state. | — | — | — | SINGLE_ASSIGNMENT | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:task-routed | Confirmed | No external validation required | SRC-018 SRC-035 |
+| STEP-0031 | 3 | Record the executive approval | modules/executive.js | executive workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls governedTransition. | Ownership: executive.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:executive-approved | Inferred | No external validation required | SRC-018 SRC-035 |
+| STEP-0032 | 4 | Return the item to the sender | modules/executive.js | executive workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls governedTransition. | Ownership: executive.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:executive-returned | Inferred | No external validation required | SRC-018 SRC-035 |
+| STEP-0033 | 5 | Delegate the item | modules/executive.js | executive workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls governedTransition. | Ownership: executive.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:executive-escalated | Inferred | No external validation required | SRC-018 SRC-035 |
 
 ## 5.6 Decisions and branches
 
@@ -109,15 +119,21 @@ _No exception path is evidenced in this process. Where the process is a request-
 
 | ID | Kind | Name | Description | Threshold | Escalation threshold | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| MON-021 | Audit event | Audit event audit:executive-minute | The governance table binds action 'append-minute' to the audit vocabulary 'audit:executive-minute'. | — | — | Confirmed |
-| MON-022 | Audit event | Audit event audit:task-routed | The governance table binds action 'route-task' to the audit vocabulary 'audit:task-routed'. | — | — | Confirmed |
+| MON-028 | Audit event | Audit event audit:executive-minute | The governance table binds action 'append-minute' to the audit vocabulary 'audit:executive-minute'. | — | — | Confirmed |
+| MON-029 | Audit event | Audit event audit:task-routed | The governance table binds action 'route-task' to the audit vocabulary 'audit:task-routed'. | — | — | Confirmed |
+| MON-030 | Audit event | Audit event audit:executive-approved | The governance table binds action 'executive-approve' to the audit vocabulary 'audit:executive-approved'. | — | — | Confirmed |
+| MON-031 | Audit event | Audit event audit:executive-returned | The governance table binds action 'executive-return' to the audit vocabulary 'audit:executive-returned'. | — | — | Confirmed |
+| MON-032 | Audit event | Audit event audit:executive-escalated | The governance table binds action 'executive-escalate' to the audit vocabulary 'audit:executive-escalated'. | — | — | Confirmed |
 
 ### Audit events written by this process
 
 | Step | Audit event |
 | --- | --- |
-| STEP-0022 Add the minute | audit:executive-minute |
-| STEP-0023 Route the task | audit:task-routed |
+| STEP-0029 Add the minute | audit:executive-minute |
+| STEP-0030 Route the task | audit:task-routed |
+| STEP-0031 Record the executive approval | audit:executive-approved |
+| STEP-0032 Return the item to the sender | audit:executive-returned |
+| STEP-0033 Delegate the item | audit:executive-escalated |
 
 ## Relationships
 
@@ -129,6 +145,14 @@ _No exception path is evidenced in this process. Where the process is a request-
 | SUBPROC-040 | Return the item to the sender | Reusable governed write | An operator activates the control bound to this action. |
 | SUBPROC-041 | Delegate the item | Reusable governed write | An operator activates the control bound to this action. |
 | SUBPROC-042 | Add the minute | Reusable governed write | An operator activates the control bound to this action. |
+
+### Variants
+
+| ID | Name | Kind | Differs from the primary path | Activation |
+| --- | --- | --- | --- | --- |
+| VAR-009 | Executive decision hub — as DGCEO | Role-specific variant | The same workspace, with a different set of decision panels shown. The rendered root carries class role-DGCEO, and the stylesheet hides the panels the other roles own. | role(profile.email) resolves to 'DGCEO'. It is derived from substrings of the email address, not from the role model. |
+| VAR-010 | Executive decision hub — as Officer | Role-specific variant | The same workspace, with a different set of decision panels shown. The rendered root carries class role-Officer, and the stylesheet hides the panels the other roles own. | role(profile.email) resolves to 'Officer'. It is derived from substrings of the email address, not from the role model. |
+| VAR-011 | Executive decision hub — as EA | Role-specific variant | The same workspace, with a different set of decision panels shown. The rendered root carries class role-EA, and the stylesheet hides the panels the other roles own. | role(profile.email) resolves to 'EA'. It is derived from substrings of the email address, not from the role model. |
 
 ### Dependencies
 

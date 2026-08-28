@@ -12,6 +12,7 @@
 | Alternative or legacy name | — |
 | Category | Sub-view of a primary workspace |
 | Description | — |
+| Description declared in the artifact itself | — |
 | Business objective | — |
 | Operational objective | — |
 | Process owner | — |
@@ -41,7 +42,7 @@
 
 | Step | Name | Responsible | Kind |
 | --- | --- | --- | --- |
-| STEP-0006 | Archive the reference | archive workspace | Manual — operator-initiated |
+| STEP-0011 | Archive the reference | archive workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -59,7 +60,7 @@
 
 | Step | Required inputs |
 | --- | --- |
-| STEP-0006 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0011 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
@@ -67,7 +68,7 @@
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STEP-0006 | 1 | Archive the reference | modules/archive.js | archive workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls ArchiveService.archiveReference. | Ownership: archive.<br>Backend: ARCHIVE_REFERENCE.optional. | A backend call on ARCHIVE_REFERENCE is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | ARCHIVE_REFERENCE | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:archived | Confirmed | No external validation required | SRC-008 SRC-035 |
+| STEP-0011 | 1 | Archive the reference | modules/archive.js | archive workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls ArchiveService.archiveReference. | Ownership: archive.<br>Backend: ARCHIVE_REFERENCE.optional. | A backend call on ARCHIVE_REFERENCE is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | ARCHIVE_REFERENCE | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:archived | Confirmed | No external validation required | SRC-008 SRC-035 |
 
 ## 5.6 Decisions and branches
 
@@ -115,13 +116,13 @@ _No exception path is evidenced in this process. Where the process is a request-
 
 | ID | Kind | Name | Description | Threshold | Escalation threshold | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| MON-006 | Audit event | Audit event audit:archived | The governance table binds action 'archive-reference' to the audit vocabulary 'audit:archived'. | — | — | Confirmed |
+| MON-011 | Audit event | Audit event audit:archived | The governance table binds action 'archive-reference' to the audit vocabulary 'audit:archived'. | — | — | Confirmed |
 
 ### Audit events written by this process
 
 | Step | Audit event |
 | --- | --- |
-| STEP-0006 Archive the reference | audit:archived |
+| STEP-0011 Archive the reference | audit:archived |
 
 ## Relationships
 

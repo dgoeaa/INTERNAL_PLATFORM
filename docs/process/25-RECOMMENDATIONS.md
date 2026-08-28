@@ -14,11 +14,11 @@ show is needed.
 
 | # | Recommendation | Closes | Owner needed | Done when |
 | --- | --- | --- | --- | --- |
-| 1 | Bind an escalation to each service-level clock: name who is told on breach, what changes, and which lifecycle state the record enters. | GAP-009 | Operational owner | A rule exists that fires on clock expiry, and a record in breach is distinguishable from one that is not. |
-| 2 | State a server-side authorisation posture for every endpoint: trigger authentication type and the role check applied before the work is done. | GAP-012 | Security or access authority | Each endpoint names its authentication type, and a call bypassing the client is refused. |
+| 1 | Fire the escalation that already exists. Breach is computed and the escalation and notification actions are built; add the scheduled check or flow that raises them when a clock expires, rather than waiting for an operator to open the FastTrack workspace. | — | Operational owner | A rule exists that fires on clock expiry, and a record in breach is distinguishable from one that is not. |
+| 2 | State a server-side authorisation posture for every endpoint: trigger authentication type and the role check applied before the work is done. | — | Security or access authority | Each endpoint names its authentication type, and a call bypassing the client is refused. |
 | 3 | Give every workflow an owner, a one-sentence purpose and a criticality grade. | — | Technical owner | No automated process in document 7 has a blank owner, purpose or criticality. |
-| 4 | Reconcile the two status models: give every lifecycle state a declared public status, or merge the models. | GAP-005 GAP-006 GAP-007 | Business owner | A citizen viewing a record and an officer holding it see states that correspond by declaration, not by reading. |
-| 5 | Supply the reference data the assignment cascade reads its routing matrix from, and confirm each mapping, priority and clock in it against the agency structure. | GAP-008 | Business owner | The live matrix is catalogued row by row, and the rules documented here are the agency's routing rather than the cascade's fallback. |
+| 4 | Reconcile the two status models: give every lifecycle state a declared public status, or merge the models. | GAP-007 GAP-008 GAP-009 | Business owner | A citizen viewing a record and an officer holding it see states that correspond by declaration, not by reading. |
+| 5 | Supply the reference data the assignment cascade reads its routing matrix from, and confirm each mapping, priority and clock in it against the agency structure. | GAP-011 | Business owner | The live matrix is catalogued row by row, and the rules documented here are the agency's routing rather than the cascade's fallback. |
 
 ## Priority 2 — the documentation cannot be completed without these
 
@@ -26,8 +26,8 @@ show is needed.
 | --- | --- | --- | --- | --- |
 | 6 | Supply a tenant export for every workflow currently evidenced only by a run record or only by a design package. | — | Technical owner | Every endpoint that answers a caller has a catalogued action graph. |
 | 7 | Add a catch scope to every request-triggered workflow that lacks one, returning the contracted response shape on failure. | — | Technical owner | No request-triggered workflow can return an uncontracted shape. |
-| 8 | Join every endpoint alias to the workflow that answers it, by identifier. Never by URL: a trigger URL carries a bearer token. | GAP-011 | Technical owner | Document 21 resolves from a client step to the workflow serving it without a break. |
-| 9 | Cite the records-management instrument each retention period derives from. | GAP-010 | Business owner | Every retention class names its authority. |
+| 8 | Join every endpoint alias to the workflow that answers it, by identifier. Never by URL: a trigger URL carries a bearer token. | GAP-014 | Technical owner | Document 21 resolves from a client step to the workflow serving it without a break. |
+| 9 | Cite the records-management instrument each retention period derives from. | GAP-013 | Business owner | Every retention class names its authority. |
 | 10 | Record one complete citizen journey and one officer journey, end to end, so a journey map can be drawn from evidence rather than invented. | Enables diagram 9 in document 20 | Product owner | A journey map exists whose every step cites a captured observation. |
 
 ## Priority 3 — completeness of the record

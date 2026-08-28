@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'assistant' |
 | Category | User-initiated · operational |
 | Description | Contextual guidance for the DGO operating model — not a module of record. |
+| Description declared in the artifact itself | — |
 | Business objective | Contextual guidance for the DGO operating model — not a module of record. |
 | Operational objective | Boundary role 'governed-ai-assist'. Owns ask, summarize, suggest-next-action; must not own raw-state-access, unauthorized-action. |
 | Process owner | — |
@@ -41,7 +42,7 @@
 
 | Step | Name | Responsible | Kind |
 | --- | --- | --- | --- |
-| STEP-0007 | ask | assistant workspace | Manual — operator-initiated |
+| STEP-0012 | ask | assistant workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -59,7 +60,7 @@
 
 | Step | Required inputs |
 | --- | --- |
-| STEP-0007 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0012 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
@@ -67,7 +68,7 @@
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STEP-0007 | 1 | ask | modules/assistant.js | assistant workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Performs the governed write declared for this action. | — | Not evidenced for this action. | An updated record in application state. | — | — | — | — | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | — | Partially evidenced | No external validation required | SRC-009 |
+| STEP-0012 | 1 | ask | modules/assistant.js | assistant workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Performs the governed write declared for this action. | — | Not evidenced for this action. | An updated record in application state. | — | — | — | — | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | — | Partially evidenced | No external validation required | SRC-009 |
 
 ## 5.6 Decisions and branches
 
@@ -117,7 +118,7 @@ _No monitoring control, metric, service-level expectation or audit event is evid
 
 | ID | Name | Kind | Differs from the primary path | Activation |
 | --- | --- | --- | --- | --- |
-| VAR-009 | Support request — Access Error | Conditional variant selected by the reported category | A support request of category 'Access Error' is routed to the assistant workspace at severity high, rather than into a single support queue. | The requester selects category 'access-error'. |
+| VAR-012 | Support request — Access Error | Conditional variant selected by the reported category | A support request of category 'Access Error' is routed to the assistant workspace at severity high, rather than into a single support queue. | The requester selects category 'access-error'. |
 
 ## Operational status
 

@@ -9,11 +9,11 @@
 
 | Classification | Meaning | Confidence | Records so classified |
 | --- | --- | --- | --- |
-| Confirmed | A supplied artifact states this directly. Reading that artifact is sufficient to establish it. | High | 571 |
-| Inferred | Derived by reasoning across two or more artifacts. No single artifact states it. | Medium | 0 |
-| Partially evidenced | Some attributes are stated by an artifact and others are not. The record says which is which. | Medium | 22 |
-| Conflicting | Two artifacts disagree. Both readings are recorded; neither is silently preferred. | Low | 5 |
-| Unavailable | The information is required by this standard and no supplied artifact carries it. | None | 12 |
+| Confirmed | A supplied artifact states this directly. Reading that artifact is sufficient to establish it. | High | 598 |
+| Inferred | Derived by reasoning across two or more artifacts. No single artifact states it. | Medium | 13 |
+| Partially evidenced | Some attributes are stated by an artifact and others are not. The record says which is which. | Medium | 23 |
+| Conflicting | Two artifacts disagree. Both readings are recorded; neither is silently preferred. | Low | 8 |
+| Unavailable | The information is required by this standard and no supplied artifact carries it. | None | 11 |
 | Not verifiable from the supplied inputs | The artifact exists but does not permit the statement to be checked from the supplied inputs alone. | None | 0 |
 | Requires authoritative validation | Readable from an artifact, but the artifact is not authoritative for it. A named owner must confirm. | Low | 9 |
 
@@ -24,7 +24,7 @@ it is not the authority for it. That is carried separately:
 
 | Validation status | Records |
 | --- | --- |
-| No external validation required | 244 |
+| No external validation required | 265 |
 | Requires confirmation against the live tenant | 20 |
 | Requires confirmation by the registry owner | 12 |
 | Requires confirmation by the named owner | 2 |

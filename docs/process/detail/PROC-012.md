@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'approvals' |
 | Category | User-initiated · operational |
 | Description | Review, return, reject or approve work with audit trail and executive escalation. |
+| Description declared in the artifact itself | — |
 | Business objective | Review, return, reject or approve work with audit trail and executive escalation. |
 | Operational objective | Boundary role 'standard-review-authority'. Owns approve, approve-with-edit, return, reject, review-minute; must not own executive-exception-only, dispatch-execution. |
 | Process owner | The approvals module, per the per-action governance table. |
@@ -41,7 +42,9 @@
 
 | Step | Name | Responsible | Kind |
 | --- | --- | --- | --- |
-| STEP-0005 | Raise the approval request | approvals workspace | Manual — operator-initiated |
+| STEP-0008 | Raise the approval request | approvals workspace | Manual — operator-initiated |
+| STEP-0009 | Record the approval | approvals workspace | Manual — operator-initiated |
+| STEP-0010 | Record the rejection | approvals workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -59,15 +62,19 @@
 
 | Step | Required inputs |
 | --- | --- |
-| STEP-0005 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0008 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0009 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0010 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
-1 step(s).
+3 step(s).
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STEP-0005 | 1 | Raise the approval request | modules/approvals.js | approvals workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: approvals.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:approval-requested | Confirmed | No external validation required | SRC-007 SRC-035 |
+| STEP-0008 | 1 | Raise the approval request | modules/approvals.js | approvals workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: approvals.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:approval-requested | Confirmed | No external validation required | SRC-007 SRC-035 |
+| STEP-0009 | 2 | Record the approval | modules/approvals.js | approvals workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls governedTransition. | Ownership: approvals.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:approved | Confirmed | No external validation required | SRC-007 SRC-035 |
+| STEP-0010 | 3 | Record the rejection | modules/approvals.js | approvals workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls governedTransition. | Ownership: approvals.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:rejected | Confirmed | No external validation required | SRC-007 SRC-035 |
 
 ## 5.6 Decisions and branches
 
@@ -100,13 +107,17 @@ _No exception path is evidenced in this process. Where the process is a request-
 
 | ID | Kind | Name | Description | Threshold | Escalation threshold | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| MON-005 | Audit event | Audit event audit:approval-requested | The governance table binds action 'create-approval' to the audit vocabulary 'audit:approval-requested'. | — | — | Confirmed |
+| MON-008 | Audit event | Audit event audit:approval-requested | The governance table binds action 'create-approval' to the audit vocabulary 'audit:approval-requested'. | — | — | Confirmed |
+| MON-009 | Audit event | Audit event audit:approved | The governance table binds action 'approve' to the audit vocabulary 'audit:approved'. | — | — | Confirmed |
+| MON-010 | Audit event | Audit event audit:rejected | The governance table binds action 'reject' to the audit vocabulary 'audit:rejected'. | — | — | Confirmed |
 
 ### Audit events written by this process
 
 | Step | Audit event |
 | --- | --- |
-| STEP-0005 Raise the approval request | audit:approval-requested |
+| STEP-0008 Raise the approval request | audit:approval-requested |
+| STEP-0009 Record the approval | audit:approved |
+| STEP-0010 Record the rejection | audit:rejected |
 
 ## Relationships
 

@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'briefs' |
 | Category | User-initiated · operational |
 | Description | Prepare and track brief packs raised for an executive decision. |
+| Description declared in the artifact itself | — |
 | Business objective | Prepare and track brief packs raised for an executive decision. |
 | Operational objective | Boundary role 'decision-pack'. Owns create-brief, submit-brief, decide-brief; must not own intake-master, registry-custody, archive-execution, task-execution. |
 | Process owner | The briefs module, per the per-action governance table. |
@@ -41,7 +42,9 @@
 
 | Step | Name | Responsible | Kind |
 | --- | --- | --- | --- |
-| STEP-0008 | Create the brief | briefs workspace | Manual — operator-initiated |
+| STEP-0013 | Create the brief | briefs workspace | Manual — operator-initiated |
+| STEP-0014 | Submit the brief | briefs workspace | Manual — operator-initiated |
+| STEP-0015 | Record the decision on the brief | briefs workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -59,15 +62,19 @@
 
 | Step | Required inputs |
 | --- | --- |
-| STEP-0008 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0013 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0014 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0015 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
-1 step(s).
+3 step(s).
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STEP-0008 | 1 | Create the brief | modules/briefs.js | briefs workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Briefs.create. | Ownership: briefs.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:brief-created | Confirmed | No external validation required | SRC-010 SRC-035 |
+| STEP-0013 | 1 | Create the brief | modules/briefs.js | briefs workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Briefs.create. | Ownership: briefs.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:brief-created | Confirmed | No external validation required | SRC-010 SRC-035 |
+| STEP-0014 | 2 | Submit the brief | modules/briefs.js | briefs workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Briefs.transition. | Ownership: briefs.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:brief-submitted | Confirmed | No external validation required | SRC-010 SRC-035 |
+| STEP-0015 | 3 | Record the decision on the brief | modules/briefs.js | briefs workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Briefs.transition. | Ownership: briefs.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:brief-decided | Confirmed | No external validation required | SRC-010 SRC-035 |
 
 ## 5.6 Decisions and branches
 
@@ -104,13 +111,17 @@ _No exception path is evidenced in this process. Where the process is a request-
 
 | ID | Kind | Name | Description | Threshold | Escalation threshold | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| MON-007 | Audit event | Audit event audit:brief-created | The governance table binds action 'create-brief' to the audit vocabulary 'audit:brief-created'. | — | — | Confirmed |
+| MON-012 | Audit event | Audit event audit:brief-created | The governance table binds action 'create-brief' to the audit vocabulary 'audit:brief-created'. | — | — | Confirmed |
+| MON-013 | Audit event | Audit event audit:brief-submitted | The governance table binds action 'submit-brief' to the audit vocabulary 'audit:brief-submitted'. | — | — | Confirmed |
+| MON-014 | Audit event | Audit event audit:brief-decided | The governance table binds action 'decide-brief' to the audit vocabulary 'audit:brief-decided'. | — | — | Confirmed |
 
 ### Audit events written by this process
 
 | Step | Audit event |
 | --- | --- |
-| STEP-0008 Create the brief | audit:brief-created |
+| STEP-0013 Create the brief | audit:brief-created |
+| STEP-0014 Submit the brief | audit:brief-submitted |
+| STEP-0015 Record the decision on the brief | audit:brief-decided |
 
 ## Relationships
 

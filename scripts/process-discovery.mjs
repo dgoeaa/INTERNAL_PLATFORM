@@ -226,7 +226,85 @@ for (const mod of out.modules) {
   discoverModuleSteps(X, ID, {
     route: mod.route, path: `modules/${mod.route}.js`,
     srcId: SRC(`modules/${mod.route}.js`), ownerProc, ownership,
+    boundaryOwns: mod.features || [],
+    boundarySrcId: has('config/module-boundaries.config.js') ? SRC('config/module-boundaries.config.js') : undefined,
   });
+}
+
+/* Two artifacts authorise a governed action, and the record has to say so. */
+{
+  const ownSrc = 'config/action-ownership.config.js', bSrc = 'config/module-boundaries.config.js';
+  if (has(ownSrc) && has(bSrc)) {
+    const charter = [...new Set(out.modules.flatMap(m => m.features || []))];
+    const specs = Object.keys(ownership);
+    const charterOnly = charter.filter(a => !specs.includes(a));
+    const variableCallers = out.modules
+      .filter(m => has(`modules/${m.route}.js`) && /executeOwnedAction\(\s*'[a-z][a-z-]*'\s*,\s*[A-Za-z_$][A-Za-z0-9_$]*\s*,/.test(R(`modules/${m.route}.js`)))
+      .map(m => m.route);
+    gap({
+      system: 'DGO Internal Platform', module: `${ownSrc} and ${bSrc}`,
+      subject: 'Two artifacts authorise a governed action, and only one of them says what the action does',
+      missing: 'A per-action governance record for every name the runtime will accept, and a stated precedence between the two authorities.',
+      available: `core/action-authority.js accepts an action when the per-action table carries a spec for it OR the module boundary charter lists it in owns[]. The table carries ${specs.length} specs, each naming an owner, a service, an audit vocabulary and a backend requirement. The charter declares ${charter.length} capability names across ${out.modules.length} modules, of which ${charterOnly.length} have no per-action spec. The charter list mixes writes with view capabilities, so its entries cannot be read as actions without checking each one.`,
+      evidence: EV.CONFLICTING,
+      reason: 'An action authorised only by the charter runs with no declared service, no declared audit vocabulary and no declared backend requirement, while an action in the table runs with all four. Nothing states which authority governs when they disagree.',
+      impact: `Governed writes exist that this documentation can name but cannot describe: the FastTrack escalation and owner-notification actions are authorised by the charter alone and carry no audit vocabulary of their own.`,
+      risk: 'A write reaches the system of record without the audit event a reader of the governance table would expect it to write.',
+      authority: 'The platform technical owner, as the owner of both configurations.',
+      ownershipType: 'Technical owner',
+      priority: 'High',
+      resolution: 'Every name the runtime will accept as an action has a per-action record, or the charter states explicitly which of its entries are actions and which are views.',
+      source: [SRC(ownSrc), SRC(bSrc), ...(has('core/action-authority.js') ? [SRC('core/action-authority.js')] : [])],
+    });
+    if (variableCallers.length) {
+      gap({
+        system: 'DGO Internal Platform',
+        subject: 'Some governed writes cannot be named from their call site',
+        missing: 'The action name at the call site, for the modules that pass it as a variable.',
+        available: `${variableCallers.length} module(s) — ${variableCallers.join(', ')} — call executeOwnedAction() with the action passed as a variable. Their actions are recovered from the per-action table and, where the name also appears as a literal in the module, from the boundary charter. Every recovered step is classified Inferred and says which recovery produced it.`,
+        evidence: EV.INFERRED,
+        reason: 'A step recovered by reading two artifacts together is weaker evidence than one read from a single call site, and the difference should not be invisible to a reader.',
+        impact: 'For these modules, the mapping from a control the operator presses to the action it raises is a reading rather than a fact.',
+        risk: 'An action could be raised that no artifact declares, and this documentation would not show it.',
+        authority: 'The module source, if the call sites are changed to name their actions literally.',
+        ownershipType: 'Technical owner',
+        priority: 'Low',
+        resolution: 'Each call site names its action literally, or the module declares the set of names it dispatches.',
+        source: [...new Set(variableCallers.map(r => SRC(`modules/${r}.js`)))],
+      });
+    }
+  }
+}
+
+/* The application shell. Not a workspace, and not previously in scope: shared/ carries the
+   chrome the workspaces render inside. It is scanned here so the review is accountable for it
+   rather than silently skipping a directory of the platform. */
+{
+  const dir = 'shared';
+  const files = ls(dir).filter(f => f.endsWith('.js'));
+  if (files.length) {
+    let notices = 0, writes = 0;
+    for (const f of files) {
+      const path = `${dir}/${f}`, body = R(path);
+      if (/executeOwnedAction\(\s*'/.test(body)) writes += 1;
+      for (const m of body.matchAll(/toast\(\s*'([^']{3,120})'\s*,\s*'(success|error|info|warn)'/g)) {
+        notices += 1;
+        out.notifications.push(compact({
+          id: ID('NOTIF'), name: m[1], process: 'Application shell',
+          channel: 'In-application message to the operator',
+          kind: m[2] === 'error' ? 'Failure notice' : m[2] === 'success' ? 'Completion notice' : 'Informational notice',
+          trigger: `Raised by the shell runtime in ${path}.`,
+          failureBehaviour: 'Not applicable: the notice is rendered in the operator session itself.',
+          evidence: EV.CONFIRMED,
+          evidenceNote: 'The message text and its tone are string literals at the call site.',
+          source: [SRC(path)],
+        }));
+      }
+    }
+    coverage('Application shell and shared runtime', writes ? COV.PARTIAL : COV.FULL,
+      `${files.length} file(s) reviewed. They carry the chrome, the accessibility runtime, the design-system adapter and the welcome experience — presentation, not process. ${writes} carry a governed write; ${notices} operator notice(s) are catalogued from them. The shell is where core/notification-center.js is consumed.`,
+      files.map(f => SRC(`${dir}/${f}`)), 0);
+  }
 }
 
 /* ═════════════ 6. Published integration contracts ═════════════ */
@@ -287,7 +365,10 @@ const flowByName = {};
       category: `Automated · ${kind}`,
       group: 'Flow estate',
       description: `Power Automate workflow carrying ${walked.actionCount} action(s) under ${walked.triggers.length} trigger(s).`,
-      businessPurpose: 'Not evidenced. No supplied artifact states what this workflow is for in business terms; its name and its actions are all the export carries.',
+      declaredDescription: def.description,
+      businessPurpose: def.description
+        ? `The export carries a workflow-level description: ${JSON.stringify(def.description)}. A Power Automate workflow inherits the description of the template it was created from, and an export does not record whether that text was ever edited, so this is evidence of provenance and is NOT established as a statement of what this workflow does.`
+        : 'Not evidenced. No supplied artifact states what this workflow is for in business terms; its name and its actions are all the export carries.',
       operationalPurpose: walked.connectors.length
         ? `Reads from and writes to ${walked.connectors.join(', ')}.`
         : 'Performs run-scoped computation only; no connector is called.',
@@ -315,11 +396,32 @@ const flowByName = {};
       connectors: walked.connectors,
       exportedAtUtc: d?.exportedAtUtc,
       evidence: EV.PARTIAL,
-      evidenceNote: 'Every action, run-after condition, branch and connector call is CONFIRMED from the tenant export and catalogued step by step. What the workflow is FOR, who owns it and how critical it is are NOT evidenced: no supplied artifact states them.',
+      evidenceNote: def.description
+        ? 'Every action, run-after condition, branch and connector call is CONFIRMED from the tenant export and catalogued step by step. A workflow-level description is present but is REQUIRES AUTHORITATIVE VALIDATION: an export does not distinguish a description someone wrote from the one the source template supplied. Owner and criticality are NOT evidenced: no supplied artifact carries either field.'
+        : 'Every action, run-after condition, branch and connector call is CONFIRMED from the tenant export and catalogued step by step. What the workflow is FOR, who owns it and how critical it is are NOT evidenced: no supplied artifact states them.',
+      descriptionValidation: def.description ? VALIDATION.TENANT : undefined,
       documentationStatus: DOCSTATUS.PARTIAL,
       validationStatus: VALIDATION.TENANT,
       source: srcIds,
     }));
+
+    if (def.description) {
+      gap({
+        system: 'Microsoft Power Automate', process: id,
+        subject: `Workflow '${name}' carries a description whose authorship cannot be established`,
+        missing: 'Confirmation of whether the workflow-level description was written for this workflow or inherited unedited from the template it was created from.',
+        available: `The export carries definition.description = ${JSON.stringify(def.description)}.`,
+        evidence: EV.VALIDATE,
+        reason: 'A description inherited from a template describes the template, not the workflow. Treating one as a statement of purpose would put an unverified claim into the authoritative record.',
+        impact: 'The only purpose text this workflow carries cannot be relied on.',
+        risk: 'A reader takes the description as the workflow\'s purpose when it may describe something the workflow does not do.',
+        authority: 'The workflow owner in the tenant.',
+        ownershipType: 'Technical owner',
+        priority: 'Medium',
+        resolution: 'The description is confirmed or replaced with one written for this workflow.',
+        source: srcIds,
+      });
+    }
 
     if (!walked.catchScopes.length && kind === 'System-initiated (HTTP request)') {
       gap({
@@ -423,7 +525,18 @@ const flowByName = {};
       latestStatusSent: latest.sent,
       deliveryConfirmed: v.runs.some(r => r.delivered && r.bodyBytes > 2),
       operationalEvidence: `${v.runs.length} run record(s) captured 2026-08-27. Records execution outcome only: not availability, not latency, and not business-transaction success.`,
-      operationalCaveat: 'No successful business transaction is recorded among these runs. The observed responses are validation, not-found and authorisation rejections.',
+      operationalCaveat: (() => {
+        const ok = v.runs.filter(r => String(r.sent) === '200');
+        const withBody = ok.filter(r => Number(r.bodyBytes) > 2);
+        /* State what the records show, counted, rather than a blanket claim. A 200 is a
+           successful CALL; whether it completed a business transaction is a separate question
+           these records do not answer, and the body size is the only proxy they carry. */
+        return `Of ${v.runs.length} captured run(s): ${ok.length} returned HTTP 200`
+          + (ok.length ? `, ${withBody.length} of them with a body larger than an empty object` : '')
+          + `; ${v.runs.filter(r => String(r.sent) === '0').length} did not complete (status 0)`
+          + `; the remainder returned ${[...new Set(v.runs.map(r => String(r.sent)).filter(x => x !== '200' && x !== '0'))].sort().join(', ') || 'no other status'}.`
+          + ' A returned status records that the endpoint answered. It does not record that a business transaction completed, and nothing in these records establishes that one did.';
+      })(),
     };
     if (proc) {
       Object.assign(proc, rec);
@@ -704,6 +817,83 @@ const statIdByName = {};
   }
 }
 
+/* ═════════════ 10b. The stored correspondence status vocabulary — a third status model ═══
+ *
+ * The workspace modules do not run on the lifecycle. They run on a five-value list declared in
+ * modules/correspondence.js, and it is that list the internal-to-public map translates. So the
+ * estate carries three status vocabularies, not two, and the one an officer actually sees in the
+ * intake workspace is neither the lifecycle nor the public one. Documenting only two would leave
+ * out the vocabulary with the widest reach across the operator surface.
+ */
+{
+  const p = 'modules/correspondence.js';
+  const m = has(p) && R(p).match(/statusList\s*=\s*\[([^\]]*)\]/);
+  if (m) {
+    const s = SRC(p);
+    const stored = (m[1].match(/'([^']+)'/g) || []).map(x => x.slice(1, -1));
+    /* A module is counted as using this vocabulary only when it carries several of its values.
+       A single match on one value is not evidence: 'Pending', 'Declined' and 'Archived' are
+       ordinary words that also belong to other status sets in this estate — modules/registry.js
+       carries 'Archived' as a REGISTRY FILE state, not a correspondence status — and a string
+       alone does not say which vocabulary it came from. */
+    const usage = out.modules
+      .filter(mod => has(`modules/${mod.route}.js`))
+      .map(mod => {
+        const body = R(`modules/${mod.route}.js`);
+        return { route: mod.route, hits: stored.filter(v => new RegExp(`'${v}'`).test(body)) };
+      })
+      .filter(x => x.hits.length);
+    const users = usage.filter(x => x.hits.length >= 3).map(x => x.route);
+    const ambiguous = usage.filter(x => x.hits.length < 3).map(x => `${x.route} (${x.hits.join(', ')})`);
+    for (const st of stored) {
+      out.statuses.push(compact({
+        id: ID('STAT'), name: st, model: 'Stored correspondence status',
+        kind: 'Operator-facing stored value',
+        description: `Value '${st}' of the status list the intake workspace renders and filters on.`,
+        entryCondition: 'Not evidenced. The list declares the values, not the events that set them.',
+        permittedActions: 'Not evidenced. No guard restricts movement between these values.',
+        restrictedActions: 'None evidenced: unlike the lifecycle, this vocabulary has no transition guard.',
+        responsibleActor: `An operator working in one of the ${users.length} module(s) that carry three or more values of this vocabulary.`,
+        exitCondition: 'Not evidenced.',
+        possibleNextStates: 'Not declared. This vocabulary is a flat list, not a transition map.',
+        reversalConditions: 'Not evidenced.',
+        timeLimits: 'Not evidenced.',
+        escalationConditions: 'Not evidenced.',
+        relatedNotifications: 'Not evidenced.',
+        auditBehaviour: 'Not evidenced for the status value itself; audit vocabulary is bound to governed actions.',
+        usedByModules: users,
+        alsoAppearsIn: ambiguous.length
+          ? `${ambiguous.length} further module(s) carry exactly one of these values, which does not establish which vocabulary it belongs to: ${ambiguous.join('; ')}.`
+          : undefined,
+        evidence: EV.CONFIRMED,
+        evidenceNote: 'Read from the status list declared in the intake workspace module, which renders the filter and the badge from it.',
+        validationStatus: VALIDATION.NONE,
+        source: [s],
+      }));
+    }
+    const lifeStates = new Set(out.statuses.filter(x => x.model === 'Internal correspondence lifecycle').map(x => x.name));
+    const overlap = stored.filter(x => lifeStates.has(x.toLowerCase()));
+    gap({
+      system: 'DGO Internal Platform',
+      subject: 'Three status vocabularies govern the same records, and the widest one has no guard',
+      missing: 'A declared relationship between the lifecycle states and the stored status values, and a guard over the stored values.',
+      available: `${lifeStates.size} lifecycle states in core/lifecycle.js, used by ${['core/metrics-service.js', 'core/entity-store.js', 'core/dispatch-service.js'].filter(has).length + 1} core file(s); ${stored.length} stored values in modules/correspondence.js, carried in full or near-full by ${users.length} workspace module(s) (${users.join(', ')}) and in single-value form by ${ambiguous.length} more where the vocabulary cannot be established from the string; ${out.statuses.filter(x => x.model === 'Governed public status vocabulary').length} public values. The declared internal-to-public map translates the STORED values, not the lifecycle states. The vocabularies share ${overlap.length} name(s) (${overlap.join(', ') || 'none'}) by coincidence of spelling, not by declaration.`,
+      evidence: EV.CONFLICTING,
+      reason: 'The lifecycle carries the transition guard and the entry preconditions. The vocabulary the operator surface actually uses carries neither, and nothing declares how a record in one is expressed in the other.',
+      impact: 'The documented lifecycle controls do not demonstrably apply to the status an officer sets in the intake workspace, and a record moving through the lifecycle has no evidenced effect on what a citizen is shown.',
+      risk: 'A governed transition can be bypassed by writing the stored value directly, and the two can disagree about the same record with nothing to detect it.',
+      authority: 'The process owner for the correspondence lifecycle, with the platform technical owner.',
+      ownershipType: 'Process owner',
+      priority: 'High',
+      resolution: 'One vocabulary governs, or each value in every vocabulary declares its counterpart in the others and a guard enforces it.',
+      source: [s, ...(has('core/lifecycle.js') ? [SRC('core/lifecycle.js')] : []), ...(has('config/status-vocabulary.config.js') ? [SRC('config/status-vocabulary.config.js')] : [])],
+    });
+    coverage('Stored correspondence status vocabulary', COV.PARTIAL,
+      `${stored.length} values declared, and carried by ${users.length} workspace module(s) in full or near-full form. Entry conditions, exit conditions, permitted actions and audit behaviour are not evidenced for any of them, and no guard governs movement between them. A further ${ambiguous.length} module(s) carry a single one of these values; a lone common word does not establish which status set it belongs to, and those are not counted as users.`,
+      [s], 0);
+  }
+}
+
 /* ═════════════ 11. Routing and service-level rules ═════════════ */
 {
   const p = 'config/assignment-cascade.config.js';
@@ -748,7 +938,7 @@ const statIdByName = {};
         kind: 'Service-level expectation',
         description: `Acknowledgement within ${m[8]} day(s); completion within ${m[9]} day(s), at priority ${m[7]}.`,
         threshold: `acknowledge ${m[8]}d / complete ${m[9]}d`,
-        escalationThreshold: 'Not evidenced. The matrix sets the clocks; no supplied artifact states what happens when one expires.',
+        escalationThreshold: 'The clock is the threshold, and breach against it is computed and displayed by the FastTrack workspace. No artifact binds its expiry to an automatic escalation or notification; both exist as operator-initiated actions only.',
         alerting: 'Not evidenced.',
         reportingOutput: 'Not evidenced.',
         evidence: EV.PARTIAL,
@@ -785,18 +975,18 @@ const statIdByName = {};
       });
       gap({
         system: 'DGO Internal Platform', module: 'config/assignment-cascade.config.js',
-        subject: 'No escalation behaviour is bound to the service-level clocks',
-        missing: 'What happens when an acknowledgement or completion clock expires: who is told, what changes, what state the record enters.',
-        available: `${n} rows carrying acknowledgement and completion day counts.`,
-        evidence: EV.UNAVAILABLE,
-        reason: 'A clock with no consequence is a measurement, not a control.',
-        impact: 'Breach is undetectable from the supplied inputs and no escalation is documented.',
-        risk: 'Overdue matters accumulate with no evidenced trigger for intervention.',
+        subject: 'Nothing fires an escalation when a service-level clock expires',
+        missing: 'An automatic trigger: a scheduled check, a flow, or a rule that raises the escalation when the acknowledgement or completion date passes.',
+        available: `${n} routing rows carrying acknowledgement and completion day counts, which core/assignment-cascade.js turns into dated ack and due fields on the assignment. Breach IS detected — modules/fasttrack.js classifies every tracked item Breached, Due soon or Unassigned against its due date and reports the counts. Escalation IS available — governed actions raise an escalation level, force priority to urgent, write an escalation record, queue an owner notification, and resolve an open escalation. Every one of them requires an operator to press a control.`,
+        evidence: EV.PARTIAL,
+        reason: 'The detection and the response both exist; only the connection between the clock and the response is missing. A clock whose expiry raises nothing is a measurement, not a control.',
+        impact: 'A breach is visible only to someone who opens the FastTrack workspace and looks. Nothing reaches an owner who does not.',
+        risk: 'Overdue matters accumulate unseen between visits to the workspace.',
         authority: 'The process owner for the correspondence lifecycle.',
         ownershipType: 'Operational owner',
         priority: 'High',
-        resolution: 'An escalation rule exists, bound to the clock, naming the recipient and the resulting state.',
-        source: [s],
+        resolution: 'A scheduled check or a flow raises the escalation and the notification when a clock expires, without waiting for an operator to open a screen.',
+        source: [s, ...(has('modules/fasttrack.js') ? [SRC('modules/fasttrack.js')] : []), ...(has('core/assignment-cascade.js') ? [SRC('core/assignment-cascade.js')] : [])],
       });
     }
     coverage('Routing and service-level rules', isFallback ? COV.INSUFFICIENT : provisional ? COV.CONFLICT : COV.FULL,
@@ -940,6 +1130,60 @@ const statIdByName = {};
       }));
     }
   }
+  /* A role-specific variant, and a third authority for what a role is. modules/executive.js
+     derives DGCEO / EA / Officer from substrings of the signed-in email address — not from the
+     RBAC role model and not from the persona — and the panels each sees are separated by CSS
+     display rules. Both halves are evidenced; both belong in the record. */
+  {
+    const ex = 'modules/executive.js', css = 'styles/app.css';
+    const body = has(ex) ? R(ex) : '';
+    /* Take the role names from the stylesheet, not from the function body: the function's
+       string literals include the email substrings it MATCHES ('dg@', 'dgs', 'registry') as
+       well as the values it RETURNS, and only the returned values are role names. The
+       stylesheet keys on the returned values, so it is the reliable list. */
+    const cssText = has(css) ? R(css) : '';
+    const roles = [...new Set((cssText.match(/\.role-([A-Za-z]+)\s/g) || [])
+      .map(x => x.trim().slice(6))
+      .filter(r => new RegExp(`return[^;]*'${r}'|\\?\\s*'${r}'|:\\s*'${r}'`).test(body)))];
+    const cssRules = (cssText.match(/\.role-[A-Za-z]+[^{]*\{[^}]*\}/g) || []);
+    if (roles.length && cssRules.length) {
+      const s3 = SRC(ex), s4 = SRC(css);
+      for (const r of roles) {
+        out.variants.push(compact({
+          id: ID('VAR'), name: `Executive decision hub — as ${r}`,
+          variantOf: 'Executive decision hub', parentProcess: procByKey.executive || "Workspace 'executive'",
+          kind: 'Role-specific variant',
+          differsFrom: `The same workspace, with a different set of decision panels shown. The rendered root carries class role-${r}, and the stylesheet hides the panels the other roles own.`,
+          activationCondition: `role(profile.email) resolves to '${r}'. It is derived from substrings of the email address, not from the role model.`,
+          participants: [`A person whose email resolves to ${r}`],
+          stepsChanged: 'No step is added or removed. The controls that raise the steps are hidden or shown.',
+          rulesApplied: cssRules.join(' '),
+          outputs: 'Identical where the control is reachable.',
+          completionCondition: 'Identical to the primary path.',
+          currentStatus: 'Current',
+          evidence: EV.CONFIRMED,
+          evidenceNote: 'The role function, the class it sets and the stylesheet rules that act on it are all read directly.',
+          source: [s3, s4],
+        }));
+      }
+      gap({
+        system: 'DGO Internal Platform', module: ex, process: procByKey.executive,
+        subject: 'A third role authority, derived from the email address and enforced by stylesheet',
+        missing: 'A statement of which authority governs, and an enforcement that does not rely on presentation.',
+        available: `modules/executive.js derives ${roles.join(', ')} from substrings of the signed-in email address, independently of the ${out.roles.filter(x => x.type === 'Role').length} roles and ${out.roles.filter(x => x.type === 'Persona').length} personas in the access model. The panels each sees are separated by ${cssRules.length} stylesheet rule(s) using display:none.`,
+        evidence: EV.CONFLICTING,
+        reason: 'Three authorities decide what a person may do, and the one governing the executive decision panels is neither of the two the access model declares.',
+        impact: 'The role matrix in this package describes route access. It does not describe who can reach the decision controls inside the executive workspace, which this variant governs instead.',
+        risk: 'A display rule hides a control; it does not disable it. Anyone whose email does not match still receives the markup and the handlers.',
+        authority: 'The security or access authority, with the platform technical owner.',
+        ownershipType: 'Security or access authority',
+        priority: 'High',
+        resolution: 'The executive panels are gated by the declared role model, and the gate refuses the action rather than hiding the control.',
+        source: [s3, s4, SRC('config/rbac.config.js')],
+      });
+    }
+  }
+
   const sr = 'config/support-routing.config.js';
   if (has(sr)) {
     const s2 = SRC(sr), t = R(sr);
@@ -1031,27 +1275,43 @@ const statIdByName = {};
     [SRC('config/assignment-cascade.config.js')], out.notifications.length);
 }
 
-gap({
-  system: 'DGO Internal Platform', module: 'config/rbac.config.js',
-  subject: 'Authorisation is evidenced only on the client',
-  missing: 'Evidence of how a caller is authenticated, and how their role is established before it is trusted.',
-  available: 'canAccess() gates every route on a role and persona held in the client profile.',
-  evidence: EV.VALIDATE,
-  reason: 'A control enforced only where the caller controls the code is a usability feature, not a security control.',
-  impact: 'The access model documented here describes what the interface offers, not what the estate refuses.',
-  risk: 'Direct calls to the endpoints may not be subject to the documented role model.',
-  authority: 'The tenant owner, against the flow trigger authentication settings.',
-  ownershipType: 'Security or access authority',
-  priority: 'High',
-  resolution: 'For each endpoint, the trigger authentication type and the server-side role check are stated.',
-  source: [SRC('config/rbac.config.js')],
-});
+{
+  /* An authentication service IS provisioned. What is not evidenced is that it is switched on:
+     the configuration defaults to disabled, and the flag can also be injected at runtime from
+     outside source, so the deployed posture cannot be read from these inputs either way. Saying
+     only "no authorisation is evidenced" would understate what exists; saying "authentication is
+     implemented" would overstate what is enforced. Both halves belong in the record. */
+  const authCfg = 'config/auth.config.js', authSvc = 'core/auth.js';
+  const provisioned = has(authSvc) && has(authCfg);
+  const defaultEnabled = provisioned && /_pick\('enabled',\s*true\)/.test(R(authCfg));
+  gap({
+    system: 'DGO Internal Platform', module: 'config/rbac.config.js',
+    subject: provisioned
+      ? 'An authentication service is provisioned but is not evidenced as enforced'
+      : 'Authorisation is evidenced only on the client',
+    missing: provisioned
+      ? 'The deployed value of the authentication enable flag, and for each endpoint the trigger authentication type and any server-side role check.'
+      : 'Evidence of how a caller is authenticated, and how their role is established before it is trusted.',
+    available: provisioned
+      ? `core/auth.js is complete and documents two postures. config/auth.config.js resolves the enable flag to ${defaultEnabled ? 'true' : 'false'} by default, and states the flag may also be injected at runtime from outside source. In the disabled posture the service returns the local profile as the identity and sends no Authorization header. canAccess() gates every route on a role and persona held in the client profile.`
+      : 'canAccess() gates every route on a role and persona held in the client profile.',
+    evidence: EV.VALIDATE,
+    reason: 'A control enforced only where the caller controls the code is a usability feature, not a security control. Whether this estate is in that position depends on a runtime value these inputs do not carry.',
+    impact: 'The access model documented here describes what the interface offers. Whether the estate refuses a caller who bypasses the interface is not established either way.',
+    risk: 'If the flag is off in the deployed environment, direct calls to the endpoints are not subject to the documented role model.',
+    authority: 'The tenant owner, from the deployed runtime configuration and the flow trigger authentication settings.',
+    ownershipType: 'Security or access authority',
+    priority: 'High',
+    resolution: 'The deployed enable flag is stated, and for each endpoint the trigger authentication type and the server-side role check are recorded.',
+    source: [SRC('config/rbac.config.js'), ...(provisioned ? [SRC(authSvc), SRC(authCfg)] : [])],
+  });
+}
 
 if (Object.keys(flowByName).length) gap({
   system: 'Microsoft Power Automate',
   subject: 'No flow export states its business purpose, owner or criticality',
   missing: 'Business purpose, process owner and criticality for every workflow in the estate.',
-  available: `${Object.keys(flowByName).length} complete action graphs, walked step by step.`,
+  available: `${Object.keys(flowByName).length} complete action graphs, walked step by step. ${out.processes.filter(p => p.declaredDescription).length} of them carry a workflow-level description whose authorship cannot be established from an export; none carries an owner or a criticality field at any level.`,
   evidence: EV.UNAVAILABLE,
   reason: 'This standard requires purpose, owner and criticality for every process. A workflow export carries none of the three.',
   impact: 'No automated process can reach full documentation from confirmed evidence.',

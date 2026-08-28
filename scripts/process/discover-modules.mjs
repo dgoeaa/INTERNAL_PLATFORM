@@ -9,8 +9,17 @@
  */
 import { EV, VALIDATION, compact } from './lib.mjs';
 
-/* Governed writes: executeOwnedAction(module, action, fn, meta). */
+/* Governed writes: executeOwnedAction(module, action, fn, meta).
+   Three shapes occur in this estate and all three are read:
+     ('registry','register-file', …)                      — both names literal
+     ('approvals', kind==='approve'?'approve':'reject', …) — a ternary over two literals
+     ('fasttrack', action, …)                             — the action passed as a variable
+   The third cannot be named from the call site. Those actions are recovered from the
+   governance table instead, and the recovery is labelled so nobody mistakes a declaration
+   for an observed call. */
 const OWNED = /executeOwnedAction\(\s*'([a-z][a-z-]*)'\s*,\s*'([a-z][a-z0-9-]*)'/g;
+const OWNED_TERNARY = /executeOwnedAction\(\s*'([a-z][a-z-]*)'\s*,[^,]*\?\s*'([a-z][a-z0-9-]*)'\s*:\s*'([a-z][a-z0-9-]*)'/g;
+const OWNED_VARIABLE = /executeOwnedAction\(\s*'([a-z][a-z-]*)'\s*,\s*[A-Za-z_$][A-Za-z0-9_$]*\s*,/g;
 /* State writes that declare their module and audit vocabulary. */
 const PATCH = /module:\s*'([a-z][a-z-]*)'\s*,\s*action:\s*'([a-zA-Z0-9:._-]+)'/g;
 /* Operator confirmations — the human control point before an irreversible write. */
@@ -24,7 +33,7 @@ const TOAST = /toast\(\s*'([^']{3,120})'\s*(?:,\s*'(success|error|info|warn)')?\
 /* Handoffs to another workspace. */
 const HANDOFF = /location\.hash\s*=\s*'#\/([a-z-]+)'/g;
 
-export function discoverModuleSteps(X, ID, { route, path, srcId, ownerProc, ownership }) {
+export function discoverModuleSteps(X, ID, { route, path, srcId, ownerProc, ownership, boundaryOwns = [], boundarySrcId }) {
   const { out, R } = X;
   const t = R(path);
   /* Every distinct capture tuple the pattern finds, de-duplicated by value so a control
@@ -40,7 +49,40 @@ export function discoverModuleSteps(X, ID, { route, path, srcId, ownerProc, owne
     return [...seen.values()];
   };
 
-  const owned = grab(OWNED).filter(([mod]) => mod === route);
+  const literal = grab(OWNED).filter(([mod]) => mod === route);
+  const ternary = grab(OWNED_TERNARY).filter(([mod]) => mod === route)
+    .flatMap(([mod, a, b]) => [[mod, a], [mod, b]]);
+  const variableSites = grab(OWNED_VARIABLE).filter(([mod]) => mod === route).length;
+
+  /* An action the governance table says this module owns, which no call site here names
+     literally, is still a governed write this module performs — the table is the authority on
+     ownership. Recovering it keeps the catalogue complete; the flag keeps it honest. */
+  const named = new Set([...literal, ...ternary].map(([, a]) => a));
+  /* Two artifacts authorise an action name. core/action-authority.js consults the per-action
+     governance table first and falls back to the module boundary charter's owns[] list, so a
+     capability named only in the charter is still a valid governed action. Recovery therefore
+     draws on both — but only for names that actually appear as a string literal somewhere in
+     this module, which is what distinguishes an action the module raises from one the charter
+     merely permits it to raise. */
+  /* Two tiers, because the two authorities prove different things. A per-action governance
+     spec proves the name is a WRITE: it carries a service and an audit vocabulary. The boundary
+     charter's owns[] proves only that the module may use the name, and that list mixes writes
+     with view capabilities ('search', 'print', 'phase-filtering'). So a charter-only name is
+     recovered solely when it also appears as a literal in this module; otherwise recovering it
+     would manufacture a process step out of a view. */
+    const specOwned = Object.values(ownership).filter(a => a.owner === route).map(a => a.action);
+    const charterOnly = boundaryOwns.filter(a => !specOwned.includes(a));
+  const literalHere = a => new RegExp(`'${a.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'`).test(t);
+  const recovered = variableSites
+    ? [
+      ...specOwned.filter(a => !named.has(a))
+        .map(a => [route, a, literalHere(a) ? 'literal-in-module' : 'declared-ownership-only']),
+      ...charterOnly.filter(a => !named.has(a) && literalHere(a))
+        .map(a => [route, a, 'literal-in-module']),
+    ]
+    : [];
+
+  const owned = [...literal, ...ternary, ...recovered];
   const patches = grab(PATCH).filter(([mod]) => mod === route);
   const confirms = grab(CONFIRM).map(x => x[0]);
   const invokes = grab(INVOKE).map(x => x[0]);
@@ -50,7 +92,7 @@ export function discoverModuleSteps(X, ID, { route, path, srcId, ownerProc, owne
 
   let seq = 0;
   const ids = [];
-  for (const [, action] of owned) {
+  for (const [, action, isRecovered] of owned) {
     const own = ownership[action];
     const id = ID('STEP'); ids.push(id); seq += 1;
     out.steps.push(compact({
@@ -83,13 +125,24 @@ export function discoverModuleSteps(X, ID, { route, path, srcId, ownerProc, owne
       auditEvent: own?.audit,
       controls: ['Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of.'],
       dependencies: own?.backend ? [own.backend.split('.')[0]] : undefined,
-      evidence: own ? EV.CONFIRMED : EV.PARTIAL,
-      evidenceNote: own
-        ? 'The call site names the module and the action; the governance table states the owner, the service, the audit vocabulary and the backend requirement.'
-        : 'The call site names the module and the action, but the governance table carries no record for it, so owner, service and audit vocabulary are unestablished.',
+      callSite: !isRecovered
+        ? 'Named literally at the call site.'
+        : isRecovered === 'literal-in-module'
+          ? 'Not named at the executeOwnedAction() call, which passes the action as a variable. The name appears as a string literal elsewhere in this module and is declared as this module\'s action, so the two are read together.'
+          : 'Not named at the executeOwnedAction() call, which passes the action as a variable, and the name appears nowhere in this module as a literal. It is recovered from the declaration that this module owns it.',
+      evidence: isRecovered ? EV.INFERRED : own ? EV.CONFIRMED : EV.PARTIAL,
+      evidenceNote: isRecovered
+        ? (isRecovered === 'literal-in-module'
+          ? 'INFERRED. This module raises governed writes whose action name is passed as a variable, this name is declared as an action it owns, and the name appears as a literal in this module. Reading those three together is sound but no single artifact states the correspondence.'
+          : 'INFERRED, and the weaker of the two recoveries. This name is declared as an action this module owns, and this module raises governed writes by variable, but the name appears nowhere in this module as a literal. Whether this module actually raises it is not established.')
+        : own
+          ? 'The call site names the module and the action; the governance table states the owner, the service, the audit vocabulary and the backend requirement.'
+          : boundaryOwns.includes(action)
+            ? 'The call site names the module and the action. No per-action governance record exists, so owner, service and audit vocabulary are unestablished; the module boundary charter authorises the name through its owns[] list, which is the fallback authority the runtime consults.'
+            : 'The call site names the module and the action, but neither the governance table nor the boundary charter carries a record for it, so owner, service and audit vocabulary are unestablished.',
       businessMeaning: own?.label ? `Stated by the governance table as: ${own.label}.` : 'Not evidenced.',
       validationStatus: VALIDATION.NONE,
-      source: [srcId, ...(own ? [own.srcId] : [])],
+      source: [srcId, ...(own ? [own.srcId] : []), ...(isRecovered && !own && boundarySrcId ? [boundarySrcId] : [])],
     }));
 
     if (own?.audit) {
@@ -170,6 +223,7 @@ export function discoverModuleSteps(X, ID, { route, path, srcId, ownerProc, owne
   }
 
   return {
+    variableSites, recoveredCount: recovered.length,
     governedActions: owned.map(x => x[1]),
     audits: audits.map(a => a[0]),
     invokes, handoffs,

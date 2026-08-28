@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'ecm-erp-charter' |
 | Category | User-initiated · operational |
 | Description | Defines the authoritative boundary, ownership model, and integration rules between ERP and ECM. |
+| Description declared in the artifact itself | — |
 | Business objective | Defines the authoritative boundary, ownership model, and integration rules between ERP and ECM. |
 | Operational objective | Boundary role 'boundary-charter'. Owns scope-boundary-charter, ownership-matrix, shared-terminology, integration-rules, delivery-sequencing; must not own transaction-processing, content-write-operations, records-disposition-execution. |
 | Process owner | — |

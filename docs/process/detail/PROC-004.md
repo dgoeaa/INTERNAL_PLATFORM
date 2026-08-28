@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'correspondence' |
 | Category | User-initiated · operational |
 | Description | Capture, triage and classify correspondence, then assign it into a governed task — all in one place. |
+| Description declared in the artifact itself | — |
 | Business objective | Capture, triage and classify correspondence, then assign it into a governed task — all in one place. |
 | Operational objective | Boundary role 'intake-master'. Owns create-correspondence, triage, classify, hold, reject, duplicate, send-to-routing; must not own registry-custody, task-execution, archive-execution. |
 | Process owner | The correspondence module, per the per-action governance table. |
@@ -41,9 +42,9 @@
 
 | Step | Name | Responsible | Kind |
 | --- | --- | --- | --- |
-| STEP-0015 | Log the correspondence | correspondence workspace | Manual — operator-initiated |
-| STEP-0016 | Update the record | correspondence workspace | Manual — operator-initiated |
-| STEP-0017 | Turn the email into a correspondence record | correspondence workspace | Manual — operator-initiated |
+| STEP-0022 | Log the correspondence | correspondence workspace | Manual — operator-initiated |
+| STEP-0023 | Update the record | correspondence workspace | Manual — operator-initiated |
+| STEP-0024 | Turn the email into a correspondence record | correspondence workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -61,9 +62,9 @@
 
 | Step | Required inputs |
 | --- | --- |
-| STEP-0015 | The record the operator has selected, and any values captured by the form attached to the control. |
-| STEP-0016 | The record the operator has selected, and any values captured by the form attached to the control. |
-| STEP-0017 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0022 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0023 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0024 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
@@ -71,9 +72,9 @@
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STEP-0015 | 1 | Log the correspondence | modules/correspondence.js | correspondence workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Entities.create. | Ownership: correspondence; allowed invokers scan-intake.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:correspondence-created | Confirmed | No external validation required | SRC-014 SRC-035 |
-| STEP-0016 | 2 | Update the record | modules/correspondence.js | correspondence workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Entities.transitionStatus. | Ownership: correspondence.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:triage-completed | Confirmed | No external validation required | SRC-014 SRC-035 |
-| STEP-0017 | 3 | Turn the email into a correspondence record | modules/correspondence.js | correspondence workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Entities.create. | Ownership: correspondence.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:email-converted | Confirmed | No external validation required | SRC-014 SRC-035 |
+| STEP-0022 | 1 | Log the correspondence | modules/correspondence.js | correspondence workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Entities.create. | Ownership: correspondence; allowed invokers scan-intake.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:correspondence-created | Confirmed | No external validation required | SRC-014 SRC-035 |
+| STEP-0023 | 2 | Update the record | modules/correspondence.js | correspondence workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Entities.transitionStatus. | Ownership: correspondence.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:triage-completed | Confirmed | No external validation required | SRC-014 SRC-035 |
+| STEP-0024 | 3 | Turn the email into a correspondence record | modules/correspondence.js | correspondence workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Entities.create. | Ownership: correspondence.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:email-converted | Confirmed | No external validation required | SRC-014 SRC-035 |
 
 ## 5.6 Decisions and branches
 
@@ -123,17 +124,17 @@ _No exception path is evidenced in this process. Where the process is a request-
 
 | ID | Kind | Name | Description | Threshold | Escalation threshold | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| MON-014 | Audit event | Audit event audit:correspondence-created | The governance table binds action 'create-correspondence' to the audit vocabulary 'audit:correspondence-created'. | — | — | Confirmed |
-| MON-015 | Audit event | Audit event audit:triage-completed | The governance table binds action 'triage' to the audit vocabulary 'audit:triage-completed'. | — | — | Confirmed |
-| MON-016 | Audit event | Audit event audit:email-converted | The governance table binds action 'convert-email' to the audit vocabulary 'audit:email-converted'. | — | — | Confirmed |
+| MON-021 | Audit event | Audit event audit:correspondence-created | The governance table binds action 'create-correspondence' to the audit vocabulary 'audit:correspondence-created'. | — | — | Confirmed |
+| MON-022 | Audit event | Audit event audit:triage-completed | The governance table binds action 'triage' to the audit vocabulary 'audit:triage-completed'. | — | — | Confirmed |
+| MON-023 | Audit event | Audit event audit:email-converted | The governance table binds action 'convert-email' to the audit vocabulary 'audit:email-converted'. | — | — | Confirmed |
 
 ### Audit events written by this process
 
 | Step | Audit event |
 | --- | --- |
-| STEP-0015 Log the correspondence | audit:correspondence-created |
-| STEP-0016 Update the record | audit:triage-completed |
-| STEP-0017 Turn the email into a correspondence record | audit:email-converted |
+| STEP-0022 Log the correspondence | audit:correspondence-created |
+| STEP-0023 Update the record | audit:triage-completed |
+| STEP-0024 Turn the email into a correspondence record | audit:email-converted |
 
 ## Relationships
 

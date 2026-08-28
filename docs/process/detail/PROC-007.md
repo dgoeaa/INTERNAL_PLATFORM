@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'registry' |
 | Category | User-initiated · operational |
 | Description | Official file control and registry search across every intake channel. |
+| Description declared in the artifact itself | — |
 | Business objective | Official file control and registry search across every intake channel. |
 | Operational objective | Boundary role 'official-file-control'. Owns registry-file, file-jacket, custody, movement, minutes, registry-closure-candidate; must not own triage-master, search-retrieval, report-export. |
 | Process owner | The registry module, per the per-action governance table. |
@@ -41,10 +42,10 @@
 
 | Step | Name | Responsible | Kind |
 | --- | --- | --- | --- |
-| STEP-0035 | Register the file | registry workspace | Manual — operator-initiated |
-| STEP-0036 | Route the file | registry workspace | Manual — operator-initiated |
-| STEP-0037 | Record receipt of the file | registry workspace | Manual — operator-initiated |
-| STEP-0038 | Close the file | registry workspace | Manual — operator-initiated |
+| STEP-0048 | Register the file | registry workspace | Manual — operator-initiated |
+| STEP-0049 | Route the file | registry workspace | Manual — operator-initiated |
+| STEP-0050 | Record receipt of the file | registry workspace | Manual — operator-initiated |
+| STEP-0051 | Close the file | registry workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -62,10 +63,10 @@
 
 | Step | Required inputs |
 | --- | --- |
-| STEP-0035 | The record the operator has selected, and any values captured by the form attached to the control. |
-| STEP-0036 | The record the operator has selected, and any values captured by the form attached to the control. |
-| STEP-0037 | The record the operator has selected, and any values captured by the form attached to the control. |
-| STEP-0038 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0048 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0049 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0050 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0051 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
@@ -73,10 +74,10 @@
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STEP-0035 | 1 | Register the file | modules/registry.js | registry workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls createRegistryFile. | Ownership: registry.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:file-registered | Confirmed | No external validation required | SRC-026 SRC-035 |
-| STEP-0036 | 2 | Route the file | modules/registry.js | registry workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls createMovement. | Ownership: registry.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:file-routed | Confirmed | No external validation required | SRC-026 SRC-035 |
-| STEP-0037 | 3 | Record receipt of the file | modules/registry.js | registry workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: registry.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:custody-received | Confirmed | No external validation required | SRC-026 SRC-035 |
-| STEP-0038 | 4 | Close the file | modules/registry.js | registry workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: registry.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:file-closed | Confirmed | No external validation required | SRC-026 SRC-035 |
+| STEP-0048 | 1 | Register the file | modules/registry.js | registry workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls createRegistryFile. | Ownership: registry.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:file-registered | Confirmed | No external validation required | SRC-026 SRC-035 |
+| STEP-0049 | 2 | Route the file | modules/registry.js | registry workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls createMovement. | Ownership: registry.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:file-routed | Confirmed | No external validation required | SRC-026 SRC-035 |
+| STEP-0050 | 3 | Record receipt of the file | modules/registry.js | registry workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: registry.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:custody-received | Confirmed | No external validation required | SRC-026 SRC-035 |
+| STEP-0051 | 4 | Close the file | modules/registry.js | registry workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: registry.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:file-closed | Confirmed | No external validation required | SRC-026 SRC-035 |
 
 ## 5.6 Decisions and branches
 
@@ -114,19 +115,19 @@ _No exception path is evidenced in this process. Where the process is a request-
 
 | ID | Kind | Name | Description | Threshold | Escalation threshold | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| MON-034 | Audit event | Audit event audit:file-registered | The governance table binds action 'register-file' to the audit vocabulary 'audit:file-registered'. | — | — | Confirmed |
-| MON-035 | Audit event | Audit event audit:file-routed | The governance table binds action 'route-file' to the audit vocabulary 'audit:file-routed'. | — | — | Confirmed |
-| MON-036 | Audit event | Audit event audit:custody-received | The governance table binds action 'receive-file' to the audit vocabulary 'audit:custody-received'. | — | — | Confirmed |
-| MON-037 | Audit event | Audit event audit:file-closed | The governance table binds action 'close-file' to the audit vocabulary 'audit:file-closed'. | — | — | Confirmed |
+| MON-044 | Audit event | Audit event audit:file-registered | The governance table binds action 'register-file' to the audit vocabulary 'audit:file-registered'. | — | — | Confirmed |
+| MON-045 | Audit event | Audit event audit:file-routed | The governance table binds action 'route-file' to the audit vocabulary 'audit:file-routed'. | — | — | Confirmed |
+| MON-046 | Audit event | Audit event audit:custody-received | The governance table binds action 'receive-file' to the audit vocabulary 'audit:custody-received'. | — | — | Confirmed |
+| MON-047 | Audit event | Audit event audit:file-closed | The governance table binds action 'close-file' to the audit vocabulary 'audit:file-closed'. | — | — | Confirmed |
 
 ### Audit events written by this process
 
 | Step | Audit event |
 | --- | --- |
-| STEP-0035 Register the file | audit:file-registered |
-| STEP-0036 Route the file | audit:file-routed |
-| STEP-0037 Record receipt of the file | audit:custody-received |
-| STEP-0038 Close the file | audit:file-closed |
+| STEP-0048 Register the file | audit:file-registered |
+| STEP-0049 Route the file | audit:file-routed |
+| STEP-0050 Record receipt of the file | audit:custody-received |
+| STEP-0051 Close the file | audit:file-closed |
 
 ## Relationships
 

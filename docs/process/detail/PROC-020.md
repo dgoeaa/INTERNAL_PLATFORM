@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'correspondence-email' |
 | Category | User-initiated · operational |
 | Description | Manage outward official correspondence sent by email, including drafting, branded templates, dispatch evidence and the sent register. |
+| Description declared in the artifact itself | — |
 | Business objective | Manage outward official correspondence sent by email, including drafting, branded templates, dispatch evidence and the sent register. |
 | Operational objective | Boundary role 'official-correspondence-email-dispatch'. Owns create-correspondence-email-draft, send-correspondence-email, duplicate-correspondence-email, archive-correspondence-email; must not own task-notification, acknowledgement-receipt, personal-mailbox. |
 | Process owner | The correspondence-email module, per the per-action governance table. |
@@ -41,10 +42,10 @@
 
 | Step | Name | Responsible | Kind |
 | --- | --- | --- | --- |
-| STEP-0011 | Save the letter draft | correspondence-email workspace | Manual — operator-initiated |
-| STEP-0012 | Send the letter | correspondence-email workspace | Manual — operator-initiated |
-| STEP-0013 | Duplicate the letter draft | correspondence-email workspace | Manual — operator-initiated |
-| STEP-0014 | Archive the letter | correspondence-email workspace | Manual — operator-initiated |
+| STEP-0018 | Save the letter draft | correspondence-email workspace | Manual — operator-initiated |
+| STEP-0019 | Send the letter | correspondence-email workspace | Manual — operator-initiated |
+| STEP-0020 | Duplicate the letter draft | correspondence-email workspace | Manual — operator-initiated |
+| STEP-0021 | Archive the letter | correspondence-email workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -62,10 +63,10 @@
 
 | Step | Required inputs |
 | --- | --- |
-| STEP-0011 | The record the operator has selected, and any values captured by the form attached to the control. |
-| STEP-0012 | The record the operator has selected, and any values captured by the form attached to the control. |
-| STEP-0013 | The record the operator has selected, and any values captured by the form attached to the control. |
-| STEP-0014 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0018 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0019 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0020 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0021 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
@@ -73,10 +74,10 @@
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STEP-0011 | 1 | Save the letter draft | modules/correspondence-email.js | correspondence-email workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls CorrespondenceEmailService.saveDraft. | Ownership: correspondence-email.<br>Backend: none. | Not evidenced for this action. | An updated record in application state. | — | — | — | none | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:correspondence-email-draft-created | Confirmed | No external validation required | SRC-013 SRC-035 |
-| STEP-0012 | 2 | Send the letter | modules/correspondence-email.js | correspondence-email workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls CorrespondenceEmailService.sendDraft. | Ownership: correspondence-email.<br>Backend: EMAIL. | Not evidenced for this action. | An updated record in application state. | — | — | — | EMAIL | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:correspondence-email-sent | Confirmed | No external validation required | SRC-013 SRC-035 |
-| STEP-0013 | 3 | Duplicate the letter draft | modules/correspondence-email.js | correspondence-email workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls CorrespondenceEmailService.duplicate. | Ownership: correspondence-email.<br>Backend: none. | Not evidenced for this action. | An updated record in application state. | — | — | — | none | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:correspondence-email-duplicated | Confirmed | No external validation required | SRC-013 SRC-035 |
-| STEP-0014 | 4 | Archive the letter | modules/correspondence-email.js | correspondence-email workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls CorrespondenceEmailService.archive. | Ownership: correspondence-email.<br>Backend: none. | Not evidenced for this action. | An updated record in application state. | — | — | — | none | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:correspondence-email-archived | Confirmed | No external validation required | SRC-013 SRC-035 |
+| STEP-0018 | 1 | Save the letter draft | modules/correspondence-email.js | correspondence-email workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls CorrespondenceEmailService.saveDraft. | Ownership: correspondence-email.<br>Backend: none. | Not evidenced for this action. | An updated record in application state. | — | — | — | none | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:correspondence-email-draft-created | Confirmed | No external validation required | SRC-013 SRC-035 |
+| STEP-0019 | 2 | Send the letter | modules/correspondence-email.js | correspondence-email workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls CorrespondenceEmailService.sendDraft. | Ownership: correspondence-email.<br>Backend: EMAIL. | Not evidenced for this action. | An updated record in application state. | — | — | — | EMAIL | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:correspondence-email-sent | Confirmed | No external validation required | SRC-013 SRC-035 |
+| STEP-0020 | 3 | Duplicate the letter draft | modules/correspondence-email.js | correspondence-email workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls CorrespondenceEmailService.duplicate. | Ownership: correspondence-email.<br>Backend: none. | Not evidenced for this action. | An updated record in application state. | — | — | — | none | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:correspondence-email-duplicated | Confirmed | No external validation required | SRC-013 SRC-035 |
+| STEP-0021 | 4 | Archive the letter | modules/correspondence-email.js | correspondence-email workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls CorrespondenceEmailService.archive. | Ownership: correspondence-email.<br>Backend: none. | Not evidenced for this action. | An updated record in application state. | — | — | — | none | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:correspondence-email-archived | Confirmed | No external validation required | SRC-013 SRC-035 |
 
 ## 5.6 Decisions and branches
 
@@ -114,19 +115,19 @@ _No exception path is evidenced in this process. Where the process is a request-
 
 | ID | Kind | Name | Description | Threshold | Escalation threshold | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| MON-010 | Audit event | Audit event audit:correspondence-email-draft-created | The governance table binds action 'create-correspondence-email-draft' to the audit vocabulary 'audit:correspondence-email-draft-created'. | — | — | Confirmed |
-| MON-011 | Audit event | Audit event audit:correspondence-email-sent | The governance table binds action 'send-correspondence-email' to the audit vocabulary 'audit:correspondence-email-sent'. | — | — | Confirmed |
-| MON-012 | Audit event | Audit event audit:correspondence-email-duplicated | The governance table binds action 'duplicate-correspondence-email' to the audit vocabulary 'audit:correspondence-email-duplicated'. | — | — | Confirmed |
-| MON-013 | Audit event | Audit event audit:correspondence-email-archived | The governance table binds action 'archive-correspondence-email' to the audit vocabulary 'audit:correspondence-email-archived'. | — | — | Confirmed |
+| MON-017 | Audit event | Audit event audit:correspondence-email-draft-created | The governance table binds action 'create-correspondence-email-draft' to the audit vocabulary 'audit:correspondence-email-draft-created'. | — | — | Confirmed |
+| MON-018 | Audit event | Audit event audit:correspondence-email-sent | The governance table binds action 'send-correspondence-email' to the audit vocabulary 'audit:correspondence-email-sent'. | — | — | Confirmed |
+| MON-019 | Audit event | Audit event audit:correspondence-email-duplicated | The governance table binds action 'duplicate-correspondence-email' to the audit vocabulary 'audit:correspondence-email-duplicated'. | — | — | Confirmed |
+| MON-020 | Audit event | Audit event audit:correspondence-email-archived | The governance table binds action 'archive-correspondence-email' to the audit vocabulary 'audit:correspondence-email-archived'. | — | — | Confirmed |
 
 ### Audit events written by this process
 
 | Step | Audit event |
 | --- | --- |
-| STEP-0011 Save the letter draft | audit:correspondence-email-draft-created |
-| STEP-0012 Send the letter | audit:correspondence-email-sent |
-| STEP-0013 Duplicate the letter draft | audit:correspondence-email-duplicated |
-| STEP-0014 Archive the letter | audit:correspondence-email-archived |
+| STEP-0018 Save the letter draft | audit:correspondence-email-draft-created |
+| STEP-0019 Send the letter | audit:correspondence-email-sent |
+| STEP-0020 Duplicate the letter draft | audit:correspondence-email-duplicated |
+| STEP-0021 Archive the letter | audit:correspondence-email-archived |
 
 ## Relationships
 

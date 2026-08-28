@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'acknowledgment' |
 | Category | User-initiated · operational |
 | Description | Confirm receipt of assigned work before it starts, with the SLA clock in view. |
+| Description declared in the artifact itself | — |
 | Business objective | Confirm receipt of assigned work before it starts, with the SLA clock in view. |
 | Operational objective | Boundary role 'assignment-receipt-gate'. Owns acknowledge, acknowledge-retry, remind-assignee, escalate-non-ack; must not own task-progress, response-monitoring. |
 | Process owner | The acknowledgment module, per the per-action governance table. |
@@ -140,7 +141,7 @@ _No exception path is evidenced in this process. Where the process is a request-
 | ID | Name | Kind | Differs from the primary path | Activation |
 | --- | --- | --- | --- | --- |
 | VAR-002 | record the acknowledgment — raised from orchestrator | Channel-specific variant | The same governed action, raised from orchestrator instead of from its owner acknowledgment. | An operator working in orchestrator takes the action. |
-| VAR-015 | Support request — Already Acknowledged | Conditional variant selected by the reported category | A support request of category 'Already Acknowledged' is routed to the acknowledgment workspace at severity normal, rather than into a single support queue. | The requester selects category 'already-acknowledged'. |
+| VAR-018 | Support request — Already Acknowledged | Conditional variant selected by the reported category | A support request of category 'Already Acknowledged' is routed to the acknowledgment workspace at severity normal, rather than into a single support queue. | The requester selects category 'already-acknowledged'. |
 
 ### Dependencies
 

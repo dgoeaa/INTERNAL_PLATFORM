@@ -12,6 +12,7 @@
 | Alternative or legacy name | — |
 | Category | Sub-view of a primary workspace |
 | Description | — |
+| Description declared in the artifact itself | — |
 | Business objective | — |
 | Operational objective | — |
 | Process owner | — |
@@ -41,7 +42,7 @@
 
 | Step | Name | Responsible | Kind |
 | --- | --- | --- | --- |
-| STEP-0009 | Assign those records | bulk-assignment workspace | Manual — operator-initiated |
+| STEP-0016 | Assign those records | bulk-assignment workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -59,7 +60,7 @@
 
 | Step | Required inputs |
 | --- | --- |
-| STEP-0009 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0016 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
@@ -67,7 +68,7 @@
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STEP-0009 | 1 | Assign those records | modules/bulk-assignment.js | bulk-assignment workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls OtpService+Idempotency. | Ownership: bulk-assignment.<br>Backend: BULK_ASSIGNMENT. | Not evidenced for this action. | An updated record in application state. | — | — | — | BULK_ASSIGNMENT | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:bulk-assignment-submitted | Confirmed | No external validation required | SRC-011 SRC-035 |
+| STEP-0016 | 1 | Assign those records | modules/bulk-assignment.js | bulk-assignment workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls OtpService+Idempotency. | Ownership: bulk-assignment.<br>Backend: BULK_ASSIGNMENT. | Not evidenced for this action. | An updated record in application state. | — | — | — | BULK_ASSIGNMENT | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:bulk-assignment-submitted | Confirmed | No external validation required | SRC-011 SRC-035 |
 
 ## 5.6 Decisions and branches
 
@@ -104,13 +105,13 @@ _No exception path is evidenced in this process. Where the process is a request-
 
 | ID | Kind | Name | Description | Threshold | Escalation threshold | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| MON-008 | Audit event | Audit event audit:bulk-assignment-submitted | The governance table binds action 'bulk-assign' to the audit vocabulary 'audit:bulk-assignment-submitted'. | — | — | Confirmed |
+| MON-015 | Audit event | Audit event audit:bulk-assignment-submitted | The governance table binds action 'bulk-assign' to the audit vocabulary 'audit:bulk-assignment-submitted'. | — | — | Confirmed |
 
 ### Audit events written by this process
 
 | Step | Audit event |
 | --- | --- |
-| STEP-0009 Assign those records | audit:bulk-assignment-submitted |
+| STEP-0016 Assign those records | audit:bulk-assignment-submitted |
 
 ## Relationships
 

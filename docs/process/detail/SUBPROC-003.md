@@ -12,6 +12,7 @@
 | Alternative or legacy name | — |
 | Category | Sub-view of a primary workspace |
 | Description | — |
+| Description declared in the artifact itself | — |
 | Business objective | — |
 | Operational objective | — |
 | Process owner | — |
@@ -41,7 +42,7 @@
 
 | Step | Name | Responsible | Kind |
 | --- | --- | --- | --- |
-| STEP-0039 | Lodge the scanned document | scan-intake workspace | Manual — operator-initiated |
+| STEP-0052 | Lodge the scanned document | scan-intake workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -59,7 +60,7 @@
 
 | Step | Required inputs |
 | --- | --- |
-| STEP-0039 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0052 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
@@ -67,7 +68,7 @@
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STEP-0039 | 1 | Lodge the scanned document | modules/scan-intake.js | scan-intake workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls ScanIntakeService.depositScan. | Ownership: scan-intake.<br>Backend: SCAN_INTAKE.required. | A backend call on SCAN_INTAKE must succeed; the write is not simulated locally when it fails. | An updated record in application state. | — | — | — | SCAN_INTAKE | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:scan-deposited | Confirmed | No external validation required | SRC-029 SRC-035 |
+| STEP-0052 | 1 | Lodge the scanned document | modules/scan-intake.js | scan-intake workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls ScanIntakeService.depositScan. | Ownership: scan-intake.<br>Backend: SCAN_INTAKE.required. | A backend call on SCAN_INTAKE must succeed; the write is not simulated locally when it fails. | An updated record in application state. | — | — | — | SCAN_INTAKE | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:scan-deposited | Confirmed | No external validation required | SRC-029 SRC-035 |
 
 ## 5.6 Decisions and branches
 
@@ -104,13 +105,13 @@ _No exception path is evidenced in this process. Where the process is a request-
 
 | ID | Kind | Name | Description | Threshold | Escalation threshold | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| MON-038 | Audit event | Audit event audit:scan-deposited | The governance table binds action 'scan-deposit' to the audit vocabulary 'audit:scan-deposited'. | — | — | Confirmed |
+| MON-048 | Audit event | Audit event audit:scan-deposited | The governance table binds action 'scan-deposit' to the audit vocabulary 'audit:scan-deposited'. | — | — | Confirmed |
 
 ### Audit events written by this process
 
 | Step | Audit event |
 | --- | --- |
-| STEP-0039 Lodge the scanned document | audit:scan-deposited |
+| STEP-0052 Lodge the scanned document | audit:scan-deposited |
 
 ## Relationships
 

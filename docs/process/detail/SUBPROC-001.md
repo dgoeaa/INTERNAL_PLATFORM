@@ -12,6 +12,7 @@
 | Alternative or legacy name | — |
 | Category | Sub-view of a primary workspace |
 | Description | — |
+| Description declared in the artifact itself | — |
 | Business objective | — |
 | Operational objective | — |
 | Process owner | — |
@@ -41,7 +42,7 @@
 
 | Step | Name | Responsible | Kind |
 | --- | --- | --- | --- |
-| STEP-0041 | Assign that record | single-assignment workspace | Manual — operator-initiated |
+| STEP-0054 | Assign that record | single-assignment workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -59,7 +60,7 @@
 
 | Step | Required inputs |
 | --- | --- |
-| STEP-0041 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0054 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
@@ -67,7 +68,7 @@
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STEP-0041 | 1 | Assign that record | modules/single-assignment.js | single-assignment workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Entities.create(task). | Ownership: single-assignment.<br>Backend: SINGLE_ASSIGNMENT. | Not evidenced for this action. | An updated record in application state. | — | — | — | SINGLE_ASSIGNMENT | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:assigned | Confirmed | No external validation required | SRC-031 SRC-035 |
+| STEP-0054 | 1 | Assign that record | modules/single-assignment.js | single-assignment workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Entities.create(task). | Ownership: single-assignment.<br>Backend: SINGLE_ASSIGNMENT. | Not evidenced for this action. | An updated record in application state. | — | — | — | SINGLE_ASSIGNMENT | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:assigned | Confirmed | No external validation required | SRC-031 SRC-035 |
 
 ## 5.6 Decisions and branches
 
@@ -110,13 +111,13 @@ _No exception path is evidenced in this process. Where the process is a request-
 
 | ID | Kind | Name | Description | Threshold | Escalation threshold | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| MON-040 | Audit event | Audit event audit:assigned | The governance table binds action 'assign-one' to the audit vocabulary 'audit:assigned'. | — | — | Confirmed |
+| MON-050 | Audit event | Audit event audit:assigned | The governance table binds action 'assign-one' to the audit vocabulary 'audit:assigned'. | — | — | Confirmed |
 
 ### Audit events written by this process
 
 | Step | Audit event |
 | --- | --- |
-| STEP-0041 Assign that record | audit:assigned |
+| STEP-0054 Assign that record | audit:assigned |
 
 ## Relationships
 
@@ -135,7 +136,7 @@ _No exception path is evidenced in this process. Where the process is a request-
 | VAR-003 | route the task — raised from executive | Channel-specific variant | The same governed action, raised from executive instead of from its owner single-assignment. | An operator working in executive takes the action. |
 | VAR-007 | raise a task from that email — raised from lookup | Channel-specific variant | The same governed action, raised from lookup instead of from its owner single-assignment. | An operator working in lookup takes the action. |
 | VAR-008 | raise a task from that email — raised from correspondence | Channel-specific variant | The same governed action, raised from correspondence instead of from its owner single-assignment. | An operator working in correspondence takes the action. |
-| VAR-010 | Support request — Reassignment Request | Conditional variant selected by the reported category | A support request of category 'Reassignment Request' is routed to the single-assignment workspace at severity medium, rather than into a single support queue. | The requester selects category 'reassignment'. |
+| VAR-013 | Support request — Reassignment Request | Conditional variant selected by the reported category | A support request of category 'Reassignment Request' is routed to the single-assignment workspace at severity medium, rather than into a single support queue. | The requester selects category 'reassignment'. |
 
 ### Dependencies
 

@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'projects' |
 | Category | User-initiated · operational |
 | Description | A register of projects and the measures they are tracked against. |
+| Description declared in the artifact itself | — |
 | Business objective | A register of projects and the measures they are tracked against. |
 | Operational objective | Boundary role 'project-register'. Owns create-project, update-project; must not own intake-master, registry-custody, task-execution, archive-execution. |
 | Process owner | The projects module, per the per-action governance table. |
@@ -41,8 +42,8 @@
 
 | Step | Name | Responsible | Kind |
 | --- | --- | --- | --- |
-| STEP-0033 | Create the project | projects workspace | Manual — operator-initiated |
-| STEP-0034 | Update the project | projects workspace | Manual — operator-initiated |
+| STEP-0046 | Create the project | projects workspace | Manual — operator-initiated |
+| STEP-0047 | Update the project | projects workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -60,8 +61,8 @@
 
 | Step | Required inputs |
 | --- | --- |
-| STEP-0033 | The record the operator has selected, and any values captured by the form attached to the control. |
-| STEP-0034 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0046 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0047 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
@@ -69,8 +70,8 @@
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STEP-0033 | 1 | Create the project | modules/projects.js | projects workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Projects.create. | Ownership: projects.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:project-created | Confirmed | No external validation required | SRC-025 SRC-035 |
-| STEP-0034 | 2 | Update the project | modules/projects.js | projects workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Projects.update. | Ownership: projects.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:project-updated | Confirmed | No external validation required | SRC-025 SRC-035 |
+| STEP-0046 | 1 | Create the project | modules/projects.js | projects workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Projects.create. | Ownership: projects.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:project-created | Confirmed | No external validation required | SRC-025 SRC-035 |
+| STEP-0047 | 2 | Update the project | modules/projects.js | projects workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Projects.update. | Ownership: projects.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:project-updated | Confirmed | No external validation required | SRC-025 SRC-035 |
 
 ## 5.6 Decisions and branches
 
@@ -108,15 +109,15 @@ _No exception path is evidenced in this process. Where the process is a request-
 
 | ID | Kind | Name | Description | Threshold | Escalation threshold | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| MON-032 | Audit event | Audit event audit:project-created | The governance table binds action 'create-project' to the audit vocabulary 'audit:project-created'. | — | — | Confirmed |
-| MON-033 | Audit event | Audit event audit:project-updated | The governance table binds action 'update-project' to the audit vocabulary 'audit:project-updated'. | — | — | Confirmed |
+| MON-042 | Audit event | Audit event audit:project-created | The governance table binds action 'create-project' to the audit vocabulary 'audit:project-created'. | — | — | Confirmed |
+| MON-043 | Audit event | Audit event audit:project-updated | The governance table binds action 'update-project' to the audit vocabulary 'audit:project-updated'. | — | — | Confirmed |
 
 ### Audit events written by this process
 
 | Step | Audit event |
 | --- | --- |
-| STEP-0033 Create the project | audit:project-created |
-| STEP-0034 Update the project | audit:project-updated |
+| STEP-0046 Create the project | audit:project-created |
+| STEP-0047 Update the project | audit:project-updated |
 
 ## Relationships
 

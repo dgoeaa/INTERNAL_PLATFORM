@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'reports' |
 | Category | User-initiated · operational |
 | Description | Generate and export operational reports drawn from tracking and management views. |
+| Description declared in the artifact itself | — |
 | Business objective | Generate and export operational reports drawn from tracking and management views. |
 | Operational objective | Boundary role 'report-export-authority'. Owns generate-report, print, export, email-report, evidence-report; must not own live-monitoring, archive-execution. |
 | Process owner | The reports module, per the per-action governance table. |

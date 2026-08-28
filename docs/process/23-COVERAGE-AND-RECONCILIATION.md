@@ -11,26 +11,28 @@
 
 | ID | Area | Coverage status | Processes identified | Note | Sources |
 | --- | --- | --- | --- | --- | --- |
-| COV-001 | Correspondence lifecycle state machine | Documented with minor validation requirements | 1 | All 31 states and every declared transition read from the frozen map. Actor, clock, notification and audit behaviour per state are not carried by the map and are recorded as unevidenced. | SRC-037 |
-| COV-002 | Routing and service-level rules | Insufficient evidence | 6 | The cascade mechanism is fully documented: it derives responsible unit, assignee, priority and both clocks from the category. The matrix it applies is not. The 6 rows catalogued are the declared fallback; the live matrix is expected from reference data that is not among the supplied inputs. | SRC-039 |
-| COV-003 | Endpoint registry | Partially documented | 20 | 20 aliases are declared. The workflow behind each is only partly established, and by design the registry carries no URL. | SRC-003 |
-| COV-004 | Reference data, scales and budgets | Not applicable | 0 | 4 artifact(s) reviewed and found to carry vocabulary, scales or budgets rather than process behaviour: config/priority.config.js, config/receipt-ledger.config.js, config/browser-certification.config.js, config/performance-budget.config.js. Recorded so the review is accountable for them. | SRC-043 SRC-044 SRC-045 SRC-046 |
-| COV-005 | Operator workspaces | Documented with minor validation requirements | 24 | 24 workspaces declared, each matched to a module file. Their governed writes are catalogued step by step; the rendering, filtering and paging between writes is presentation and is not modelled as process. | SRC-036 |
-| COV-006 | Governed action model | Fully documented from confirmed evidence | 61 | 61 actions, each with a declared owner, service, audit vocabulary and backend requirement. | SRC-035 |
-| COV-007 | Role and access model | Documented with minor validation requirements | 10 | 6 roles and 4 personas, each with its route set. Server-side authorisation of the caller is not evidenced and is raised as a gap. | SRC-034 |
-| COV-008 | Notification and escalation behaviour | Partially documented | 137 | 137 notification points identified: outbound mail sends in the flow estate and operator-facing outcome messages in the modules. No escalation bound to a service-level clock is evidenced anywhere in the supplied inputs. | SRC-039 |
-| COV-009 | Automated flow estate | Insufficient evidence | 0 | No artifact of this class is present in this repository. It would establish: Every action, branch, connector call and exception path of every deployed workflow. | — |
-| COV-010 | Correspondence Gateway designs | Insufficient evidence | 0 | No artifact of this class is present in this repository. It would establish: The designed action graph of each gateway endpoint. | — |
-| COV-011 | Published integration contracts | Insufficient evidence | 0 | No artifact of this class is present in this repository. It would establish: The request and response contract of every call the citizen portal makes. | — |
-| COV-012 | Operational execution evidence | Insufficient evidence | 0 | No artifact of this class is present in this repository. It would establish: That an endpoint executed, and what status it returned. | — |
-| COV-013 | System-of-record inventory | Insufficient evidence | 0 | No artifact of this class is present in this repository. It would establish: Which lists and libraries exist and which the estate adopted. | — |
-| COV-014 | Delivery register | Insufficient evidence | 0 | No artifact of this class is present in this repository. It would establish: What the delivery team already records as outstanding. | — |
-| COV-015 | Architecture and design materials | Insufficient evidence | 0 | No artifact of this class is present in this repository. It would establish: The intended architecture, against which the implemented one can be compared. | — |
-| COV-016 | Test cases and acceptance criteria | Partially documented | 0 | 1 test files are present and were reviewed. They establish invariants over the implementation — contracts, vocabularies, wiring, encoding, secrets. They do NOT state, per process, what that process is required to do to be accepted, so no process draws its completion criteria from them. | SRC-047 |
-| COV-017 | Standard operating procedures | Insufficient evidence | 0 | No artifact of this class is among the supplied inputs. It would establish: A written procedure for any process. | — |
-| COV-018 | User guides and training materials | Insufficient evidence | 0 | No artifact of this class is among the supplied inputs. It would establish: How an operator is taught to work a process. | — |
-| COV-019 | Support and operational records | Insufficient evidence | 0 | No artifact of this class is among the supplied inputs. It would establish: What actually goes wrong in service, and how it is resolved. | — |
-| COV-020 | User journey records | Insufficient evidence | 0 | No artifact of this class is among the supplied inputs. It would establish: What a citizen or an officer experiences end to end. | — |
+| COV-001 | Application shell and shared runtime | Fully documented from confirmed evidence | 0 | 8 file(s) reviewed. They carry the chrome, the accessibility runtime, the design-system adapter and the welcome experience — presentation, not process. 0 carry a governed write; 2 operator notice(s) are catalogued from them. The shell is where core/notification-center.js is consumed. | SRC-040 SRC-041 SRC-042 SRC-043 SRC-044 SRC-038 SRC-039 SRC-045 |
+| COV-002 | Correspondence lifecycle state machine | Documented with minor validation requirements | 1 | All 31 states and every declared transition read from the frozen map. Actor, clock, notification and audit behaviour per state are not carried by the map and are recorded as unevidenced. | SRC-046 |
+| COV-003 | Stored correspondence status vocabulary | Partially documented | 0 | 5 values declared, and carried by 2 workspace module(s) in full or near-full form. Entry conditions, exit conditions, permitted actions and audit behaviour are not evidenced for any of them, and no guard governs movement between them. A further 10 module(s) carry a single one of these values; a lone common word does not establish which status set it belongs to, and those are not counted as users. | SRC-014 |
+| COV-004 | Routing and service-level rules | Insufficient evidence | 6 | The cascade mechanism is fully documented: it derives responsible unit, assignee, priority and both clocks from the category. The matrix it applies is not. The 6 rows catalogued are the declared fallback; the live matrix is expected from reference data that is not among the supplied inputs. | SRC-048 |
+| COV-005 | Endpoint registry | Partially documented | 20 | 20 aliases are declared. The workflow behind each is only partly established, and by design the registry carries no URL. | SRC-003 |
+| COV-006 | Reference data, scales and budgets | Not applicable | 0 | 4 artifact(s) reviewed and found to carry vocabulary, scales or budgets rather than process behaviour: config/priority.config.js, config/receipt-ledger.config.js, config/browser-certification.config.js, config/performance-budget.config.js. Recorded so the review is accountable for them. | SRC-054 SRC-055 SRC-056 SRC-057 |
+| COV-007 | Operator workspaces | Documented with minor validation requirements | 24 | 24 workspaces declared, each matched to a module file. Their governed writes are catalogued step by step; the rendering, filtering and paging between writes is presentation and is not modelled as process. | SRC-036 |
+| COV-008 | Governed action model | Fully documented from confirmed evidence | 61 | 61 actions, each with a declared owner, service, audit vocabulary and backend requirement. | SRC-035 |
+| COV-009 | Role and access model | Documented with minor validation requirements | 10 | 6 roles and 4 personas, each with its route set. Server-side authorisation of the caller is not evidenced and is raised as a gap. | SRC-034 |
+| COV-010 | Notification and escalation behaviour | Partially documented | 139 | 139 notification points identified: outbound mail sends in the flow estate and operator-facing outcome messages in the modules. No escalation bound to a service-level clock is evidenced anywhere in the supplied inputs. | SRC-048 |
+| COV-011 | Automated flow estate | Insufficient evidence | 0 | No artifact of this class is present in this repository. It would establish: Every action, branch, connector call and exception path of every deployed workflow. | — |
+| COV-012 | Correspondence Gateway designs | Insufficient evidence | 0 | No artifact of this class is present in this repository. It would establish: The designed action graph of each gateway endpoint. | — |
+| COV-013 | Published integration contracts | Insufficient evidence | 0 | No artifact of this class is present in this repository. It would establish: The request and response contract of every call the citizen portal makes. | — |
+| COV-014 | Operational execution evidence | Insufficient evidence | 0 | No artifact of this class is present in this repository. It would establish: That an endpoint executed, and what status it returned. | — |
+| COV-015 | System-of-record inventory | Insufficient evidence | 0 | No artifact of this class is present in this repository. It would establish: Which lists and libraries exist and which the estate adopted. | — |
+| COV-016 | Delivery register | Insufficient evidence | 0 | No artifact of this class is present in this repository. It would establish: What the delivery team already records as outstanding. | — |
+| COV-017 | Architecture and design materials | Insufficient evidence | 0 | No artifact of this class is present in this repository. It would establish: The intended architecture, against which the implemented one can be compared. | — |
+| COV-018 | Test cases and acceptance criteria | Partially documented | 0 | 1 test files are present and were reviewed. They establish invariants over the implementation — contracts, vocabularies, wiring, encoding, secrets. They do NOT state, per process, what that process is required to do to be accepted, so no process draws its completion criteria from them. | SRC-060 |
+| COV-019 | Standard operating procedures | Insufficient evidence | 0 | No artifact of this class is among the supplied inputs. It would establish: A written procedure for any process. | — |
+| COV-020 | User guides and training materials | Insufficient evidence | 0 | No artifact of this class is among the supplied inputs. It would establish: How an operator is taught to work a process. | — |
+| COV-021 | Support and operational records | Insufficient evidence | 0 | No artifact of this class is among the supplied inputs. It would establish: What actually goes wrong in service, and how it is resolved. | — |
+| COV-022 | User journey records | Insufficient evidence | 0 | No artifact of this class is among the supplied inputs. It would establish: What a citizen or an officer experiences end to end. | — |
 
 ## Source-to-process mapping
 
@@ -82,28 +84,41 @@ than silently passing over them.
 | SRC-002 | `core/boot.js` | Source code — platform core | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
 | SRC-003 | `config/endpoints.config.js` | Configuration file | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
 | SRC-034 | `config/rbac.config.js` | Configuration file | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
-| SRC-037 | `core/lifecycle.js` | Source code — platform core | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
-| SRC-038 | `config/status-vocabulary.config.js` | Configuration file | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
-| SRC-039 | `config/assignment-cascade.config.js` | Configuration file | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
-| SRC-040 | `config/acknowledgement-flow.config.js` | Configuration file | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
-| SRC-041 | `core/retention.js` | Source code — platform core | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
-| SRC-042 | `config/support-routing.config.js` | Configuration file | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
-| SRC-043 | `config/priority.config.js` | Configuration file | Reviewed. Carries reference data, a scale or a budget, not process behaviour. |
-| SRC-044 | `config/receipt-ledger.config.js` | Configuration file | Reviewed. Carries reference data, a scale or a budget, not process behaviour. |
-| SRC-045 | `config/browser-certification.config.js` | Configuration file | Reviewed. Carries reference data, a scale or a budget, not process behaviour. |
-| SRC-046 | `config/performance-budget.config.js` | Configuration file | Reviewed. Carries reference data, a scale or a budget, not process behaviour. |
-| SRC-047 | `tests` | Automated test suite | Reviewed as a whole: the suite asserts implementation invariants. |
+| SRC-037 | `core/action-authority.js` | Source code — platform core | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-038 | `shared/shell.js` | Artifact | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-039 | `shared/welcome-runtime.js` | Artifact | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-040 | `shared/accessibility.js` | Artifact | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-041 | `shared/components.js` | Artifact | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-042 | `shared/design-system-adapter.js` | Artifact | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-043 | `shared/figma-uiux-runtime.js` | Artifact | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-044 | `shared/relationship-runtime.js` | Artifact | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-045 | `shared/workspace-guide.js` | Artifact | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-046 | `core/lifecycle.js` | Source code — platform core | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-047 | `config/status-vocabulary.config.js` | Configuration file | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-048 | `config/assignment-cascade.config.js` | Configuration file | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-049 | `core/assignment-cascade.js` | Source code — platform core | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-050 | `config/acknowledgement-flow.config.js` | Configuration file | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-051 | `core/retention.js` | Source code — platform core | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-052 | `styles/app.css` | Artifact | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-053 | `config/support-routing.config.js` | Configuration file | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-054 | `config/priority.config.js` | Configuration file | Reviewed. Carries reference data, a scale or a budget, not process behaviour. |
+| SRC-055 | `config/receipt-ledger.config.js` | Configuration file | Reviewed. Carries reference data, a scale or a budget, not process behaviour. |
+| SRC-056 | `config/browser-certification.config.js` | Configuration file | Reviewed. Carries reference data, a scale or a budget, not process behaviour. |
+| SRC-057 | `config/performance-budget.config.js` | Configuration file | Reviewed. Carries reference data, a scale or a budget, not process behaviour. |
+| SRC-058 | `core/auth.js` | Source code — platform core | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-059 | `config/auth.config.js` | Configuration file | Cited as evidence for a rule, control, status or step rather than for the existence of a process. |
+| SRC-060 | `tests` | Automated test suite | Reviewed as a whole: the suite asserts implementation invariants. |
 
 ## Modules reconciled against processes
 
 | Module | Route | Process record | Steps found |
 | --- | --- | --- | --- |
 | MOD-001 | `acknowledgment` | PROC-006 Acknowledgment Queue | 2 |
-| MOD-002 | `activities` | PROC-003 Activities | 2 |
-| MOD-003 | `approvals` | PROC-012 Review & Approval | 1 |
+| MOD-002 | `activities` | PROC-003 Activities | 5 |
+| MOD-003 | `approvals` | PROC-012 Review & Approval | 3 |
 | MOD-004 | `archive` | SUBPROC-004 Archive Evidence | 1 |
 | MOD-005 | `assistant` | PROC-021 Assistant | 1 |
-| MOD-006 | `briefs` | PROC-013 Briefs & Submissions | 1 |
+| MOD-006 | `briefs` | PROC-013 Briefs & Submissions | 3 |
 | MOD-007 | `bulk-assignment` | SUBPROC-002 Bulk Assignment | 1 |
 | MOD-008 | `comments` | PROC-008 Comments | 1 |
 | MOD-009 | `correspondence-email` | PROC-020 Correspondence Email Desk | 4 |
@@ -111,8 +126,8 @@ than silently passing over them.
 | MOD-011 | `diagnostics` | PROC-024 System Health | 0 |
 | MOD-012 | `dispatch` | PROC-019 Dispatch | 4 |
 | MOD-013 | `ecm-erp-charter` | PROC-002 ERP–ECM Charter | 0 |
-| MOD-014 | `executive` | PROC-018 DGCEO Correspondence & Decision Hub | 2 |
-| MOD-015 | `fasttrack` | PROC-011 FastTrack SLA | 1 |
+| MOD-014 | `executive` | PROC-018 DGCEO Correspondence & Decision Hub | 5 |
+| MOD-015 | `fasttrack` | PROC-011 FastTrack SLA | 4 |
 | MOD-016 | `home` | PROC-001 Command Center | 0 |
 | MOD-017 | `lookup` | PROC-009 Lookup & Direct Action | 3 |
 | MOD-018 | `meetings` | PROC-014 Meetings | 3 |
@@ -126,16 +141,16 @@ than silently passing over them.
 | MOD-026 | `settings` | PROC-023 Administration | 1 |
 | MOD-027 | `single-assignment` | SUBPROC-001 Assignment Desk | 1 |
 | MOD-028 | `statistics` | PROC-017 Statistics | 0 |
-| MOD-029 | `user-admin` | SUBPROC-005 User Administration | 1 |
+| MOD-029 | `user-admin` | SUBPROC-005 User Administration | 4 |
 
 ## Reconciliation statement
 
-24 processes, 66 subprocesses and 15 variants are documented. Every one is
-attributable to at least one of the 47 sources listed in document 3, and every source is
+24 processes, 66 subprocesses and 18 variants are documented. Every one is
+attributable to at least one of the 60 sources listed in document 3, and every source is
 accounted for above: either it produced a process, or it is recorded here as producing none, or it is
 cited by a rule, status, control or step record instead.
 
-42 steps are catalogued. Every step belongs to exactly one process, and every process with a
+58 steps are catalogued. Every step belongs to exactly one process, and every process with a
 readable structure carries its steps; the 7
 processes with no steps are those whose structure the supplied inputs do not carry, each with a gap
 register row naming what would supply it.

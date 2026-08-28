@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'meetings' |
 | Category | User-initiated · operational |
 | Description | Request, schedule and record the outcomes of meetings; agreed actions become tasks. |
+| Description declared in the artifact itself | — |
 | Business objective | Request, schedule and record the outcomes of meetings; agreed actions become tasks. |
 | Operational objective | Boundary role 'engagement-schedule'. Owns request-meeting, decide-meeting, meeting-actions-to-tasks; must not own intake-master, registry-custody, approval-decision, archive-execution. |
 | Process owner | The meetings module, per the per-action governance table. |
@@ -41,9 +42,9 @@
 
 | Step | Name | Responsible | Kind |
 | --- | --- | --- | --- |
-| STEP-0028 | Request the meeting | meetings workspace | Manual — operator-initiated |
-| STEP-0029 | Record the decision on the meeting | meetings workspace | Manual — operator-initiated |
-| STEP-0030 | Turn the meeting actions into tasks | meetings workspace | Manual — operator-initiated |
+| STEP-0041 | Request the meeting | meetings workspace | Manual — operator-initiated |
+| STEP-0042 | Record the decision on the meeting | meetings workspace | Manual — operator-initiated |
+| STEP-0043 | Turn the meeting actions into tasks | meetings workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -61,9 +62,9 @@
 
 | Step | Required inputs |
 | --- | --- |
-| STEP-0028 | The record the operator has selected, and any values captured by the form attached to the control. |
-| STEP-0029 | The record the operator has selected, and any values captured by the form attached to the control. |
-| STEP-0030 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0041 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0042 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0043 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
@@ -71,9 +72,9 @@
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STEP-0028 | 1 | Request the meeting | modules/meetings.js | meetings workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Meetings.create. | Ownership: meetings.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:meeting-requested | Confirmed | No external validation required | SRC-022 SRC-035 |
-| STEP-0029 | 2 | Record the decision on the meeting | modules/meetings.js | meetings workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Meetings.transition. | Ownership: meetings.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:meeting-decided | Confirmed | No external validation required | SRC-022 SRC-035 |
-| STEP-0030 | 3 | Turn the meeting actions into tasks | modules/meetings.js | meetings workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Meetings.actionsToTasks. | Ownership: meetings.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:meeting-actions-converted | Confirmed | No external validation required | SRC-022 SRC-035 |
+| STEP-0041 | 1 | Request the meeting | modules/meetings.js | meetings workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Meetings.create. | Ownership: meetings.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:meeting-requested | Confirmed | No external validation required | SRC-022 SRC-035 |
+| STEP-0042 | 2 | Record the decision on the meeting | modules/meetings.js | meetings workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Meetings.transition. | Ownership: meetings.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:meeting-decided | Confirmed | No external validation required | SRC-022 SRC-035 |
+| STEP-0043 | 3 | Turn the meeting actions into tasks | modules/meetings.js | meetings workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls Meetings.actionsToTasks. | Ownership: meetings.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:meeting-actions-converted | Confirmed | No external validation required | SRC-022 SRC-035 |
 
 ## 5.6 Decisions and branches
 
@@ -110,17 +111,17 @@ _No exception path is evidenced in this process. Where the process is a request-
 
 | ID | Kind | Name | Description | Threshold | Escalation threshold | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| MON-027 | Audit event | Audit event audit:meeting-requested | The governance table binds action 'request-meeting' to the audit vocabulary 'audit:meeting-requested'. | — | — | Confirmed |
-| MON-028 | Audit event | Audit event audit:meeting-decided | The governance table binds action 'decide-meeting' to the audit vocabulary 'audit:meeting-decided'. | — | — | Confirmed |
-| MON-029 | Audit event | Audit event audit:meeting-actions-converted | The governance table binds action 'meeting-actions-to-tasks' to the audit vocabulary 'audit:meeting-actions-converted'. | — | — | Confirmed |
+| MON-037 | Audit event | Audit event audit:meeting-requested | The governance table binds action 'request-meeting' to the audit vocabulary 'audit:meeting-requested'. | — | — | Confirmed |
+| MON-038 | Audit event | Audit event audit:meeting-decided | The governance table binds action 'decide-meeting' to the audit vocabulary 'audit:meeting-decided'. | — | — | Confirmed |
+| MON-039 | Audit event | Audit event audit:meeting-actions-converted | The governance table binds action 'meeting-actions-to-tasks' to the audit vocabulary 'audit:meeting-actions-converted'. | — | — | Confirmed |
 
 ### Audit events written by this process
 
 | Step | Audit event |
 | --- | --- |
-| STEP-0028 Request the meeting | audit:meeting-requested |
-| STEP-0029 Record the decision on the meeting | audit:meeting-decided |
-| STEP-0030 Turn the meeting actions into tasks | audit:meeting-actions-converted |
+| STEP-0041 Request the meeting | audit:meeting-requested |
+| STEP-0042 Record the decision on the meeting | audit:meeting-decided |
+| STEP-0043 Turn the meeting actions into tasks | audit:meeting-actions-converted |
 
 ## Relationships
 

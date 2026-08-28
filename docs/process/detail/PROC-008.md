@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'comments' |
 | Category | User-initiated · operational |
 | Description | Threaded collaboration on correspondence and tasks, visible to everyone on the record. |
+| Description declared in the artifact itself | — |
 | Business objective | Threaded collaboration on correspondence and tasks, visible to everyone on the record. |
 | Operational objective | Boundary role 'collaboration-thread'. Owns comment, review-note, return-reason, dispatch-note; must not own status-transition, archive-mutation. |
 | Process owner | The comments module, per the per-action governance table. |
@@ -41,7 +42,7 @@
 
 | Step | Name | Responsible | Kind |
 | --- | --- | --- | --- |
-| STEP-0010 | Add the comment | comments workspace | Manual — operator-initiated |
+| STEP-0017 | Add the comment | comments workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -59,7 +60,7 @@
 
 | Step | Required inputs |
 | --- | --- |
-| STEP-0010 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0017 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
@@ -67,7 +68,7 @@
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STEP-0010 | 1 | Add the comment | modules/comments.js | comments workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: comments.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:comment-added | Confirmed | No external validation required | SRC-012 SRC-035 |
+| STEP-0017 | 1 | Add the comment | modules/comments.js | comments workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: comments.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:comment-added | Confirmed | No external validation required | SRC-012 SRC-035 |
 
 ## 5.6 Decisions and branches
 
@@ -110,13 +111,13 @@ _No exception path is evidenced in this process. Where the process is a request-
 
 | ID | Kind | Name | Description | Threshold | Escalation threshold | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| MON-009 | Audit event | Audit event audit:comment-added | The governance table binds action 'add-comment' to the audit vocabulary 'audit:comment-added'. | — | — | Confirmed |
+| MON-016 | Audit event | Audit event audit:comment-added | The governance table binds action 'add-comment' to the audit vocabulary 'audit:comment-added'. | — | — | Confirmed |
 
 ### Audit events written by this process
 
 | Step | Audit event |
 | --- | --- |
-| STEP-0010 Add the comment | audit:comment-added |
+| STEP-0017 Add the comment | audit:comment-added |
 
 ## Relationships
 
@@ -130,7 +131,7 @@ _No exception path is evidenced in this process. Where the process is a request-
 
 | ID | Name | Kind | Differs from the primary path | Activation |
 | --- | --- | --- | --- | --- |
-| VAR-012 | Support request — Clarification Required | Conditional variant selected by the reported category | A support request of category 'Clarification Required' is routed to the comments workspace at severity normal, rather than into a single support queue. | The requester selects category 'clarification'. |
+| VAR-015 | Support request — Clarification Required | Conditional variant selected by the reported category | A support request of category 'Clarification Required' is routed to the comments workspace at severity normal, rather than into a single support queue. | The requester selects category 'clarification'. |
 
 ## Operational status
 

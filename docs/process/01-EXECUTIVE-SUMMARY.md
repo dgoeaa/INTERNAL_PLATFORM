@@ -10,7 +10,7 @@
 ## What was documented
 
 24 processes were identified across the two platforms and their supporting estate, along with
-66 subprocesses, 15 process variants and 42 individual process steps. Every step
+66 subprocesses, 18 process variants and 58 individual process steps. Every step
 carries the artifact it was read from.
 
 | Category | Count | What it is |
@@ -19,48 +19,62 @@ carries the artifact it was read from.
 | Automated processes | 0 | Power Automate workflows, walked action by action. |
 | Integration-supported processes | 0 | Published contracts between the citizen portal and the estate. |
 | Reusable subprocesses | 66 | Governed writes and sub-views invoked from one or more workspaces. |
-| Process variants | 15 | Alternative paths through a process, selected by channel or by category. |
+| Process variants | 18 | Alternative paths through a process, selected by channel or by category. |
 
 ## How strongly it is evidenced
 
 | Evidence class | Records | What that means |
 | --- | --- | --- |
-| Confirmed | 571 | A supplied artifact states this directly. Reading that artifact is sufficient to establish it. |
-| Inferred | 0 | Derived by reasoning across two or more artifacts. No single artifact states it. |
-| Partially evidenced | 22 | Some attributes are stated by an artifact and others are not. The record says which is which. |
-| Conflicting | 5 | Two artifacts disagree. Both readings are recorded; neither is silently preferred. |
-| Unavailable | 12 | The information is required by this standard and no supplied artifact carries it. |
+| Confirmed | 598 | A supplied artifact states this directly. Reading that artifact is sufficient to establish it. |
+| Inferred | 13 | Derived by reasoning across two or more artifacts. No single artifact states it. |
+| Partially evidenced | 23 | Some attributes are stated by an artifact and others are not. The record says which is which. |
+| Conflicting | 8 | Two artifacts disagree. Both readings are recorded; neither is silently preferred. |
+| Unavailable | 11 | The information is required by this standard and no supplied artifact carries it. |
 | Not verifiable from the supplied inputs | 0 | The artifact exists but does not permit the statement to be checked from the supplied inputs alone. |
 | Requires authoritative validation | 9 | Readable from an artifact, but the artifact is not authoritative for it. A named owner must confirm. |
 
 ## The four findings that matter most
 
 1. **No automated process states what it is for.** 0 workflows carrying 0
-   actions between them were walked action by action, so every step, branch and connector call is confirmed. Not one export states a business
-   purpose, an owner or a criticality. Until someone supplies those three facts per workflow, no
-   automated process in this estate can be documented to a confirmed standard, however completely
-   its mechanics are known.
+   actions between them were walked action by action, so every step, branch and connector call is
+   confirmed. Not one carries an owner or a criticality field at any level.
+   0 carry a workflow-level description, and an
+   export does not record whether that text was written for the workflow or inherited unedited from
+   the template it was created from, so each is graded as requiring validation rather than as purpose.
+   Until those facts are supplied per workflow, no automated process in this estate can be documented
+   to a confirmed standard, however completely its mechanics are known.
 
-2. **Two status models govern the same records.** An internal lifecycle and a seven-state public
-   vocabulary both exist, and the declared mapping between them covers five internal values. Two of
-   those five edges are recorded in their own source as readings rather than decisions. A citizen and
-   an officer looking at the same matter are not guaranteed to be looking at the same thing.
+2. **Three status vocabularies govern the same records, and the one with the widest reach has no
+   guard.** 31 lifecycle states carry the transition guard and the entry preconditions,
+   and are used by the core services. 5 stored values carry neither, and are what the intake and
+   executive workspaces render and filter on. 7 public values are what a citizen sees. The only
+   declared mapping runs from the stored values to the public ones; nothing declares how a lifecycle
+   state is expressed in either, and two of those five mapped edges are recorded in their own source
+   as readings rather than decisions. An officer and a citizen looking at the same matter are not
+   guaranteed to be looking at the same thing, and neither is guaranteed to reflect the lifecycle the
+   guard is enforcing.
 
-3. **The routing matrix is a fallback, and its clocks have no consequence.** The 6 rows that decide which directorate answers a citizen live under a key
-   named `fallbackMatrix`, beside a declared list of the column names the live matrix may arrive
-   under from reference data. That reference data is not among the supplied inputs, so what the
-   estate routes on in the ordinary case is not documented anywhere here. Its acknowledgement and completion
-   clocks are declared; nothing in the supplied inputs states what happens when one expires. A clock
-   with no consequence is a measurement, not a control.
+3. **The routing matrix is a fallback, and nothing fires when its clocks expire.** The
+   6 rows that decide which directorate answers a citizen live under a key named
+   `fallbackMatrix`, beside a declared list of the column names the live matrix may arrive under from
+   reference data. That reference data is not among the supplied inputs, so what the estate routes on
+   in the ordinary case is documented nowhere here. Their acknowledgement and completion clocks are
+   declared and are turned into dated fields on each assignment, and breach against them is computed
+   and displayed. What is missing is the trigger: every escalation and every notice in this estate
+   waits for an operator to open a screen and press a control. A breach nobody looks at raises nothing.
 
-4. **Authorisation is evidenced only on the client.** Every route is gated on a role held in the
-   browser. No server-side authorisation of the caller is evidenced. What is documented here as the
-   access model describes what the interface offers, not what the estate refuses.
+4. **An authentication service is provisioned, and is not evidenced as enforced.** `core/auth.js` is
+   complete and documents both a disabled and an enforced posture. `config/auth.config.js` resolves
+   the enable flag to `false` by default and states it may also be injected at runtime from outside
+   source. In that default posture the service returns the local profile as the identity and sends no
+   Authorization header, and every route is gated on a role held in the browser. Which posture the
+   deployed environment is in cannot be read from these inputs, so the access model documented here
+   describes what the interface offers and says nothing either way about what the estate refuses.
 
 ## Register position
 
-24 material gaps are recorded, 13 of them at high validation priority, each with the
-authoritative source and the ownership type needed to close it. 5 record(s) carry
+28 material gaps are recorded, 16 of them at high validation priority, each with the
+authoritative source and the ownership type needed to close it. 8 record(s) carry
 conflicting evidence; each names both readings rather than choosing one silently.
 
 ## This repository's place in the estate
@@ -94,6 +108,8 @@ node tests/process-docs.test.mjs          # staleness, identifiers, references, 
 ## What this package is not
 
 It is the authoritative record of what the supplied artifacts state. It is **not** evidence that any
-process works: execution evidence is carried separately, and among the run records supplied, no
-successful business transaction is recorded. Where the two are easy to confuse, the process record
-says so in its own text.
+process works. Execution evidence is carried separately, in its own field on the process record, and
+it is thin: 0 process(es) carry run records, 0 runs in total.
+Those records show which status each endpoint returned. They do not show that a submission was
+accepted, a document stored, or an enquiry answered with data, and nothing here should be read as
+saying they do. Each process record states its own position in its own words.

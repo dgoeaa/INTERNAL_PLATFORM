@@ -135,27 +135,40 @@ ${table(['Evidence class', 'Records', 'What that means'],
 ## The four findings that matter most
 
 1. **No automated process states what it is for.** ${flows.length} workflows carrying ${D.steps.filter(s => s.responsibleKind !== 'Manual — operator-initiated').length}
-   actions between them were walked action by action, so every step, branch and connector call is confirmed. Not one export states a business
-   purpose, an owner or a criticality. Until someone supplies those three facts per workflow, no
-   automated process in this estate can be documented to a confirmed standard, however completely
-   its mechanics are known.
+   actions between them were walked action by action, so every step, branch and connector call is
+   confirmed. Not one carries an owner or a criticality field at any level.
+   ${D.processes.filter(p => p.declaredDescription).length} carry a workflow-level description, and an
+   export does not record whether that text was written for the workflow or inherited unedited from
+   the template it was created from, so each is graded as requiring validation rather than as purpose.
+   Until those facts are supplied per workflow, no automated process in this estate can be documented
+   to a confirmed standard, however completely its mechanics are known.
 
-2. **Two status models govern the same records.** An internal lifecycle and a seven-state public
-   vocabulary both exist, and the declared mapping between them covers five internal values. Two of
-   those five edges are recorded in their own source as readings rather than decisions. A citizen and
-   an officer looking at the same matter are not guaranteed to be looking at the same thing.
+2. **Three status vocabularies govern the same records, and the one with the widest reach has no
+   guard.** ${D.statuses.filter(s => s.model === 'Internal correspondence lifecycle').length} lifecycle states carry the transition guard and the entry preconditions,
+   and are used by the core services. ${D.statuses.filter(s => s.model === 'Stored correspondence status').length} stored values carry neither, and are what the intake and
+   executive workspaces render and filter on. ${D.statuses.filter(s => s.model === 'Governed public status vocabulary').length} public values are what a citizen sees. The only
+   declared mapping runs from the stored values to the public ones; nothing declares how a lifecycle
+   state is expressed in either, and two of those five mapped edges are recorded in their own source
+   as readings rather than decisions. An officer and a citizen looking at the same matter are not
+   guaranteed to be looking at the same thing, and neither is guaranteed to reflect the lifecycle the
+   guard is enforcing.
 
-3. **The routing matrix is a fallback, and its clocks have no consequence.** ${D.rules.filter(r => r.matrix === 'Fallback matrix').length ? `The ${D.rules.filter(r => r.matrix === 'Fallback matrix').length} rows that decide which directorate answers a citizen live under a key
-   named \`fallbackMatrix\`, beside a declared list of the column names the live matrix may arrive
-   under from reference data. That reference data is not among the supplied inputs, so what the
-   estate routes on in the ordinary case is not documented anywhere here.` : `The routing matrix marks itself provisional in its own source: the category-to-directorate mapping
-   is an operating-model decision the software cannot make.`} Its acknowledgement and completion
-   clocks are declared; nothing in the supplied inputs states what happens when one expires. A clock
-   with no consequence is a measurement, not a control.
+3. **The routing matrix is a fallback, and nothing fires when its clocks expire.** The
+   ${D.rules.filter(r => r.matrix === 'Fallback matrix').length} rows that decide which directorate answers a citizen live under a key named
+   \`fallbackMatrix\`, beside a declared list of the column names the live matrix may arrive under from
+   reference data. That reference data is not among the supplied inputs, so what the estate routes on
+   in the ordinary case is documented nowhere here. Their acknowledgement and completion clocks are
+   declared and are turned into dated fields on each assignment, and breach against them is computed
+   and displayed. What is missing is the trigger: every escalation and every notice in this estate
+   waits for an operator to open a screen and press a control. A breach nobody looks at raises nothing.
 
-4. **Authorisation is evidenced only on the client.** Every route is gated on a role held in the
-   browser. No server-side authorisation of the caller is evidenced. What is documented here as the
-   access model describes what the interface offers, not what the estate refuses.
+4. **An authentication service is provisioned, and is not evidenced as enforced.** \`core/auth.js\` is
+   complete and documents both a disabled and an enforced posture. \`config/auth.config.js\` resolves
+   the enable flag to \`false\` by default and states it may also be injected at runtime from outside
+   source. In that default posture the service returns the local profile as the identity and sends no
+   Authorization header, and every route is gated on a role held in the browser. Which posture the
+   deployed environment is in cannot be read from these inputs, so the access model documented here
+   describes what the interface offers and says nothing either way about what the estate refuses.
 
 ## Register position
 
@@ -170,9 +183,11 @@ ${SCOPE_NOTE}
 ## What this package is not
 
 It is the authoritative record of what the supplied artifacts state. It is **not** evidence that any
-process works: execution evidence is carried separately, and among the run records supplied, no
-successful business transaction is recorded. Where the two are easy to confuse, the process record
-says so in its own text.
+process works. Execution evidence is carried separately, in its own field on the process record, and
+it is thin: ${D.processes.filter(p => p.runsObserved).length} process(es) carry run records, ${D.processes.reduce((n, p) => n + (p.runsObserved || 0), 0)} runs in total.
+Those records show which status each endpoint returned. They do not show that a submission was
+accepted, a document stored, or an enquiry answered with data, and nothing here should be read as
+saying they do. Each process record states its own position in its own words.
 `);
 }
 
@@ -430,6 +445,7 @@ ${(() => {
 ${table(['Attribute', 'Value'], [
   ['Identifier', p.id], ['Name', p.name], ['Alternative or legacy name', p.altName],
   ['Category', p.category], ['Description', p.description],
+  ['Description declared in the artifact itself', p.declaredDescription],
   ['Business objective', p.businessPurpose], ['Operational objective', p.operationalPurpose],
   ['Process owner', p.owner], ['Criticality', p.criticality],
   ['Business area / group', p.group],
@@ -592,7 +608,7 @@ ${table(['ID', 'Name', 'Kind', 'Variant of', 'Parent process', 'How it differs',
 ${table(['Variant kind', 'Found', 'Note'], [
   ['Standard process path', 'Yes', 'Every process record documents its primary path.'],
   ['Alternative paths', 'Yes', `${D.decisions.length} decision points, each with its branches recorded.`],
-  ['Role-specific variants', 'Not evidenced', 'No supplied artifact declares a process that changes shape by role. Roles gate access to routes, not the steps within one.'],
+  ['Role-specific variants', String(D.variants.filter(v => v.kind === 'Role-specific variant').length > 0), `${D.variants.filter(v => v.kind === 'Role-specific variant').length} recorded, all in the executive decision hub, where the panels shown depend on a role derived from the email address and separated by stylesheet display rules. No other workspace changes shape by role: elsewhere roles gate access to routes, not the controls within one.`],
   ['Location-specific variants', 'Not evidenced', 'No artifact declares location as a condition anywhere.'],
   ['Channel-specific variants', 'Yes', `${D.variants.filter(v => v.kind === 'Channel-specific variant').length} recorded: a governed action raised from an allowed invoker rather than its owner.`],
   ['Manual variants', 'Yes', 'Every workspace process is manual by definition; the catalogue records automation level per process.'],
@@ -653,12 +669,12 @@ ${table(['Category', 'Found', 'Where'], [
   ['Assignment rules', 'Yes', 'The assignment cascade derives unit and assignee from category.'],
   ['Approval rules', 'Partially evidenced', 'Approval states exist in the lifecycle; no artifact names the authority that gives an approval.'],
   ['Notification rules', 'Partially evidenced', `${n.notif} notification points are evidenced; none is bound to a rule that decides whether to send.`],
-  ['Escalation rules', 'Not evidenced', 'Escalation is a lifecycle state and a service-level clock exists; nothing binds one to the other.'],
+  ['Escalation rules', 'Partially evidenced', 'Escalation exists as governed actions in the FastTrack workspace, and breach is computed against the declared clocks. No rule binds the clock to the escalation: the operator must raise it.'],
   ['Time-based rules', 'Partially evidenced', 'Acknowledgement and completion clocks are declared per routing row, with no evidenced consequence.'],
   ['Status-transition rules', 'Yes', `${D.controls.filter(c => c.type === 'Status-transition rule').length} entry preconditions in validateGate(), plus the transition guard itself.`],
   ['Permission rules', 'Yes', `${D.controls.filter(c => c.type === 'Permission rule').length} declared capabilities in the role model.`],
   ['Completion rules', 'Yes', 'The closure gate, and the response-evidence precondition on action completion.'],
-  ['Cancellation rules', 'Not evidenced', 'No artifact declares a cancellation path.'],
+  ['Cancellation rules', 'Partially evidenced', "Cancellation STATES exist — 'Cancelled' is one of three terminal task states in core/enterprise-domain.js and one of five project states, and 'withdrawn' is a public status meaning closed at the submitter's request. No rule governs who may cancel, on what condition, or what becomes of work already done."],
   ['Reopening rules', 'Partially evidenced', 'The lifecycle declares a reopen request and a reopened-as-new-reference state; no rule governs who may request it.'],
   ['Retention and archival rules', 'Yes', `${D.rules.filter(r => /Retention/.test(r.type || '')).length} classes with declared periods.`],
   ['Exception-handling rules', 'Yes', `${n.exc} recovery paths read from run-after conditions.`],
@@ -884,11 +900,11 @@ ${table(['Failure kind', 'Evidenced', 'Note'], [
   ['Duplicate requests', 'Yes', 'The acknowledgement control declares an idempotency key and a dedupe window.'],
   ['Invalid state transitions', 'Yes', 'canTransition() refuses any edge the map does not declare.'],
   ['Notification failures', 'Partially', `Each send in document 18 records whether a catch path follows it; most do not.`],
-  ['Incomplete processing', 'Not evidenced', 'No artifact declares detection of a run that stopped part way.'],
+  ['Incomplete processing', 'Not evidenced by this review', 'No artifact examined declares detection of a run that stopped part way. Power Automate run history would show it; no such history is among the supplied inputs.'],
   ['Retry behaviour', 'Partially', 'Declared for acknowledgement only. No flow declares a retry policy in its definition.'],
   ['Rollback behaviour', 'Not evidenced', 'Power Automate does not undo completed actions, and no compensating action is declared anywhere in the estate. Whatever a failed run wrote before failing stays written.'],
-  ['Manual recovery', 'Not evidenced', 'No runbook or manual recovery procedure is among the supplied inputs.'],
-  ['Escalation paths', 'Not evidenced', 'Recorded as a gap.'],
+  ['Manual recovery', 'Not evidenced by this review', 'No runbook or written recovery procedure is among the supplied inputs. The pending-write queue and the offline action queue provide a retry path for a failed client write, which is a mechanism rather than a procedure.'],
+  ['Escalation paths', 'Partially evidenced', 'An escalation level, an escalation record and an owner notification are all raised by governed actions, and an open escalation can be resolved. Every one is operator-initiated; nothing raises one automatically.'],
   ['Support intervention', 'Partially', 'The support routing table names where a request goes, not what the receiver does with it.'],
 ])}
 
@@ -926,11 +942,24 @@ ${(() => {
   const bound = D.monitoring.filter(m => m.escalationThreshold && !/Not evidenced/.test(m.escalationThreshold));
   return bound.length
     ? table(['ID', 'Name', 'Threshold', 'Escalation'], bound.map(m => [m.id, m.name, m.threshold, m.escalationThreshold]))
-    : `No escalation is evidenced anywhere in the supplied inputs. The estate declares service-level
-clocks (${D.monitoring.filter(m => m.kind === 'Service-level expectation').length} of them, in
-document 19) and it declares an \`escalated\` lifecycle state. Nothing connects the two: no artifact
-states who is told when a clock expires, what changes, or what state the record enters. Until that is
-supplied, breach is undetectable from the evidence and no escalation process exists to document.`;
+    : `Escalation exists, and it is entirely operator-initiated. What is missing is the automatic
+trigger, and the distinction matters more than either half alone.
+
+**What is evidenced.** Breach is detected: the FastTrack workspace classifies every tracked item as
+Breached, Due soon, Unassigned or Complete against its due date, and reports the counts as headline
+figures. Escalation is available: three governed actions raise it — one that increments an escalation
+level and forces priority to urgent while writing an escalation record with the reason "SLA escalation
+from FastTrack", one that queues an owner notification, and one that resolves an open escalation.
+${D.statuses.filter(s => s.name === 'escalated').length ? 'The lifecycle also carries an `escalated` state with declared successors.' : ''}
+
+**What is not.** Nothing fires any of it. Every escalation and every notification in this estate
+requires an operator to open the workspace and press a control. No scheduled job, no flow trigger and
+no rule in any supplied artifact raises an escalation, sends a notice, or changes a state because a
+clock expired. The ${D.monitoring.filter(m => m.kind === 'Service-level expectation').length} service-level clocks in document 19 set the deadline and stop there.
+
+**Why that is a finding rather than a preference.** A breach that nobody opens the workspace to see
+is a breach nobody acts on, and the clocks were set precisely so that someone would. The gap register
+records this with the owner needed to close it.`;
 })()}
 `);
 
@@ -961,8 +990,8 @@ ${table(['Asked for by the standard', 'Evidenced', 'Consequence'], [
   ['Operational metrics', 'No', 'Nothing counts throughput, backlog or age of work in the supplied inputs.'],
   ['Performance indicators', 'No', 'No indicator is declared against any process.'],
   ['Process duration targets', 'Partially', 'Acknowledgement and completion day counts exist per routing row; nothing measures against them.'],
-  ['Escalation thresholds', 'No', 'Recorded as a gap.'],
-  ['Alerting behaviour', 'No', 'No alert is declared anywhere.'],
+  ['Escalation thresholds', 'Partially', 'The acknowledgement and completion dates are the thresholds, and breach against them is computed and displayed. Nothing acts on the crossing without an operator.'],
+  ['Alerting behaviour', 'Partially', "The operator HUD declares 'operator-alerts' as an owned capability and surfaces failed, pending and overdue counts, and core/notification-center.js maintains an in-session feed with unread counts that the application shell consumes. Nothing sends an alert outside the session: no artifact routes one to a mailbox, a device or a queue."],
   ['Reporting outputs', 'No', 'No report is declared as drawn from a process.'],
   ['Compliance evidence', 'Partially', `Run records exist for ${D.processes.filter(p => p.runsObserved).length} process(es) and record execution only.`],
   ['Record-retention requirements', 'Partially', `${D.rules.filter(r => /Retention/.test(r.type || '')).length} retention classes are declared in code and traced to no records-management instrument.`],
@@ -1355,7 +1384,7 @@ show is needed.
 ## Priority 1 — the estate cannot be operated safely without these
 
 ${table(['#', 'Recommendation', 'Closes', 'Owner needed', 'Done when'], [
-    ['1', 'Bind an escalation to each service-level clock: name who is told on breach, what changes, and which lifecycle state the record enters.', D.gaps.filter(g => /escalation behaviour/i.test(g.subject || '')).map(g => g.id).join(' ') || '—', 'Operational owner', 'A rule exists that fires on clock expiry, and a record in breach is distinguishable from one that is not.'],
+    ['1', 'Fire the escalation that already exists. Breach is computed and the escalation and notification actions are built; add the scheduled check or flow that raises them when a clock expires, rather than waiting for an operator to open the FastTrack workspace.', D.gaps.filter(g => /escalation behaviour/i.test(g.subject || '')).map(g => g.id).join(' ') || '—', 'Operational owner', 'A rule exists that fires on clock expiry, and a record in breach is distinguishable from one that is not.'],
     ['2', 'State a server-side authorisation posture for every endpoint: trigger authentication type and the role check applied before the work is done.', D.gaps.filter(g => /Authorisation is evidenced only on the client/.test(g.subject || '')).map(g => g.id).join(' ') || '—', 'Security or access authority', 'Each endpoint names its authentication type, and a call bypassing the client is refused.'],
     ['3', 'Give every workflow an owner, a one-sentence purpose and a criticality grade.', D.gaps.filter(g => /business purpose, owner or criticality/.test(g.subject || '')).map(g => g.id).join(' ') || '—', 'Technical owner', 'No automated process in document 7 has a blank owner, purpose or criticality.'],
     ['4', 'Reconcile the two status models: give every lifecycle state a declared public status, or merge the models.', D.gaps.filter(g => /status model|maps to public/.test(g.subject || '')).map(g => g.id).join(' ') || '—', 'Business owner', 'A citizen viewing a record and an officer holding it see states that correspond by declaration, not by reading.'],
@@ -1437,8 +1466,9 @@ ${table(['Coverage status', 'System areas'], Object.entries(conf))}
 ## What this package may not be relied on for
 
 - **That any process works.** Execution evidence covers ${D.processes.filter(p => p.runsObserved).length}
-  process(es) and records outcomes only. Among the supplied run records, no successful business
-  transaction is recorded. Nothing here should be read as an assurance of operation.
+  process(es), ${D.processes.reduce((n, p) => n + (p.runsObserved || 0), 0)} runs in total, and records the status each returned and nothing more. No
+  run record in the set shows an end-to-end business transaction completing. Nothing here should be
+  read as an assurance of operation.
 - **That the documented design is what is deployed.** For the workflows evidenced only by a design
   package, it is explicitly unverified.
 - **That the access model is enforced.** It is evidenced on the client only.

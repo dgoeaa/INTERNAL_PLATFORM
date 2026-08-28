@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'statistics' |
 | Category | User-initiated · operational |
 | Description | Analytics and trend views across the correspondence lifecycle. |
+| Description declared in the artifact itself | — |
 | Business objective | Analytics and trend views across the correspondence lifecycle. |
 | Operational objective | Boundary role 'analytics-kpi'. Owns metrics, trends, phase-distribution, sla-analytics; must not own formal-report-generation, runtime-certification. |
 | Process owner | — |

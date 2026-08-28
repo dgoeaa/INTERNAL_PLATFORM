@@ -12,6 +12,7 @@
 | Alternative or legacy name | — |
 | Category | Sub-view of a primary workspace |
 | Description | — |
+| Description declared in the artifact itself | — |
 | Business objective | — |
 | Operational objective | — |
 | Process owner | — |
@@ -41,7 +42,10 @@
 
 | Step | Name | Responsible | Kind |
 | --- | --- | --- | --- |
-| STEP-0042 | Disable the user | user-admin workspace | Manual — operator-initiated |
+| STEP-0055 | Disable the user | user-admin workspace | Manual — operator-initiated |
+| STEP-0056 | Create the user | user-admin workspace | Manual — operator-initiated |
+| STEP-0057 | Update the user | user-admin workspace | Manual — operator-initiated |
+| STEP-0058 | assign role | user-admin workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -59,15 +63,21 @@
 
 | Step | Required inputs |
 | --- | --- |
-| STEP-0042 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0055 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0056 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0057 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0058 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
-1 step(s).
+4 step(s).
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STEP-0042 | 1 | Disable the user | modules/user-admin.js | user-admin workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: user-admin.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:user-disabled | Confirmed | No external validation required | SRC-033 SRC-035 |
+| STEP-0055 | 1 | Disable the user | modules/user-admin.js | user-admin workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: user-admin.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:user-disabled | Confirmed | No external validation required | SRC-033 SRC-035 |
+| STEP-0056 | 2 | Create the user | modules/user-admin.js | user-admin workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: user-admin.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:user-created | Inferred | No external validation required | SRC-033 SRC-035 |
+| STEP-0057 | 3 | Update the user | modules/user-admin.js | user-admin workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: user-admin.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:user-updated | Inferred | No external validation required | SRC-033 SRC-035 |
+| STEP-0058 | 4 | assign role | modules/user-admin.js | user-admin workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: user-admin.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:user-role-assigned | Inferred | No external validation required | SRC-033 SRC-035 |
 
 ## 5.6 Decisions and branches
 
@@ -105,13 +115,19 @@ _No exception path is evidenced in this process. Where the process is a request-
 
 | ID | Kind | Name | Description | Threshold | Escalation threshold | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| MON-041 | Audit event | Audit event audit:user-disabled | The governance table binds action 'disable-user' to the audit vocabulary 'audit:user-disabled'. | — | — | Confirmed |
+| MON-051 | Audit event | Audit event audit:user-disabled | The governance table binds action 'disable-user' to the audit vocabulary 'audit:user-disabled'. | — | — | Confirmed |
+| MON-052 | Audit event | Audit event audit:user-created | The governance table binds action 'create-user' to the audit vocabulary 'audit:user-created'. | — | — | Confirmed |
+| MON-053 | Audit event | Audit event audit:user-updated | The governance table binds action 'update-user' to the audit vocabulary 'audit:user-updated'. | — | — | Confirmed |
+| MON-054 | Audit event | Audit event audit:user-role-assigned | The governance table binds action 'assign-role' to the audit vocabulary 'audit:user-role-assigned'. | — | — | Confirmed |
 
 ### Audit events written by this process
 
 | Step | Audit event |
 | --- | --- |
-| STEP-0042 Disable the user | audit:user-disabled |
+| STEP-0055 Disable the user | audit:user-disabled |
+| STEP-0056 Create the user | audit:user-created |
+| STEP-0057 Update the user | audit:user-updated |
+| STEP-0058 assign role | audit:user-role-assigned |
 
 ## Relationships
 

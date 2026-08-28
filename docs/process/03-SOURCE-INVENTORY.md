@@ -7,7 +7,7 @@
 
 **Purpose.** List every artifact read, what kind of artifact it is, and how far a statement resting on it can be trusted.
 
-47 artifacts were read. Each identifier below is cited by every record derived from it; the
+60 artifacts were read. Each identifier below is cited by every record derived from it; the
 reverse index — which processes came from which source — is in document 23.
 
 | ID | Artifact | Kind | Classification | Confidence | Validation |
@@ -48,14 +48,27 @@ reverse index — which processes came from which source — is in document 23.
 | SRC-034 | `config/rbac.config.js` | Configuration file | Confirmed | High | No external validation required |
 | SRC-035 | `config/action-ownership.config.js` | Configuration file | Confirmed | High | No external validation required |
 | SRC-036 | `config/workflow-clarity.config.js` | Configuration file | Confirmed | High | No external validation required |
-| SRC-037 | `core/lifecycle.js` | Source code — platform core | Confirmed | High | No external validation required |
-| SRC-038 | `config/status-vocabulary.config.js` | Configuration file | Confirmed | High | No external validation required |
-| SRC-039 | `config/assignment-cascade.config.js` | Configuration file | Confirmed | High | No external validation required |
-| SRC-040 | `config/acknowledgement-flow.config.js` | Configuration file | Confirmed | High | No external validation required |
-| SRC-041 | `core/retention.js` | Source code — platform core | Confirmed | High | No external validation required |
-| SRC-042 | `config/support-routing.config.js` | Configuration file | Confirmed | High | No external validation required |
-| SRC-043 | `config/priority.config.js` | Configuration file | Confirmed | High | No external validation required |
-| SRC-044 | `config/receipt-ledger.config.js` | Configuration file | Confirmed | High | No external validation required |
-| SRC-045 | `config/browser-certification.config.js` | Configuration file | Confirmed | High | No external validation required |
-| SRC-046 | `config/performance-budget.config.js` | Configuration file | Confirmed | High | No external validation required |
-| SRC-047 | `tests` | Automated test suite | Confirmed | High | No external validation required |
+| SRC-037 | `core/action-authority.js` | Source code — platform core | Confirmed | High | No external validation required |
+| SRC-038 | `shared/shell.js` | Artifact | Confirmed | High | No external validation required |
+| SRC-039 | `shared/welcome-runtime.js` | Artifact | Confirmed | High | No external validation required |
+| SRC-040 | `shared/accessibility.js` | Artifact | Confirmed | High | No external validation required |
+| SRC-041 | `shared/components.js` | Artifact | Confirmed | High | No external validation required |
+| SRC-042 | `shared/design-system-adapter.js` | Artifact | Confirmed | High | No external validation required |
+| SRC-043 | `shared/figma-uiux-runtime.js` | Artifact | Confirmed | High | No external validation required |
+| SRC-044 | `shared/relationship-runtime.js` | Artifact | Confirmed | High | No external validation required |
+| SRC-045 | `shared/workspace-guide.js` | Artifact | Confirmed | High | No external validation required |
+| SRC-046 | `core/lifecycle.js` | Source code — platform core | Confirmed | High | No external validation required |
+| SRC-047 | `config/status-vocabulary.config.js` | Configuration file | Confirmed | High | No external validation required |
+| SRC-048 | `config/assignment-cascade.config.js` | Configuration file | Confirmed | High | No external validation required |
+| SRC-049 | `core/assignment-cascade.js` | Source code — platform core | Confirmed | High | No external validation required |
+| SRC-050 | `config/acknowledgement-flow.config.js` | Configuration file | Confirmed | High | No external validation required |
+| SRC-051 | `core/retention.js` | Source code — platform core | Confirmed | High | No external validation required |
+| SRC-052 | `styles/app.css` | Artifact | Confirmed | High | No external validation required |
+| SRC-053 | `config/support-routing.config.js` | Configuration file | Confirmed | High | No external validation required |
+| SRC-054 | `config/priority.config.js` | Configuration file | Confirmed | High | No external validation required |
+| SRC-055 | `config/receipt-ledger.config.js` | Configuration file | Confirmed | High | No external validation required |
+| SRC-056 | `config/browser-certification.config.js` | Configuration file | Confirmed | High | No external validation required |
+| SRC-057 | `config/performance-budget.config.js` | Configuration file | Confirmed | High | No external validation required |
+| SRC-058 | `core/auth.js` | Source code — platform core | Confirmed | High | No external validation required |
+| SRC-059 | `config/auth.config.js` | Configuration file | Confirmed | High | No external validation required |
+| SRC-060 | `tests` | Automated test suite | Confirmed | High | No external validation required |

@@ -11,26 +11,26 @@ Inventory generated 2026-08-28. Standard `dgo-process-documentation/v2`.
 | --- | --- | --- |
 | 1 | [Executive summary](01-EXECUTIVE-SUMMARY.md) | What was found, how strongly it is evidenced, and the four findings that matter most. |
 | 2 | [Scope and assessment boundaries](02-SCOPE-AND-BOUNDARIES.md) | What was reviewed, what was excluded and why, and what could not be reached. |
-| 3 | [Source inventory](03-SOURCE-INVENTORY.md) | All 47 artifacts read. |
+| 3 | [Source inventory](03-SOURCE-INVENTORY.md) | All 60 artifacts read. |
 | 4 | [Review methodology](04-METHODOLOGY.md) | How each kind of artifact was read, and the rule applied when evidence ran out. |
 | 5 | [Evidence-classification framework](05-EVIDENCE-FRAMEWORK.md) | The seven classifications, the validation statuses and the ownership types. |
 | 6 | [Enterprise process architecture](06-PROCESS-ARCHITECTURE.md) | 2 systems, 29 modules, and the estate context diagram. |
 | 7 | [Master process inventory](07-MASTER-PROCESS-INVENTORY.md) | 24 processes with their twenty-two attributes. |
 | 8 | [Process hierarchy](08-PROCESS-HIERARCHY.md) | Parentage for every process and subprocess. |
 | 9 | [Detailed process documentation](09-PROCESS-DETAIL.md) | One file per process, ten sections each. |
-| 10 | [Subprocess and variant catalogue](10-SUBPROCESS-AND-VARIANT-CATALOGUE.md) | 66 subprocesses, 15 variants. |
-| 11 | [Process-step catalogue](11-PROCESS-STEP-CATALOGUE.md) | 42 steps. |
+| 10 | [Subprocess and variant catalogue](10-SUBPROCESS-AND-VARIANT-CATALOGUE.md) | 66 subprocesses, 18 variants. |
+| 11 | [Process-step catalogue](11-PROCESS-STEP-CATALOGUE.md) | 58 steps. |
 | 12 | [Business-rule and control catalogue](12-RULE-AND-CONTROL-CATALOGUE.md) | 19 rules, 58 controls. |
 | 13 | [Roles and responsibility matrix](13-ROLES-AND-RESPONSIBILITY-MATRIX.md) | 10 roles and personas, and the access matrix. |
-| 14 | [Status and transition catalogue](14-STATUS-AND-TRANSITION-CATALOGUE.md) | 38 states, 56 transitions, across two models. |
+| 14 | [Status and transition catalogue](14-STATUS-AND-TRANSITION-CATALOGUE.md) | 43 states, 56 transitions, across two models. |
 | 15 | [Integration-supported process catalogue](15-INTEGRATION-CATALOGUE.md) | 0 published contracts and the connectors in use. |
 | 16 | [Process relationship and dependency map](16-DEPENDENCY-MAP.md) | 52 dependencies and the handoff map. |
 | 17 | [Exception, failure and recovery catalogue](17-EXCEPTION-AND-RECOVERY-CATALOGUE.md) | 0 recovery paths. |
-| 18 | [Notification and escalation catalogue](18-NOTIFICATION-AND-ESCALATION-CATALOGUE.md) | 137 notification points. |
-| 19 | [Monitoring, audit and performance catalogue](19-MONITORING-AUDIT-AND-PERFORMANCE.md) | 47 monitoring records and every audit event. |
+| 18 | [Notification and escalation catalogue](18-NOTIFICATION-AND-ESCALATION-CATALOGUE.md) | 139 notification points. |
+| 19 | [Monitoring, audit and performance catalogue](19-MONITORING-AUDIT-AND-PERFORMANCE.md) | 60 monitoring records and every audit event. |
 | 20 | [End-to-end process diagrams](20-PROCESS-DIAGRAMS.md) | Eight diagrams drawn, four named and not drawn, with the reason. |
-| 21 | [Traceability matrix](21-TRACEABILITY-MATRIX.md) | 42 chains from source evidence to exception path. |
-| 22 | [Gap, conflict and validation register](22-GAP-CONFLICT-AND-VALIDATION-REGISTER.md) | 24 gaps with fifteen attributes each. |
+| 21 | [Traceability matrix](21-TRACEABILITY-MATRIX.md) | 58 chains from source evidence to exception path. |
+| 22 | [Gap, conflict and validation register](22-GAP-CONFLICT-AND-VALIDATION-REGISTER.md) | 28 gaps with fifteen attributes each. |
 | 23 | [Coverage and reconciliation matrix](23-COVERAGE-AND-RECONCILIATION.md) | Every source accounted for, every process reconciled. |
 | 24 | [Completeness and consistency review](24-COMPLETENESS-AND-CONSISTENCY-REVIEW.md) | The twenty-five required checks, executed. |
 | 25 | [Prioritized recommendations](25-RECOMMENDATIONS.md) | What to do next, with the owner each item needs. |

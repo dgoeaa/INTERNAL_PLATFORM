@@ -7,7 +7,7 @@
 
 **Purpose.** Record every message the estate sends, to whom, on what trigger, and what happens when a send fails.
 
-137 notification points. 0 are
+139 notification points. 0 are
 classified as escalations, on the strength of their own names; **none is bound to a service-level
 clock**, which is recorded as a gap in document 22.
 
@@ -156,11 +156,16 @@ _No rows._
 | NOTIF-135 | [SUBPROC-005](detail/SUBPROC-005.md) | Email — enter a valid email address. This is how the person signs in and where their notices go. | Failure notice | Confirmed |
 | NOTIF-136 | [SUBPROC-005](detail/SUBPROC-005.md) | User list reloaded from the registry | Completion notice | Confirmed |
 | NOTIF-137 | [SUBPROC-005](detail/SUBPROC-005.md) | The registry could not be reached — the user list was not reloaded | Failure notice | Confirmed |
+| NOTIF-138 | Application shell | Synchronization requested | Informational notice | Confirmed |
+| NOTIF-139 | Application shell | Welcome experience completed | Completion notice | Confirmed |
 
 ## Escalation
 
-No escalation is evidenced anywhere in the supplied inputs. The estate declares service-level
-clocks (6 of them, in
-document 19) and it declares an `escalated` lifecycle state. Nothing connects the two: no artifact
-states who is told when a clock expires, what changes, or what state the record enters. Until that is
-supplied, breach is undetectable from the evidence and no escalation process exists to document.
+| ID | Name | Threshold | Escalation |
+| --- | --- | --- | --- |
+| MON-055 | Service level — Executive Correspondence · DG Attention | acknowledge 1d / complete 2d | The clock is the threshold, and breach against it is computed and displayed by the FastTrack workspace. No artifact binds its expiry to an automatic escalation or notification; both exist as operator-initiated actions only. |
+| MON-056 | Service level — Policy / Regulation · Review | acknowledge 1d / complete 3d | The clock is the threshold, and breach against it is computed and displayed by the FastTrack workspace. No artifact binds its expiry to an automatic escalation or notification; both exist as operator-initiated actions only. |
+| MON-057 | Service level — Operations · Service Request | acknowledge 2d / complete 5d | The clock is the threshold, and breach against it is computed and displayed by the FastTrack workspace. No artifact binds its expiry to an automatic escalation or notification; both exist as operator-initiated actions only. |
+| MON-058 | Service level — Finance / Procurement · Budget / Procurement | acknowledge 1d / complete 4d | The clock is the threshold, and breach against it is computed and displayed by the FastTrack workspace. No artifact binds its expiry to an automatic escalation or notification; both exist as operator-initiated actions only. |
+| MON-059 | Service level — ICT / Digital Services · Technical Support | acknowledge 1d / complete 4d | The clock is the threshold, and breach against it is computed and displayed by the FastTrack workspace. No artifact binds its expiry to an automatic escalation or notification; both exist as operator-initiated actions only. |
+| MON-060 | Service level — General Administration · General | acknowledge 2d / complete 5d | The clock is the threshold, and breach against it is computed and displayed by the FastTrack workspace. No artifact binds its expiry to an automatic escalation or notification; both exist as operator-initiated actions only. |

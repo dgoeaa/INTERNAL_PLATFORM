@@ -36,13 +36,13 @@
   - _SUBPROC-052_ Set the reminder (Reusable governed write)
   - _SUBPROC-057_ Update the task (Reusable governed write)
   - ~VAR-006~ variant: update the task — raised from lookup
-  - ~VAR-011~ variant: Support request — Timeline / Due Date Issue
+  - ~VAR-014~ variant: Support request — Timeline / Due Date Issue
 - **PROC-006** Acknowledgment Queue
   - _SUBPROC-019_ Record the acknowledgment (Reusable governed write)
   - _SUBPROC-020_ Send the acknowledgments still waiting (Reusable governed write)
   - _SUBPROC-045_ Send the reminder (Reusable governed write)
   - ~VAR-002~ variant: record the acknowledgment — raised from orchestrator
-  - ~VAR-015~ variant: Support request — Already Acknowledged
+  - ~VAR-018~ variant: Support request — Already Acknowledged
 - **PROC-007** Registry
   - _SUBPROC-003_ Registry Scan Intake (Sub-view of a primary workspace)
   - _SUBPROC-046_ Register the file (Reusable governed write)
@@ -51,9 +51,9 @@
   - _SUBPROC-049_ Close the file (Reusable governed write)
 - **PROC-008** Comments
   - _SUBPROC-044_ Add the comment (Reusable governed write)
-  - ~VAR-012~ variant: Support request — Clarification Required
+  - ~VAR-015~ variant: Support request — Clarification Required
 - **PROC-009** Lookup & Direct Action
-  - ~VAR-014~ variant: Support request — Wrong Task or Reference
+  - ~VAR-017~ variant: Support request — Wrong Task or Reference
 
 ### CONTROL — 9 process(es)
 
@@ -83,6 +83,9 @@
   - _SUBPROC-040_ Return the item to the sender (Reusable governed write)
   - _SUBPROC-041_ Delegate the item (Reusable governed write)
   - _SUBPROC-042_ Add the minute (Reusable governed write)
+  - ~VAR-009~ variant: Executive decision hub — as DGCEO
+  - ~VAR-010~ variant: Executive decision hub — as Officer
+  - ~VAR-011~ variant: Executive decision hub — as EA
 
 ### CLOSURE — 2 process(es)
 
@@ -101,7 +104,7 @@
 ### SYSTEM — 4 process(es)
 
 - **PROC-021** Assistant
-  - ~VAR-009~ variant: Support request — Access Error
+  - ~VAR-012~ variant: Support request — Access Error
 - **PROC-022** Operator HUD
 - **PROC-023** Administration
   - _SUBPROC-005_ User Administration (Sub-view of a primary workspace)
@@ -109,7 +112,7 @@
   - _SUBPROC-066_ Import that file (Reusable governed write)
 - **PROC-024** System Health
   - _SUBPROC-028_ Run the system checks (Reusable governed write)
-  - ~VAR-013~ variant: Support request — Offline / Queue Issue
+  - ~VAR-016~ variant: Support request — Offline / Queue Issue
 
 ## Hierarchy diagram
 

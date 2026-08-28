@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'home' |
 | Category | User-initiated · operational |
 | Description | Shows what needs attention now and routes users to the correct governed workspace. |
+| Description declared in the artifact itself | — |
 | Business objective | Shows what needs attention now and routes users to the correct governed workspace. |
 | Operational objective | Boundary role 'operational-landing'. Owns quick-entry, workload-summary; must not own certification, formal-reporting, archive-execution. |
 | Process owner | — |

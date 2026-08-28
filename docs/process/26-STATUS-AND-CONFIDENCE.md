@@ -13,27 +13,27 @@
 | --- | --- |
 | Processes documented | 24 |
 | Subprocesses documented | 66 |
-| Process variants documented | 15 |
-| Process steps documented | 42 |
+| Process variants documented | 18 |
+| Process steps documented | 58 |
 | Decisions documented | 0 |
 | Rules and controls documented | 77 |
-| Statuses and transitions documented | 94 |
+| Statuses and transitions documented | 99 |
 | Exceptions and recovery paths documented | 0 |
-| Notification points documented | 137 |
+| Notification points documented | 139 |
 | Dependencies documented | 52 |
-| Sources read | 47 |
-| Material gaps recorded | 24 |
+| Sources read | 60 |
+| Material gaps recorded | 28 |
 | Completeness and consistency checks passing | 25 of 25 — see document 24 |
 
 ## Coverage position
 
 | Coverage status | System areas |
 | --- | --- |
+| Fully documented from confirmed evidence | 2 |
 | Documented with minor validation requirements | 3 |
+| Partially documented | 4 |
 | Insufficient evidence | 12 |
-| Partially documented | 3 |
 | Not applicable | 1 |
-| Fully documented from confirmed evidence | 1 |
 
 ## What this package may be relied on for
 
@@ -47,8 +47,9 @@
 ## What this package may not be relied on for
 
 - **That any process works.** Execution evidence covers 0
-  process(es) and records outcomes only. Among the supplied run records, no successful business
-  transaction is recorded. Nothing here should be read as an assurance of operation.
+  process(es), 0 runs in total, and records the status each returned and nothing more. No
+  run record in the set shows an end-to-end business transaction completing. Nothing here should be
+  read as an assurance of operation.
 - **That the documented design is what is deployed.** For the workflows evidenced only by a design
   package, it is explicitly unverified.
 - **That the access model is enforced.** It is evidenced on the client only.
@@ -58,11 +59,11 @@
 
 | Evidence class | Records | Confidence |
 | --- | --- | --- |
-| Confirmed | 571 | High |
-| Inferred | 0 | Medium |
-| Partially evidenced | 22 | Medium |
-| Conflicting | 5 | Low |
-| Unavailable | 12 | None |
+| Confirmed | 598 | High |
+| Inferred | 13 | Medium |
+| Partially evidenced | 23 | Medium |
+| Conflicting | 8 | Low |
+| Unavailable | 11 | None |
 | Not verifiable from the supplied inputs | 0 | None |
 | Requires authoritative validation | 9 | Low |
 

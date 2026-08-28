@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'operator-hud' |
 | Category | User-initiated · operational |
 | Description | Runtime and integration health at a glance while operating the platform. |
+| Description declared in the artifact itself | — |
 | Business objective | Runtime and integration health at a glance while operating the platform. |
 | Operational objective | Boundary role 'runtime-monitoring'. Owns sync-status, pending-queue, runtime-load, operator-alerts; must not own configuration-edit, release-certification. |
 | Process owner | — |

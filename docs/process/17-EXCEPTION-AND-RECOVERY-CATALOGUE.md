@@ -28,11 +28,11 @@ _No rows._
 | Duplicate requests | Yes | The acknowledgement control declares an idempotency key and a dedupe window. |
 | Invalid state transitions | Yes | canTransition() refuses any edge the map does not declare. |
 | Notification failures | Partially | Each send in document 18 records whether a catch path follows it; most do not. |
-| Incomplete processing | Not evidenced | No artifact declares detection of a run that stopped part way. |
+| Incomplete processing | Not evidenced by this review | No artifact examined declares detection of a run that stopped part way. Power Automate run history would show it; no such history is among the supplied inputs. |
 | Retry behaviour | Partially | Declared for acknowledgement only. No flow declares a retry policy in its definition. |
 | Rollback behaviour | Not evidenced | Power Automate does not undo completed actions, and no compensating action is declared anywhere in the estate. Whatever a failed run wrote before failing stays written. |
-| Manual recovery | Not evidenced | No runbook or manual recovery procedure is among the supplied inputs. |
-| Escalation paths | Not evidenced | Recorded as a gap. |
+| Manual recovery | Not evidenced by this review | No runbook or written recovery procedure is among the supplied inputs. The pending-write queue and the offline action queue provide a retry path for a failed client write, which is a mechanism rather than a procedure. |
+| Escalation paths | Partially evidenced | An escalation level, an escalation record and an owner notification are all raised by governed actions, and an open escalation can be resolved. Every one is operator-initiated; nothing raises one automatically. |
 | Support intervention | Partially | The support routing table names where a request goes, not what the receiver does with it. |
 
 ## The rollback finding, stated plainly

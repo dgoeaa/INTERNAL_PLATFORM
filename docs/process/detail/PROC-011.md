@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'fasttrack' |
 | Category | User-initiated · operational |
 | Description | Track items at risk of breaching their service-level target before they do. |
+| Description declared in the artifact itself | — |
 | Business objective | Track items at risk of breaching their service-level target before they do. |
 | Operational objective | Boundary role 'priority-intervention'. Owns fasttrack, urgent-assign, escalate-priority, notify-owner; must not own normal-task-workbench, formal-approval. |
 | Process owner | The fasttrack module, per the per-action governance table. |
@@ -41,7 +42,10 @@
 
 | Step | Name | Responsible | Kind |
 | --- | --- | --- | --- |
-| STEP-0024 | Resolve the escalation | fasttrack workspace | Manual — operator-initiated |
+| STEP-0034 | Resolve the escalation | fasttrack workspace | Manual — operator-initiated |
+| STEP-0035 | fasttrack | fasttrack workspace | Manual — operator-initiated |
+| STEP-0036 | escalate priority | fasttrack workspace | Manual — operator-initiated |
+| STEP-0037 | notify owner | fasttrack workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -59,15 +63,21 @@
 
 | Step | Required inputs |
 | --- | --- |
-| STEP-0024 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0034 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0035 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0036 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0037 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
-1 step(s).
+4 step(s).
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STEP-0024 | 1 | Resolve the escalation | modules/fasttrack.js | fasttrack workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: fasttrack.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:escalation-resolved | Confirmed | No external validation required | SRC-019 SRC-035 |
+| STEP-0034 | 1 | Resolve the escalation | modules/fasttrack.js | fasttrack workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: fasttrack.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:escalation-resolved | Confirmed | No external validation required | SRC-019 SRC-035 |
+| STEP-0035 | 2 | fasttrack | modules/fasttrack.js | fasttrack workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Performs the governed write declared for this action. | — | Not evidenced for this action. | An updated record in application state. | — | — | — | — | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | — | Inferred | No external validation required | SRC-019 SRC-005 |
+| STEP-0036 | 3 | escalate priority | modules/fasttrack.js | fasttrack workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Performs the governed write declared for this action. | — | Not evidenced for this action. | An updated record in application state. | — | — | — | — | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | — | Inferred | No external validation required | SRC-019 SRC-005 |
+| STEP-0037 | 4 | notify owner | modules/fasttrack.js | fasttrack workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Performs the governed write declared for this action. | — | Not evidenced for this action. | An updated record in application state. | — | — | — | — | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | — | Inferred | No external validation required | SRC-019 SRC-005 |
 
 ## 5.6 Decisions and branches
 
@@ -104,13 +114,13 @@ _No exception path is evidenced in this process. Where the process is a request-
 
 | ID | Kind | Name | Description | Threshold | Escalation threshold | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| MON-023 | Audit event | Audit event audit:escalation-resolved | The governance table binds action 'resolve-escalation' to the audit vocabulary 'audit:escalation-resolved'. | — | — | Confirmed |
+| MON-033 | Audit event | Audit event audit:escalation-resolved | The governance table binds action 'resolve-escalation' to the audit vocabulary 'audit:escalation-resolved'. | — | — | Confirmed |
 
 ### Audit events written by this process
 
 | Step | Audit event |
 | --- | --- |
-| STEP-0024 Resolve the escalation | audit:escalation-resolved |
+| STEP-0034 Resolve the escalation | audit:escalation-resolved |
 
 ## Relationships
 

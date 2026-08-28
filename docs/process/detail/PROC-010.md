@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'response-tracking' |
 | Category | User-initiated · operational |
 | Description | Monitor responses, SLA ageing, matched document/email tracking and exports. |
+| Description declared in the artifact itself | — |
 | Business objective | Monitor responses, SLA ageing, matched document/email tracking and exports. |
 | Operational objective | Boundary role 'response-monitoring-lens'. Owns monitor-response, ageing, export-monitoring, route-to-owner; must not own task-execution, approval-decision. |
 | Process owner | — |

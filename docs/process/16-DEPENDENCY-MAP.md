@@ -102,7 +102,7 @@ sending module.
 | Parent processes and subprocesses | 66 | Document 8 and document 10. |
 | Processes and system modules | 29 modules mapped | Document 6 and each process record. |
 | Processes and features | Yes, where a module boundary declares owned features | Document 6. |
-| Processes and user actions | 42 operator steps | Document 11. |
+| Processes and user actions | 58 operator steps | Document 11. |
 | Processes and integrations | 36 | This document and document 15. |
 | Processes and roles | Yes, by route access | Document 13. |
 | Processes and business rules | 19 rules bound to a process | Document 12. |

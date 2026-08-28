@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'dispatch' |
 | Category | User-initiated · operational |
 | Description | Prepare dispatch, send/no-dispatch, capture receipt, close and hand off to archive. |
+| Description declared in the artifact itself | — |
 | Business objective | Prepare dispatch, send/no-dispatch, capture receipt, close and hand off to archive. |
 | Operational objective | Boundary role 'dispatch-execution'. Owns prepare-dispatch, send-dispatch, retry-dispatch, no-dispatch, capture-receipt, closure-check; must not own approval-decision, archive-execution. |
 | Process owner | The dispatch module, per the per-action governance table. |
@@ -41,10 +42,10 @@
 
 | Step | Name | Responsible | Kind |
 | --- | --- | --- | --- |
-| STEP-0018 | Send the dispatch | dispatch workspace | Manual — operator-initiated |
-| STEP-0019 | Record that nothing will be dispatched | dispatch workspace | Manual — operator-initiated |
-| STEP-0020 | Send the dispatch again | dispatch workspace | Manual — operator-initiated |
-| STEP-0021 | Close the dispatch | dispatch workspace | Manual — operator-initiated |
+| STEP-0025 | Send the dispatch | dispatch workspace | Manual — operator-initiated |
+| STEP-0026 | Record that nothing will be dispatched | dispatch workspace | Manual — operator-initiated |
+| STEP-0027 | Send the dispatch again | dispatch workspace | Manual — operator-initiated |
+| STEP-0028 | Close the dispatch | dispatch workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -62,10 +63,10 @@
 
 | Step | Required inputs |
 | --- | --- |
-| STEP-0018 | The record the operator has selected, and any values captured by the form attached to the control. |
-| STEP-0019 | The record the operator has selected, and any values captured by the form attached to the control. |
-| STEP-0020 | The record the operator has selected, and any values captured by the form attached to the control. |
-| STEP-0021 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0025 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0026 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0027 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0028 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
@@ -73,10 +74,10 @@
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| STEP-0018 | 1 | Send the dispatch | modules/dispatch.js | dispatch workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls DispatchService.dispatchOutbound. | Ownership: dispatch.<br>Backend: DISPATCH_OUTBOUND. | Not evidenced for this action. | An updated record in application state. | — | — | — | DISPATCH_OUTBOUND | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:dispatch-started | Confirmed | No external validation required | SRC-016 SRC-035 |
-| STEP-0019 | 2 | Record that nothing will be dispatched | modules/dispatch.js | dispatch workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: dispatch.<br>Backend: none. | Not evidenced for this action. | An updated record in application state. | — | — | — | none | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:no-dispatch | Confirmed | No external validation required | SRC-016 SRC-035 |
-| STEP-0020 | 3 | Send the dispatch again | modules/dispatch.js | dispatch workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls WriteManager.backend. | Ownership: dispatch.<br>Backend: DYNAMIC_ACTIONS. | Not evidenced for this action. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:dispatch-retried | Confirmed | No external validation required | SRC-016 SRC-035 |
-| STEP-0021 | 4 | Close the dispatch | modules/dispatch.js | dispatch workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: dispatch.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:dispatch-closed | Confirmed | No external validation required | SRC-016 SRC-035 |
+| STEP-0025 | 1 | Send the dispatch | modules/dispatch.js | dispatch workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls DispatchService.dispatchOutbound. | Ownership: dispatch.<br>Backend: DISPATCH_OUTBOUND. | Not evidenced for this action. | An updated record in application state. | — | — | — | DISPATCH_OUTBOUND | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:dispatch-started | Confirmed | No external validation required | SRC-016 SRC-035 |
+| STEP-0026 | 2 | Record that nothing will be dispatched | modules/dispatch.js | dispatch workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: dispatch.<br>Backend: none. | Not evidenced for this action. | An updated record in application state. | — | — | — | none | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:no-dispatch | Confirmed | No external validation required | SRC-016 SRC-035 |
+| STEP-0027 | 3 | Send the dispatch again | modules/dispatch.js | dispatch workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls WriteManager.backend. | Ownership: dispatch.<br>Backend: DYNAMIC_ACTIONS. | Not evidenced for this action. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:dispatch-retried | Confirmed | No external validation required | SRC-016 SRC-035 |
+| STEP-0028 | 4 | Close the dispatch | modules/dispatch.js | dispatch workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: dispatch.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:dispatch-closed | Confirmed | No external validation required | SRC-016 SRC-035 |
 
 ## 5.6 Decisions and branches
 
@@ -115,19 +116,19 @@ _No exception path is evidenced in this process. Where the process is a request-
 
 | ID | Kind | Name | Description | Threshold | Escalation threshold | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| MON-017 | Audit event | Audit event audit:dispatch-started | The governance table binds action 'send-dispatch' to the audit vocabulary 'audit:dispatch-started'. | — | — | Confirmed |
-| MON-018 | Audit event | Audit event audit:no-dispatch | The governance table binds action 'no-dispatch' to the audit vocabulary 'audit:no-dispatch'. | — | — | Confirmed |
-| MON-019 | Audit event | Audit event audit:dispatch-retried | The governance table binds action 'retry-dispatch' to the audit vocabulary 'audit:dispatch-retried'. | — | — | Confirmed |
-| MON-020 | Audit event | Audit event audit:dispatch-closed | The governance table binds action 'close-dispatch' to the audit vocabulary 'audit:dispatch-closed'. | — | — | Confirmed |
+| MON-024 | Audit event | Audit event audit:dispatch-started | The governance table binds action 'send-dispatch' to the audit vocabulary 'audit:dispatch-started'. | — | — | Confirmed |
+| MON-025 | Audit event | Audit event audit:no-dispatch | The governance table binds action 'no-dispatch' to the audit vocabulary 'audit:no-dispatch'. | — | — | Confirmed |
+| MON-026 | Audit event | Audit event audit:dispatch-retried | The governance table binds action 'retry-dispatch' to the audit vocabulary 'audit:dispatch-retried'. | — | — | Confirmed |
+| MON-027 | Audit event | Audit event audit:dispatch-closed | The governance table binds action 'close-dispatch' to the audit vocabulary 'audit:dispatch-closed'. | — | — | Confirmed |
 
 ### Audit events written by this process
 
 | Step | Audit event |
 | --- | --- |
-| STEP-0018 Send the dispatch | audit:dispatch-started |
-| STEP-0019 Record that nothing will be dispatched | audit:no-dispatch |
-| STEP-0020 Send the dispatch again | audit:dispatch-retried |
-| STEP-0021 Close the dispatch | audit:dispatch-closed |
+| STEP-0025 Send the dispatch | audit:dispatch-started |
+| STEP-0026 Record that nothing will be dispatched | audit:no-dispatch |
+| STEP-0027 Send the dispatch again | audit:dispatch-retried |
+| STEP-0028 Close the dispatch | audit:dispatch-closed |
 
 ## Relationships
 

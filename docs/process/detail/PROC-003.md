@@ -12,6 +12,7 @@
 | Alternative or legacy name | Route 'activities' |
 | Category | User-initiated · operational |
 | Description | Cross-workspace queue of items awaiting action, filterable by stage and owner. |
+| Description declared in the artifact itself | — |
 | Business objective | Cross-workspace queue of items awaiting action, filterable by stage and owner. |
 | Operational objective | Boundary role 'activity-lens'. Owns activity-view, phase-filtering, flag-document, activity-lifecycle-routing, activity-attachment-preview; must not own intake-master, registry-control, approval-decision, archive-execution. |
 | Process owner | The activities module, per the per-action governance table. |
@@ -43,6 +44,9 @@
 | --- | --- | --- | --- |
 | STEP-0003 | Save the work state | activities workspace | Manual — operator-initiated |
 | STEP-0004 | Mark the document | activities workspace | Manual — operator-initiated |
+| STEP-0005 | Archive the activity | activities workspace | Manual — operator-initiated |
+| STEP-0006 | Route the activity to SIWES | activities workspace | Manual — operator-initiated |
+| STEP-0007 | Route the activity to NYSC | activities workspace | Manual — operator-initiated |
 
 ## 5.3 Initiation and preconditions
 
@@ -62,15 +66,21 @@
 | --- | --- |
 | STEP-0003 | The record the operator has selected, and any values captured by the form attached to the control. |
 | STEP-0004 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0005 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0006 | The record the operator has selected, and any values captured by the form attached to the control. |
+| STEP-0007 | The record the operator has selected, and any values captured by the form attached to the control. |
 
 ## 5.5 Stages and activities
 
-2 step(s).
+5 step(s).
 
 | Step | Seq | Name | Container | Responsible | Trigger | Preconditions | Inputs | Action performed | Rules | System response | Output | Resulting status | Next step | Alternative next | Dependencies | Controls | Exceptions | Audit event | Evidence | Validation | Sources |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | STEP-0003 | 1 | Save the work state | modules/activities.js | activities workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls updateTaskState. | Ownership: activities.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:operation-updated | Confirmed | No external validation required | SRC-006 SRC-035 |
 | STEP-0004 | 2 | Mark the document | modules/activities.js | activities workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls State.patch. | Ownership: activities; allowed invokers lookup.<br>Backend: DYNAMIC_ACTIONS.optional. | A backend call on DYNAMIC_ACTIONS is attempted; the local record stands when it fails and synchronisation is queued. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:document-flagged | Confirmed | No external validation required | SRC-006 SRC-035 |
+| STEP-0005 | 3 | Archive the activity | modules/activities.js | activities workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls ActivityParity.planLifecycleAction+ActivityParity.commitLifecycleAction+WriteManager.backend. | Ownership: activities.<br>Backend: DYNAMIC_ACTIONS. | Not evidenced for this action. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:activity-archived | Inferred | No external validation required | SRC-006 SRC-035 |
+| STEP-0006 | 4 | Route the activity to SIWES | modules/activities.js | activities workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls ActivityParity.planLifecycleAction+ActivityParity.commitLifecycleAction+WriteManager.backend. | Ownership: activities.<br>Backend: DYNAMIC_ACTIONS. | Not evidenced for this action. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:activity-siwes-routed | Inferred | No external validation required | SRC-006 SRC-035 |
+| STEP-0007 | 5 | Route the activity to NYSC | modules/activities.js | activities workspace | An operator activates the control that raises this action. | The action is owned by this workspace.<br>The operator reaches the route, which canAccess() gates on their role. | The record the operator has selected, and any values captured by the form attached to the control. | Calls ActivityParity.planLifecycleAction+ActivityParity.commitLifecycleAction+WriteManager.backend. | Ownership: activities.<br>Backend: DYNAMIC_ACTIONS. | Not evidenced for this action. | An updated record in application state. | — | — | — | DYNAMIC_ACTIONS | Governed through executeOwnedAction(), which refuses an action a module does not own and is not an allowed invoker of. | — | audit:activity-nysc-routed | Inferred | No external validation required | SRC-006 SRC-035 |
 
 ## 5.6 Decisions and branches
 
@@ -109,6 +119,9 @@ _No exception path is evidenced in this process. Where the process is a request-
 | --- | --- | --- | --- | --- | --- | --- |
 | MON-003 | Audit event | Audit event audit:operation-updated | The governance table binds action 'update-operation' to the audit vocabulary 'audit:operation-updated'. | — | — | Confirmed |
 | MON-004 | Audit event | Audit event audit:document-flagged | The governance table binds action 'flag-document' to the audit vocabulary 'audit:document-flagged'. | — | — | Confirmed |
+| MON-005 | Audit event | Audit event audit:activity-archived | The governance table binds action 'activity-archive' to the audit vocabulary 'audit:activity-archived'. | — | — | Confirmed |
+| MON-006 | Audit event | Audit event audit:activity-siwes-routed | The governance table binds action 'activity-siwes' to the audit vocabulary 'audit:activity-siwes-routed'. | — | — | Confirmed |
+| MON-007 | Audit event | Audit event audit:activity-nysc-routed | The governance table binds action 'activity-nysc' to the audit vocabulary 'audit:activity-nysc-routed'. | — | — | Confirmed |
 
 ### Audit events written by this process
 
@@ -116,6 +129,9 @@ _No exception path is evidenced in this process. Where the process is a request-
 | --- | --- |
 | STEP-0003 Save the work state | audit:operation-updated |
 | STEP-0004 Mark the document | audit:document-flagged |
+| STEP-0005 Archive the activity | audit:activity-archived |
+| STEP-0006 Route the activity to SIWES | audit:activity-siwes-routed |
+| STEP-0007 Route the activity to NYSC | audit:activity-nysc-routed |
 
 ## Relationships
 

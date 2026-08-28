@@ -14,7 +14,7 @@ rules and controls, outputs, exceptions and recovery, and monitoring.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | PROC-001 | Command Center | User-initiated · operational | 0 | 0 | 0 | Confirmed | [open](detail/PROC-001.md) |
 | PROC-002 | ERP–ECM Charter | User-initiated · operational | 0 | 0 | 0 | Confirmed | [open](detail/PROC-002.md) |
-| PROC-003 | Activities | User-initiated · operational | 2 | 0 | 0 | Confirmed | [open](detail/PROC-003.md) |
+| PROC-003 | Activities | User-initiated · operational | 5 | 0 | 0 | Confirmed | [open](detail/PROC-003.md) |
 | PROC-004 | Intake & Assignment | User-initiated · operational | 3 | 0 | 0 | Confirmed | [open](detail/PROC-004.md) |
 | PROC-005 | My Work | User-initiated · operational | 2 | 0 | 0 | Confirmed | [open](detail/PROC-005.md) |
 | PROC-006 | Acknowledgment Queue | User-initiated · operational | 2 | 0 | 0 | Confirmed | [open](detail/PROC-006.md) |
@@ -22,14 +22,14 @@ rules and controls, outputs, exceptions and recovery, and monitoring.
 | PROC-008 | Comments | User-initiated · operational | 1 | 0 | 0 | Confirmed | [open](detail/PROC-008.md) |
 | PROC-009 | Lookup & Direct Action | User-initiated · operational | 3 | 0 | 0 | Confirmed | [open](detail/PROC-009.md) |
 | PROC-010 | Tracking & Monitoring | User-initiated · operational | 0 | 0 | 0 | Confirmed | [open](detail/PROC-010.md) |
-| PROC-011 | FastTrack SLA | User-initiated · operational | 1 | 0 | 0 | Confirmed | [open](detail/PROC-011.md) |
-| PROC-012 | Review & Approval | User-initiated · operational | 1 | 0 | 0 | Confirmed | [open](detail/PROC-012.md) |
-| PROC-013 | Briefs & Submissions | User-initiated · operational | 1 | 0 | 0 | Confirmed | [open](detail/PROC-013.md) |
+| PROC-011 | FastTrack SLA | User-initiated · operational | 4 | 0 | 0 | Confirmed | [open](detail/PROC-011.md) |
+| PROC-012 | Review & Approval | User-initiated · operational | 3 | 0 | 0 | Confirmed | [open](detail/PROC-012.md) |
+| PROC-013 | Briefs & Submissions | User-initiated · operational | 3 | 0 | 0 | Confirmed | [open](detail/PROC-013.md) |
 | PROC-014 | Meetings | User-initiated · operational | 3 | 0 | 0 | Confirmed | [open](detail/PROC-014.md) |
 | PROC-015 | Projects | User-initiated · operational | 2 | 0 | 0 | Confirmed | [open](detail/PROC-015.md) |
 | PROC-016 | Reports | User-initiated · operational | 0 | 0 | 0 | Confirmed | [open](detail/PROC-016.md) |
 | PROC-017 | Statistics | User-initiated · operational | 0 | 0 | 0 | Confirmed | [open](detail/PROC-017.md) |
-| PROC-018 | DGCEO Correspondence & Decision Hub | User-initiated · operational | 2 | 0 | 0 | Confirmed | [open](detail/PROC-018.md) |
+| PROC-018 | DGCEO Correspondence & Decision Hub | User-initiated · operational | 5 | 0 | 0 | Confirmed | [open](detail/PROC-018.md) |
 | PROC-019 | Dispatch | User-initiated · operational | 4 | 0 | 0 | Confirmed | [open](detail/PROC-019.md) |
 | PROC-020 | Correspondence Email Desk | User-initiated · operational | 4 | 0 | 0 | Confirmed | [open](detail/PROC-020.md) |
 | PROC-021 | Assistant | User-initiated · operational | 1 | 0 | 0 | Confirmed | [open](detail/PROC-021.md) |
@@ -40,7 +40,7 @@ rules and controls, outputs, exceptions and recovery, and monitoring.
 | SUBPROC-002 | Bulk Assignment | Sub-view of a primary workspace | 1 | 0 | 0 | Confirmed | [open](detail/SUBPROC-002.md) |
 | SUBPROC-003 | Registry Scan Intake | Sub-view of a primary workspace | 1 | 0 | 0 | Confirmed | [open](detail/SUBPROC-003.md) |
 | SUBPROC-004 | Archive Evidence | Sub-view of a primary workspace | 1 | 0 | 0 | Confirmed | [open](detail/SUBPROC-004.md) |
-| SUBPROC-005 | User Administration | Sub-view of a primary workspace | 1 | 0 | 0 | Confirmed | [open](detail/SUBPROC-005.md) |
+| SUBPROC-005 | User Administration | Sub-view of a primary workspace | 4 | 0 | 0 | Confirmed | [open](detail/SUBPROC-005.md) |
 
 5 of the 66 subprocesses
 carry steps of their own and so carry a full record here; the rest are governed writes documented in
