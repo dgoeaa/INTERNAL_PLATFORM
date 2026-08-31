@@ -1479,8 +1479,26 @@ const { phrases, interned } = internPhrases(out);
 interned.phrases = phrases;
 const text = JSON.stringify(interned, null, 1) + '\n';
 if (process.argv.includes('--check')) {
+  /* STALE MEANS THE SOURCES MOVED, NOT THAT THE CALENDAR DID.
+     `generated` is stamped with today's date, so a byte-for-byte comparison against a fresh
+     build reported the inventory stale on every day but the one it was written on — and it did,
+     failing this suite daily while the discovered content had not changed at all. A check that
+     cries wolf every morning is worse than no check: the one time the sources really do drift,
+     the failure is indistinguishable from yesterday's noise and gets regenerated away unread.
+     The stamp is kept in the written file, because knowing when the inventory was built is
+     worth something; it just does not get a vote on whether the inventory is current. */
+  const undated = (t) => {
+    try {
+      const o = JSON.parse(t);
+      delete o.generated;
+      return JSON.stringify(o);
+    } catch { return t; }
+  };
   const cur = existsSync(join(ROOT, target)) ? readFileSync(join(ROOT, target), 'utf8') : '';
-  if (cur !== text) { console.error(`❌ ${target} is stale — run: node scripts/process-discovery.mjs`); process.exit(1); }
+  if (undated(cur) !== undated(text)) {
+    console.error(`❌ ${target} is stale — run: node scripts/process-discovery.mjs`);
+    process.exit(1);
+  }
   console.log(`✅ ${target} matches a fresh discovery run`);
   process.exit(0);
 }

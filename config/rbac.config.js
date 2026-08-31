@@ -9,10 +9,46 @@ export const RoleRouteAccess = Object.freeze({
 });
 export const RolePersonaMap = Object.freeze({systemAdmin:'admin', userAdmin:'admin', executive:'executive', director:'registry', operator:'registry', viewer:'general'});
 function routeAllowedForRole(role, route){ const xs=RoleRouteAccess[role]||[]; return xs.includes('*') || xs.includes(route); }
+/* THE ROLE TABLE DECIDES. THE PERSONA IS NOT A SECOND CHANCE AT THE SAME QUESTION.
+ *
+ * Finding F-020. This used to fall THROUGH to the persona check when the role check failed:
+ *
+ *     if (user.role && routeAllowedForRole(user.role, route)) return true;
+ *     ... persona checks ...
+ *
+ * A failed role check is a DENIAL, but written that way it was merely an unsuccessful attempt,
+ * and the persona below then answered the same question with a different table. Because
+ * normalizeUserRecord() derives the persona from the role through RolePersonaMap, every real
+ * caller arrives carrying both — so the persona table, not RoleRouteAccess, is what actually
+ * gated the app.
+ *
+ * The finding recorded this as operator and director reaching settings and diagnostics. It was
+ * broader than that. Measured across every role and every route, five of the six roles were
+ * granted more than their own row allows:
+ *
+ *     userAdmin    5 routes in the table, 26 granted   (persona 'admin' returned true outright)
+ *     viewer       5                      21
+ *     executive   12                      23           (incl. diagnostics)
+ *     director    15                      25           (incl. settings, operator-hud, executive)
+ *     operator    16                      25           (incl. settings, operator-hud, executive)
+ *     systemAdmin 26                      26           the only role whose table was honoured
+ *
+ * So RoleRouteAccess was decorative for everything but systemAdmin, and a table that is read by
+ * a human and not by the code is worse than no table: it is a document asserting a control that
+ * does not exist.
+ *
+ * A role now answers from its own row, and only from its own row. The persona branch survives
+ * for the ONE caller that has no role to offer — the R11.1 lineage shell passes a bare persona
+ * string, `canAccess(profile.persona, path)` — which the string form above normalises to a
+ * record with an empty role. That caller keeps its old behaviour exactly; every caller that
+ * supplies a role gets the table it was always shown.
+ */
 export function canAccess(subject, route) {
   const user=typeof subject==='string'?{persona:subject,role:'',status:'active'}:(subject||{});
   if(user.status && user.status!=='active') return false;
-  if(user.role && routeAllowedForRole(user.role, route)) return true;
+  /* A role is authoritative in both directions: it grants what its row lists and denies
+     everything else. No fall-through. */
+  if(user.role) return routeAllowedForRole(user.role, route);
   const persona=user.persona;
   if (persona === 'admin') return true;
   if (route === 'user-admin') return false;
