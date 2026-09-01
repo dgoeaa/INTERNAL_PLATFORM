@@ -1,0 +1,33 @@
+# Nothing in this repository is private: it IS the deployed static site, so every
+# tracked file at or below the root is published by the host. A file added here is
+# a file put on the public internet.
+#
+# A 6 MB archive, "Platform frontend review.zip", was tracked at the root from
+# 2026-08-18 until 2026-09-01. It contained three complete Power Automate trigger
+# URLs with intact sig= signatures — one of them the portal SUBMISSION endpoint the
+# deployed config still uses. A signed trigger URL is a bearer credential: holding it
+# is authorisation to invoke the flow. Removing the file does not revoke them; only
+# regenerating the URLs in Power Automate does.
+#
+# Note that a text search of the tracked files finds nothing. The signatures were
+# inside an archive, where grep cannot see them. Any scanner pointed at this
+# repository has to read archive members.
+
+# Credentials the operator creates locally. config.local.js carries every signed
+# trigger URL the platform uses; it must never be committed.
+config/config.local.js
+config.local.js
+
+# Archives. The estate has no reason to track one, and the last one carried
+# credentials nobody could see.
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.gz
+*.tgz
+
+# Local noise
+node_modules/
+.DS_Store
+Thumbs.db
