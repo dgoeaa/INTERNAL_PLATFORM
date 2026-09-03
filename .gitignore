@@ -1,0 +1,20 @@
+# Local endpoint configuration. Carries signed Power Automate trigger URLs, which are
+# bearer credentials: possession alone authorises invoking the flow. Never committed.
+config/config.local.js
+config.local.js
+
+# Archives. This repository IS the deployed static site, so a file at its root is a file on
+# the public internet — and a signature inside an archive is invisible to every text search.
+# `Platform frontend review.zip` sat here carrying three complete trigger URLs inside
+# _ds/…/_ds_bundle.js, which is exactly how it went unnoticed.
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.gz
+*.tgz
+
+# Dependencies and tooling output.
+node_modules/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,40 @@
+# The gate this repository did not have.
+#
+# This repository IS the deployed operator platform — no build, no bundler, no server. What is
+# merged here is served. So the checks that matter run on every push and every pull request, and
+# a red result means "do not merge this", not "look at it later".
+#
+# `unzip` is installed deliberately. The credential check opens archives, because that is exactly
+# how three live trigger URLs sat in this repository unnoticed, inside a zip at the root. Without
+# it the check reports the archive as unreadable and fails rather than passing quietly.
+name: Verify
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The credential check reads `git ls-files`, so it needs the working tree, not history.
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install unzip
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq unzip
+
+      # No dependencies to install: the suite uses only the Node standard library, so a fresh
+      # clone can verify itself with nothing fetched. That is deliberate — the operator is not a
+      # developer, and `npm test` has to work on a machine that has just cloned this.
+      - name: Verify
+        run: npm test
