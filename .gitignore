@@ -18,3 +18,7 @@ config.local.js
 node_modules/
 .DS_Store
 Thumbs.db
+
+# Python bytecode.
+__pycache__/
+*.pyc

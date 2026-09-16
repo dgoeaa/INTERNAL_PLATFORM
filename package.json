@@ -13,6 +13,10 @@
     "test:imports": "node tests/verify.mjs --only=imports",
     "test:entry": "node tests/verify.mjs --only=entry",
     "test:syntax": "node tests/verify.mjs --only=syntax",
-    "start": "npx --yes http-server . -p 8080 --cors -c-1 --silent"
+    "start": "npx --yes http-server . -p 8080 --cors -c-1 --silent",
+    "config:local": "node -e \"const fs=require('fs');const dst='config/config.local.js';if(fs.existsSync(dst)){console.log(dst+' already exists - left alone');}else{fs.copyFileSync('config/config.example.js',dst);console.log('wrote '+dst+' from the example. PLACEHOLDERS only: a signed Power Automate URL is a bearer credential, and this file is git-ignored.');}\"",
+    "estate:verify": "python3 docs/endpoint-estate/tools/verify.py",
+    "estate:audit": "python3 docs/endpoint-estate/tools/audit_columns.py",
+    "estate:report": "python3 docs/endpoint-estate/tools/dupes.py"
   }
 }

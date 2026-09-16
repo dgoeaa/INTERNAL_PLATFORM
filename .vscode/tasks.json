@@ -1,0 +1,71 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Serve the platform",
+      "type": "shell",
+      "command": "npm start",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "label": "Verify \u2014 everything (what CI runs)",
+      "type": "shell",
+      "command": "npm test",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Verify \u2014 secrets",
+      "type": "shell",
+      "command": "npm run test:secrets",
+      "problemMatcher": []
+    },
+    {
+      "label": "Verify \u2014 imports",
+      "type": "shell",
+      "command": "npm run test:imports",
+      "problemMatcher": []
+    },
+    {
+      "label": "Verify \u2014 entry point",
+      "type": "shell",
+      "command": "npm run test:entry",
+      "problemMatcher": []
+    },
+    {
+      "label": "Verify \u2014 syntax",
+      "type": "shell",
+      "command": "npm run test:syntax",
+      "problemMatcher": []
+    },
+    {
+      "label": "Write config/config.local.js (placeholders)",
+      "type": "shell",
+      "command": "npm run config:local",
+      "problemMatcher": []
+    },
+    {
+      "label": "Endpoint estate - duplication report",
+      "type": "shell",
+      "command": "npm run estate:report",
+      "problemMatcher": []
+    },
+    {
+      "label": "Endpoint estate - verify against sources (needs ESTATE_SOURCE_DIR)",
+      "type": "shell",
+      "command": "npm run estate:verify",
+      "problemMatcher": []
+    }
+  ]
+}

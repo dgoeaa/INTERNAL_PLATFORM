@@ -1,0 +1,52 @@
+{
+  "$schema": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json",
+  "name": "DGO Digital OPS",
+
+  // Node 20 satisfies the engines floor of >=18. Nothing is built or bundled here: the
+  // repository IS the deployed platform, so the container only has to serve it as-is.
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20-bookworm",
+
+  "features": {
+    // Python is not for the platform. It runs the endpoint-estate workbook pipeline in
+    // docs/endpoint-estate/tools, which is the other runnable thing in this branch.
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11",
+      "installTools": false
+    }
+  },
+
+  "onCreateCommand": "bash .devcontainer/setup.sh",
+
+  // The platform is a browser application. Forward its port and open it on first serve.
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "DGO Digital OPS",
+      "onAutoForward": "openPreview"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "editorconfig.editorconfig",
+        "ms-python.python",
+        "grapecity.gc-excelviewer"
+      ],
+      "settings": {
+        "files.eol": "\n",
+        "files.insertFinalNewline": true,
+        "javascript.preferences.importModuleSpecifierEnding": "js",
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+
+  // A signed Power Automate URL is a bearer credential. config/config.local.js is
+  // git-ignored and stays out of the image; the platform boots without it by design,
+  // and `npm run config:local` writes a placeholder copy when you want one.
+  // The estate tooling finds its workbook relative to itself, so no env var is needed.
+
+  "remoteUser": "node"
+}
